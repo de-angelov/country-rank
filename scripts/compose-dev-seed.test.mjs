@@ -61,7 +61,7 @@ describe("resolveRedisEndpoint", () => {
 });
 
 describe("runComposeDevSeed", () => {
-  it("passes the selected Redis host port to Compose and matching Redis URL to seeding", async () => {
+  it("starts Compose with an optional host Redis port and seeds through the Compose network", async () => {
     const commandRunner = vi.fn(() => Promise.resolve(0));
     const logger = {
       log: vi.fn(),
@@ -69,7 +69,7 @@ describe("runComposeDevSeed", () => {
 
     await expect(
       runComposeDevSeed({
-        env: { PATH: "/bin" },
+        env: { APP_HOST_PORT: "5174", PATH: "/bin" },
         commandRunner,
         isPortAvailable: createPortAvailabilityChecker(new Set([6380])),
         logger,
@@ -82,6 +82,7 @@ describe("runComposeDevSeed", () => {
       ["compose", "up", "-d", "app", "redis"],
       {
         env: {
+          APP_HOST_PORT: "5174",
           PATH: "/bin",
           REDIS_HOST_PORT: "6380",
         },
@@ -89,17 +90,34 @@ describe("runComposeDevSeed", () => {
     );
     expect(commandRunner).toHaveBeenNthCalledWith(
       2,
-      "npm",
-      ["run", "seed:redis:votes"],
+      "docker",
+      [
+        "compose",
+        "exec",
+        "-T",
+        "-e",
+        "REDIS_URL=redis://redis:6379",
+        "app",
+        "npm",
+        "run",
+        "seed:redis:votes",
+      ],
       {
         env: {
+          APP_HOST_PORT: "5174",
           PATH: "/bin",
-          REDIS_URL: "redis://localhost:6380",
+          REDIS_HOST_PORT: "6380",
         },
       },
     );
     expect(logger.log).toHaveBeenCalledWith(
-      "Seeding Redis vote totals at redis://localhost:6380.",
+      "Compose dev app: http://localhost:5174",
+    );
+    expect(logger.log).toHaveBeenCalledWith(
+      "Compose dev Redis for optional local tooling: redis://localhost:6380",
+    );
+    expect(logger.log).toHaveBeenCalledWith(
+      "Seeding Redis vote totals inside Compose at redis://redis:6379.",
     );
   });
 });

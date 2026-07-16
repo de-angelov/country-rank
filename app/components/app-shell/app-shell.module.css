@@ -3,14 +3,14 @@
 }
 
 .header {
-  border-bottom: 2px solid var(--border);
+  border-bottom: var(--border-neobrutal);
   background: var(--secondary-background);
 }
 
 .banner {
   position: relative;
   overflow: hidden;
-  border-bottom: 2px solid var(--border);
+  border-bottom: var(--border-neobrutal);
   background: var(--background);
 }
 
@@ -45,8 +45,8 @@
   bottom: -0.22em;
   left: 12%;
   height: 0.22em;
-  border: 2px solid var(--border);
-  background: #ffe05c;
+  border: var(--border-neobrutal);
+  background: var(--accent-highlight);
   content: "";
   transform: skewX(-8deg);
   animation: taglineUnderline 900ms steps(2, end) 420ms 2;
@@ -54,12 +54,12 @@
 
 .ribbon {
   display: flex;
-  width: min(100%, 72rem);
+  width: min(100%, var(--size-content-max));
   margin: 0 auto;
   align-items: center;
   justify-content: space-between;
-  gap: 0.75rem;
-  padding: 0.625rem 1rem;
+  gap: var(--space-4);
+  padding: var(--space-3) var(--space-5);
 }
 
 .brand {
@@ -77,17 +77,17 @@
   flex-wrap: wrap;
   align-items: center;
   justify-content: flex-end;
-  gap: 0.5rem;
+  gap: var(--space-2);
 }
 
 .navLink {
   min-width: 7rem;
   min-height: 2.25rem;
-  padding-inline: 0.625rem;
+  padding-inline: var(--space-3);
 }
 
 .content {
-  width: min(100%, 72rem);
+  width: min(100%, var(--size-content-max));
   margin: 0 auto;
 }
 
@@ -98,11 +98,9 @@
 
   .bannerTagline {
     bottom: 8%;
-    width: calc(100% - 1rem);
+    width: calc(100% - var(--space-5));
     font-size: clamp(0.875rem, 5.3vw, 1.35rem);
     line-height: 1;
-
-
   }
 
   .bannerTagline::after {

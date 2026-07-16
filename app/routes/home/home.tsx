@@ -143,10 +143,6 @@ export function HomeCountriesContent({
         id="country-results"
         ref={resultsRef}
       >
-        <p className="text-sm" aria-live="polite">
-          Showing {resultCount} {resultCount === 1 ? "country" : "countries"}
-        </p>
-
         {resultCount > 0 ? (
           <section aria-label="Countries" className="grid gap-4 lg:grid-cols-2">
             {filteredCountries.map((country) => (

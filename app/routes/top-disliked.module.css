@@ -1,0 +1,30 @@
+.page {
+  display: grid;
+  gap: 1.5rem;
+  padding: 1.5rem 1rem 2rem;
+}
+
+.header {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.header h1 {
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1;
+}
+
+.header p {
+  max-width: 42rem;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.list {
+  display: grid;
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}

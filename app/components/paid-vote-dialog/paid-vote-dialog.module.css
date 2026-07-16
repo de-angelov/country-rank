@@ -1,0 +1,54 @@
+.selectedVote {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  border: var(--border-neobrutal);
+  border-radius: var(--radius-neobrutal);
+  color: var(--main-foreground);
+}
+
+.like {
+  background: var(--vote-like);
+}
+
+.dislike {
+  background: var(--vote-dislike);
+}
+
+.voteIcon {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+}
+
+.flag {
+  width: 4rem;
+  height: 3rem;
+  flex-shrink: 0;
+  border: var(--border-neobrutal);
+  border-radius: var(--radius-neobrutal);
+  background: var(--main);
+  object-fit: cover;
+}
+
+.selectionText {
+  min-width: 0;
+}
+
+.selectionEyebrow,
+.selectionValue {
+  margin: 0;
+  font-family: var(--font-heading);
+}
+
+.selectionEyebrow {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.selectionValue {
+  margin-top: 0.25rem;
+  font-size: 1rem;
+  line-height: 1.5rem;
+}

@@ -31,7 +31,6 @@ describe("PaidVoteDialog", () => {
     expect(html).toContain('src="https://example.com/japan.svg"');
     expect(html).toContain('alt="Japan flag"');
     expect(html).toContain("<strong>Japan</strong>");
-    expect(html).toContain("bg-vote-like");
     expect(html).toContain("lucide-thumbs-up");
     expect(html).toContain("Payment coming soon");
     expect(html).toContain("disabled");
@@ -51,7 +50,6 @@ describe("PaidVoteDialog", () => {
     expect(html).toContain('src="https://example.com/japan.svg"');
     expect(html).toContain('alt="Japan flag"');
     expect(html).toContain("<strong>Japan</strong>");
-    expect(html).toContain("bg-vote-dislike");
     expect(html).toContain("lucide-thumbs-down");
   });
 });

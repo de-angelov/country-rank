@@ -37,8 +37,6 @@ describe("CountryCard", () => {
     );
     expect(html).toContain("Like Japan");
     expect(html).toContain("Dislike Japan");
-    expect(html).toContain("bg-vote-like");
-    expect(html).toContain("bg-vote-dislike");
     expect(html).toContain("width:95.");
     expect(html).toContain("width:4.");
     expect(html).not.toContain("<dt");

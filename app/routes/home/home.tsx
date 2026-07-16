@@ -6,6 +6,7 @@ import { CountryCard } from "~/components/country-card/country-card";
 import type { Country } from "~/countries";
 
 import { loadHomeCountries } from "./home.server";
+import styles from "./home.module.css";
 
 export async function loader() {
   return {
@@ -52,24 +53,24 @@ export function HomeCountriesContent({
   const resultCount = filteredCountries.length;
 
   return (
-    <main className="mx-auto grid w-full max-w-6xl gap-6 px-4 py-6 sm:px-6 lg:px-8">
-      <div className="grid gap-4 md:grid-cols-[1fr_minmax(18rem,24rem)] md:items-end">
+    <main className={styles.page}>
+      <div className={styles.header}>
         <div>
-          <h1 className="text-3xl font-heading sm:text-4xl">Countries</h1>
-          <p className="mt-2 max-w-2xl text-base">
+          <h1>Countries</h1>
+          <p>
             Browse the current country rankings and narrow the list by country
             name.
           </p>
         </div>
 
-        <div className="grid gap-2">
-          <label className="font-heading text-sm" htmlFor="country-search">
+        <div className={styles.search}>
+          <label className={styles.searchLabel} htmlFor="country-search">
             Search countries
           </label>
-          <div className="relative">
+          <div className={styles.searchField}>
             <Search
               aria-hidden="true"
-              className="pointer-events-none absolute left-3 top-1/2 size-5 -translate-y-1/2"
+              className={styles.searchIcon}
             />
             <input
               id="country-search"
@@ -78,20 +79,20 @@ export function HomeCountriesContent({
               value={searchQuery}
               onChange={(event) => setSearchQuery(event.currentTarget.value)}
               placeholder="Country name"
-              className="h-12 w-full rounded-base border-2 border-border bg-secondary-background py-2 pl-10 pr-3 text-base shadow-shadow outline-hidden focus:ring-2 focus:ring-ring"
+              className={styles.searchInput}
             />
           </div>
         </div>
       </div>
 
-      <p className="text-sm" aria-live="polite">
+      <p className={styles.resultCount} aria-live="polite">
         Showing {resultCount} {resultCount === 1 ? "country" : "countries"}
       </p>
 
       {resultCount > 0 ? (
         <section
           aria-label="Countries"
-          className="grid gap-4 lg:grid-cols-2"
+          className={styles.countryGrid}
         >
           {filteredCountries.map((country) => (
             <CountryCard
@@ -103,7 +104,7 @@ export function HomeCountriesContent({
           ))}
         </section>
       ) : (
-        <p className="rounded-base border-2 border-border bg-secondary-background p-4">
+        <p className={styles.emptyState}>
           No countries match that search.
         </p>
       )}

@@ -1,0 +1,121 @@
+.card {
+  display: grid;
+  gap: var(--space-5);
+  padding: var(--space-5);
+  border: var(--border-neobrutal);
+  border-radius: var(--radius-neobrutal);
+  background: var(--secondary-background);
+  box-shadow: var(--shadow);
+}
+
+.flagFrame {
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border: var(--border-neobrutal);
+  border-radius: var(--radius-neobrutal);
+  background: var(--background);
+}
+
+.flagImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.body {
+  display: grid;
+  min-width: 0;
+  gap: var(--space-5);
+}
+
+.summary {
+  min-width: 0;
+}
+
+.name {
+  overflow: hidden;
+  margin: 0;
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.capital {
+  margin: 0.25rem 0 0;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.fact {
+  margin: var(--space-2) 0 0;
+  color: color-mix(in oklch, var(--foreground) 75%, transparent);
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.voteSummary {
+  display: grid;
+  gap: var(--space-2);
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+}
+
+.voteLabels {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.voteLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-family: var(--font-heading);
+}
+
+.voteIcon {
+  width: 1rem;
+  height: 1rem;
+}
+
+.voteBar {
+  display: flex;
+  height: 1rem;
+  overflow: hidden;
+  border: var(--border-neobrutal);
+  border-radius: var(--radius-neobrutal);
+  background: var(--background);
+}
+
+.likeBar,
+.dislikeBar {
+  height: 100%;
+}
+
+.likeBar {
+  background: var(--vote-like);
+}
+
+.dislikeBar {
+  background: var(--vote-dislike);
+}
+
+.actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+
+@media (min-width: 40rem) {
+  .card {
+    grid-template-columns: minmax(5rem, 7rem) minmax(0, 1fr);
+    align-items: center;
+  }
+
+  .voteSummary,
+  .actions {
+    max-width: 24rem;
+  }
+}

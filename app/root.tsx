@@ -11,6 +11,7 @@ import type { Route } from "./+types/root";
 import { AppShell } from "./components/app-shell/app-shell";
 import { Button } from "./components/ui/button";
 import "./app.css";
+import styles from "./root.module.css";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -56,26 +57,26 @@ export function RootErrorPage({ error }: Route.ErrorBoundaryProps) {
 
   return (
     <AppShell>
-      <main className="mx-auto flex min-h-[calc(100vh-18rem)] w-full max-w-3xl items-center px-4 py-12">
+      <main className={styles.errorPage}>
         <section
-          className="w-full rounded-base border-2 border-border bg-secondary-background p-6 shadow-shadow sm:p-8"
+          className={styles.errorPanel}
           aria-labelledby="error-title"
         >
-          <p className="mb-3 inline-flex rounded-base border-2 border-border bg-main px-3 py-1 text-sm font-heading text-main-foreground">
+          <p className={styles.errorEyebrow}>
             Country Ranking
           </p>
           <h1
             id="error-title"
-            className="mb-3 text-3xl font-heading leading-tight sm:text-4xl"
+            className={styles.errorTitle}
           >
             {message}
           </h1>
-          <p className="mb-6 max-w-prose text-base leading-7">{details}</p>
+          <p className={styles.errorDetails}>{details}</p>
           <Button asChild variant="neutral">
             <a href="/">Back to countries</a>
           </Button>
           {stack && (
-            <pre className="mt-6 max-h-72 overflow-auto rounded-base border-2 border-border bg-background p-4 text-sm leading-6">
+            <pre className={styles.errorStack}>
               <code>{stack}</code>
             </pre>
           )}

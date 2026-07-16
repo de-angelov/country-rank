@@ -10,6 +10,7 @@ import {
   type VoteType,
 } from "~/components/paid-vote-dialog/paid-vote-dialog";
 import { Button } from "~/components/ui/button";
+import styles from "./country-card.module.css";
 
 export type CountryVoteHandler = (country: Country) => void;
 
@@ -51,58 +52,58 @@ export function CountryCard({
     <>
       <article
         className={cn(
-          "grid gap-4 rounded-base border-2 border-border bg-secondary-background p-4 shadow-shadow sm:grid-cols-[minmax(5rem,7rem)_1fr] sm:items-center",
+          styles.card,
           className,
         )}
       >
-        <div className="aspect-[4/3] overflow-hidden rounded-base border-2 border-border bg-background">
+        <div className={styles.flagFrame}>
           <img
             src={country.flagImageUrl}
             alt={`${country.name} flag`}
-            className="h-full w-full object-cover"
+            className={styles.flagImage}
             loading="lazy"
           />
         </div>
 
-        <div className="grid min-w-0 gap-4">
-          <div className="min-w-0">
-            <h2 className="truncate text-xl font-heading">{country.name}</h2>
-            <p className="mt-1 text-sm">Capital: {country.capital}</p>
-            <p className="mt-2 text-sm text-foreground/75">
+        <div className={styles.body}>
+          <div className={styles.summary}>
+            <h2 className={styles.name}>{country.name}</h2>
+            <p className={styles.capital}>Capital: {country.capital}</p>
+            <p className={styles.fact}>
               {country.factSnippet}
             </p>
           </div>
 
           <div
-            className="grid gap-2 text-sm sm:max-w-sm"
+            className={styles.voteSummary}
             role="img"
             aria-label={`${country.name} vote ratio: ${likeCount} likes (${roundedLikeRatio}%) and ${dislikeCount} dislikes (${roundedDislikeRatio}%).`}
           >
-            <div className="flex items-center justify-between gap-3">
-              <span className="inline-flex items-center gap-1 font-heading">
-                <ThumbsUp aria-hidden="true" className="size-4" />
+            <div className={styles.voteLabels}>
+              <span className={styles.voteLabel}>
+                <ThumbsUp aria-hidden="true" className={styles.voteIcon} />
                 {likeCount} likes
               </span>
-              <span className="inline-flex items-center gap-1 font-heading">
-                <ThumbsDown aria-hidden="true" className="size-4" />
+              <span className={styles.voteLabel}>
+                <ThumbsDown aria-hidden="true" className={styles.voteIcon} />
                 {dislikeCount} dislikes
               </span>
             </div>
-            <div className="flex h-4 overflow-hidden rounded-base border-2 border-border bg-background">
+            <div className={styles.voteBar}>
               <div
-                className="h-full bg-vote-like"
+                className={styles.likeBar}
                 style={{ width: `${likeRatio}%` }}
                 aria-hidden="true"
               />
               <div
-                className="h-full bg-vote-dislike"
+                className={styles.dislikeBar}
                 style={{ width: `${dislikeRatio}%` }}
                 aria-hidden="true"
               />
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-2 sm:max-w-sm">
+          <div className={styles.actions}>
             <Button
               type="button"
               variant="like"

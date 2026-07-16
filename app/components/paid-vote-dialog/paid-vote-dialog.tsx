@@ -13,6 +13,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "~/components/ui/dialog";
+import styles from "./paid-vote-dialog.module.css";
 
 export type VoteType = "like" | "dislike";
 
@@ -34,11 +35,11 @@ const voteTypeLabels: Record<VoteType, string> = {
 const voteTypeThemes = {
   dislike: {
     Icon: ThumbsDown,
-    className: "bg-vote-dislike text-main-foreground",
+    className: styles.dislike,
   },
   like: {
     Icon: ThumbsUp,
-    className: "bg-vote-like text-main-foreground",
+    className: styles.like,
   },
 } satisfies Record<
   VoteType,
@@ -85,19 +86,19 @@ export function PaidVoteDialogBody({ intent }: { intent: VoteIntent }) {
 
       <div
         className={cn(
-          "flex items-center gap-3 rounded-base border-2 border-border p-4",
+          styles.selectedVote,
           theme.className,
         )}
       >
-        <VoteIcon aria-hidden="true" className="size-5 shrink-0" />
+        <VoteIcon aria-hidden="true" className={styles.voteIcon} />
         <img
           alt={flagAltText}
-          className="h-12 w-16 shrink-0 rounded-base border-2 border-border bg-main object-cover"
+          className={styles.flag}
           src={intent.country.flagImageUrl}
         />
-        <div>
-          <p className="text-sm font-heading">Selected vote</p>
-          <p className="mt-1 text-base font-heading">
+        <div className={styles.selectionText}>
+          <p className={styles.selectionEyebrow}>Selected vote</p>
+          <p className={styles.selectionValue}>
             <strong>{countryName}</strong> - {voteLabel}
           </p>
         </div>

@@ -116,6 +116,67 @@ The seed script reloads fixture vote totals into Redis. It is not a production
 restore path and should not be used as evidence that a GitHub backup artifact can
 be recovered into a live deployment.
 
+### Redis Restore Runner
+
+The Redis restore runner is available through `npm run restore:redis`. It reads
+one backup artifact created by the [Redis backup runner](#redis-backup-runner),
+validates the artifact shape, and replaces the `likes` and `dislikes` fields for
+each `country:votes:{COUNTRY_CODE}` hash present in the artifact.
+
+The restore runner expects the backup artifact to already be present on the
+machine where the command runs. When the artifact is stored in a GitHub-backed
+backup repository, retrieve it with repository access supplied by the shell,
+deployment job, or secret manager environment. Do not commit GitHub tokens,
+Redis URLs, downloaded artifacts, or temporary restore files to this repository.
+
+Environment variables read by the restore command:
+
+| Variable | Required | Used for | Default |
+| --- | --- | --- | --- |
+| `REDIS_URL` | Required | Target Redis instance that will receive the restored vote totals. | None |
+
+Run a restore against a target Redis instance with:
+
+```sh
+REDIS_URL=redis://target-redis-host:6379 \
+npm run restore:redis -- ./path/to/2026-07-16T12-00-00-000Z-country-votes.json
+```
+
+The command prints `Restored ... Redis country vote total(s).` after a
+successful restore. The restore replaces vote totals for countries included in
+the artifact; it does not delete unrelated Redis keys or unrelated country vote
+hashes that are absent from the artifact.
+
+For a new deployment, use this restore flow before treating fixture seeding as
+an option:
+
+1. Provision the new Redis instance and expose its connection string to the
+   restore environment as `REDIS_URL`.
+2. Follow the [backup prerequisites](#redis-backup-runner) to identify the
+   GitHub backup repository, branch, path, and artifact naming convention.
+3. Retrieve the selected `*-country-votes.json` artifact from the backup
+   repository using GitHub credentials supplied through environment variables or
+   the deployment platform's secret injection.
+4. Run `npm run restore:redis -- <artifact-path>` with `REDIS_URL` pointing at
+   the new Redis instance.
+5. Start the app against that same `REDIS_URL` and verify the country pages show
+   the restored vote totals.
+
+Use Docker Compose Redis for a local backup-and-restore round trip:
+
+```sh
+docker compose up -d redis
+REDIS_URL=redis://localhost:6379 npm run seed:redis:votes
+REDIS_URL=redis://localhost:6379 npm run backup:redis -- --dry-run
+REDIS_URL=redis://localhost:6379 npm run restore:redis -- tmp/redis-backups/<generated-backup-file>.json
+```
+
+The dummy seed command in this local example is only there to create demo data
+before the dry-run backup. For deployment recovery, restore from a GitHub-backed
+backup artifact first. Use `npm run seed:redis:votes` only as an explicit
+demo/local reset fallback when no production backup artifact exists or the
+environment is intentionally non-production.
+
 ### Request And Data Flow
 
 - Browsing: React Router renders the index route from `app/routes/home.tsx`. Country browsing UI should source country records from `app/countries/fixtures.ts` until a later task introduces a different data source.

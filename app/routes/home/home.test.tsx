@@ -102,6 +102,35 @@ describe("Home", () => {
     expect(html).not.toContain("United Kingdom");
   });
 
+  it("renders the no-match state for an initial search with no results", () => {
+    const html = renderToString(
+      <HomeCountriesContent countries={countries} initialSearch="zzzz" />,
+    );
+    const text = visibleText(html);
+
+    expect(html).toContain('value="zzzz"');
+    expect(text).toContain("Showing 0 countries");
+    expect(html).toContain("No countries match that search.");
+
+    for (const country of countries) {
+      expect(html).not.toContain(country.name);
+    }
+  });
+
+  it("filters, changes, and clears country search results by name", () => {
+    expect(filterCountriesByName(countries, "jap").map(({ name }) => name))
+      .toEqual(["Japan"]);
+
+    expect(filterCountriesByName(countries, "uni").map(({ name }) => name))
+      .toEqual(["United States", "United Kingdom"]);
+
+    expect(filterCountriesByName(countries, "king").map(({ name }) => name))
+      .toEqual(["United Kingdom"]);
+
+    expect(filterCountriesByName(countries, "").map(({ name }) => name))
+      .toEqual(["Japan", "United States", "United Kingdom"]);
+  });
+
   it("filters countries by partial name without matching other fields", () => {
     expect(filterCountriesByName(countries, "uni").map(({ name }) => name))
       .toEqual(["United States", "United Kingdom"]);

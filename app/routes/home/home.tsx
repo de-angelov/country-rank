@@ -3,6 +3,7 @@ import { Search } from "lucide-react";
 import { useLoaderData } from "react-router";
 
 import { CountryCard } from "~/components/country-card/country-card";
+import { Input } from "~/components/ui/input";
 import type { Country } from "~/countries";
 
 import { loadHomeCountries } from "./home.server";
@@ -71,14 +72,14 @@ export function HomeCountriesContent({
               aria-hidden="true"
               className="pointer-events-none absolute left-3 top-1/2 size-5 -translate-y-1/2"
             />
-            <input
+            <Input
               id="country-search"
               name="country-search"
               type="search"
               value={searchQuery}
               onChange={(event) => setSearchQuery(event.currentTarget.value)}
               placeholder="Country name"
-              className="h-12 w-full rounded-base border-2 border-border bg-secondary-background py-2 pl-10 pr-3 text-base shadow-shadow outline-hidden focus:ring-2 focus:ring-ring"
+              className="pl-10"
             />
           </div>
         </div>

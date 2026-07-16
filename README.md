@@ -47,6 +47,12 @@ the `country:votes:*` hashes to a timestamped JSON artifact. Real backup
 credentials must be supplied through environment variables and must never be
 committed to the repository.
 
+Backup artifacts are JSON files named with the backup timestamp, for example
+`2026-07-16T12-00-00-000Z-country-votes.json`. Each artifact records
+`schemaVersion`, `createdAt`, the exported Redis key pattern, and a sorted
+`records` list. Each record includes the Redis hash key, country code, normalized
+`likes` and `dislikes` numbers, and the original Redis hash fields.
+
 Environment variables read by the runner:
 
 | Variable | Required | Used for | Default |
@@ -58,17 +64,57 @@ Environment variables read by the runner:
 | `REDIS_BACKUP_PATH` | Optional | Relative directory inside the backup repository where artifacts are stored. | `redis` |
 | `REDIS_BACKUP_RETENTION_COUNT` | Optional | Number of newest backup artifacts to keep during push mode. | `30` |
 
-Local dry-run verification does not require real backup credentials:
+Create a local backup artifact from the current Redis state with dry-run mode.
+This does not require GitHub backup credentials:
 
 1. Start local Redis with `docker compose up -d redis`.
-2. Run `REDIS_URL=redis://localhost:6379 npm run backup:redis -- --dry-run`.
-3. Confirm the command prints `Created Redis backup artifact:` and `Exported ... country vote record(s).`.
-4. Inspect the generated JSON file under `tmp/redis-backups/`.
+2. Seed demo vote totals if needed with `REDIS_URL=redis://localhost:6379 npm run seed:redis:votes`.
+3. Run `REDIS_URL=redis://localhost:6379 npm run backup:redis -- --dry-run`.
+4. Confirm the command prints `Created Redis backup artifact:` and `Exported ... country vote record(s).`.
+5. Inspect the generated JSON file under `tmp/redis-backups/`.
 
-Restore a backup artifact into Redis with `npm run restore:redis -- <artifact-path>`.
-The restore runner requires `REDIS_URL`, validates the artifact shape before
-connecting to Redis, and replaces the `likes` and `dislikes` hash fields for
-each country present in the artifact.
+Push a backup artifact to GitHub-backed storage by running the same script with
+`--push` in an environment that provides the backup repository and token:
+
+```sh
+REDIS_URL=redis://localhost:6379 \
+REDIS_BACKUP_GITHUB_REPOSITORY=owner/repo \
+REDIS_BACKUP_GITHUB_TOKEN=github-token-with-repository-write-access \
+npm run backup:redis -- --push
+```
+
+The token must come from the deployment environment, local shell, or a secret
+store injected as an environment variable. Do not place GitHub tokens, Redis
+URLs, or generated backup artifacts in tracked source files. The backup
+repository may be private; the token only needs enough access to clone the
+configured branch and push commits containing files under `REDIS_BACKUP_PATH`.
+
+For a new deployment, configure these prerequisites before relying on Redis vote
+backups:
+
+1. Provision the deployment Redis instance and expose its connection string as
+   `REDIS_URL`.
+2. Create or choose a GitHub repository and branch for backup artifacts.
+3. Supply `REDIS_BACKUP_GITHUB_REPOSITORY` and `REDIS_BACKUP_GITHUB_TOKEN` as
+   environment variables in the job or runtime that executes `npm run backup:redis -- --push`.
+4. Optionally set `REDIS_BACKUP_BRANCH`, `REDIS_BACKUP_PATH`, and
+   `REDIS_BACKUP_RETENTION_COUNT` to match the backup repository layout and
+   retention policy.
+5. Run a one-off `--dry-run` against the deployment Redis URL to confirm Redis
+   connectivity without using GitHub credentials.
+6. Run `--push` once and confirm a timestamped `*-country-votes.json` artifact
+   appears in the configured backup repository path.
+
+Until automated restore support is available for deployment recovery, the dummy
+seed script remains the fallback for demo and local reset scenarios only:
+
+```sh
+REDIS_URL=redis://localhost:6379 npm run seed:redis:votes
+```
+
+The seed script reloads fixture vote totals into Redis. It is not a production
+restore path and should not be used as evidence that a GitHub backup artifact can
+be recovered into a live deployment.
 
 ### Request And Data Flow
 

@@ -9,6 +9,7 @@ import {
 
 import type { Route } from "./+types/root";
 import { AppShell } from "./components/app-shell/app-shell";
+import { Button } from "./components/ui/button";
 import "./app.css";
 
 export function Layout({ children }: { children: React.ReactNode }) {
@@ -37,31 +38,53 @@ export default function App() {
   );
 }
 
-export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
-  let message = "Oops!";
-  let details = "An unexpected error occurred.";
+export function RootErrorPage({ error }: Route.ErrorBoundaryProps) {
+  let message = "Something went wrong";
+  let details = "Please try again in a moment.";
   let stack: string | undefined;
 
   if (isRouteErrorResponse(error)) {
-    message = error.status === 404 ? "404" : "Error";
+    message = error.status === 404 ? "Page not found" : message;
     details =
       error.status === 404
         ? "The requested page could not be found."
-        : error.statusText || details;
+        : details;
   } else if (import.meta.env.DEV && error && error instanceof Error) {
     details = error.message;
     stack = error.stack;
   }
 
   return (
-    <main>
-      <h1>{message}</h1>
-      <p>{details}</p>
-      {stack && (
-        <pre>
-          <code>{stack}</code>
-        </pre>
-      )}
-    </main>
+    <AppShell>
+      <main className="mx-auto flex min-h-[calc(100vh-18rem)] w-full max-w-3xl items-center px-4 py-12">
+        <section
+          className="w-full rounded-base border-2 border-border bg-secondary-background p-6 shadow-shadow sm:p-8"
+          aria-labelledby="error-title"
+        >
+          <p className="mb-3 inline-flex rounded-base border-2 border-border bg-main px-3 py-1 text-sm font-heading text-main-foreground">
+            Country Ranking
+          </p>
+          <h1
+            id="error-title"
+            className="mb-3 text-3xl font-heading leading-tight sm:text-4xl"
+          >
+            {message}
+          </h1>
+          <p className="mb-6 max-w-prose text-base leading-7">{details}</p>
+          <Button asChild variant="neutral">
+            <a href="/">Back to countries</a>
+          </Button>
+          {stack && (
+            <pre className="mt-6 max-h-72 overflow-auto rounded-base border-2 border-border bg-background p-4 text-sm leading-6">
+              <code>{stack}</code>
+            </pre>
+          )}
+        </section>
+      </main>
+    </AppShell>
   );
+}
+
+export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
+  return <RootErrorPage error={error} />;
 }

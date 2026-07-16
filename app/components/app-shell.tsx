@@ -10,7 +10,7 @@ const navigationLinks = [
   { href: "/top-disliked", label: "Top Disliked" },
 ] as const;
 
-const bannerImageSrc = "/images/country-ranking-banner-placeholder.svg";
+const bannerImageSrc = "/images/country-ranking-banner-v5.png";
 
 export const bannerTaglines = [
   "Rankings Without Borders",

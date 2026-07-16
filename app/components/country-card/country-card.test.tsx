@@ -30,13 +30,35 @@ describe("CountryCard", () => {
       "Vending machines, bullet trains, and stationery with main-character energy.",
     );
     expect(html).toContain("Japan flag");
-    expect(html).toContain("Likes");
-    expect(html).toContain("1,234");
-    expect(html).toContain("Dislikes");
-    expect(html).toContain("56");
+    expect(html).toContain("1,234 likes");
+    expect(html).toContain("56 dislikes");
+    expect(html).toContain(
+      "Japan vote ratio: 1,234 likes (96%) and 56 dislikes (4%).",
+    );
     expect(html).toContain("Like Japan");
     expect(html).toContain("Dislike Japan");
     expect(html).toContain("bg-vote-like");
     expect(html).toContain("bg-vote-dislike");
+    expect(html).toContain("width:95.");
+    expect(html).toContain("width:4.");
+    expect(html).not.toContain("<dt");
+    expect(html).not.toContain("<dd");
+  });
+
+  it("renders an even empty chart with accessible zero totals", () => {
+    const html = renderToString(
+      <CountryCard
+        country={{ ...country, likes: 0, dislikes: 0 }}
+        onLikeClick={vi.fn()}
+        onDislikeClick={vi.fn()}
+      />,
+    );
+
+    expect(html).toContain("0 likes");
+    expect(html).toContain("0 dislikes");
+    expect(html).toContain(
+      "Japan vote ratio: 0 likes (0%) and 0 dislikes (0%).",
+    );
+    expect(html).toContain("width:50%");
   });
 });

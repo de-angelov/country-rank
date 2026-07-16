@@ -31,6 +31,11 @@ export function CountryCard({
   const [voteIntent, setVoteIntent] = useState<VoteIntent | null>(null);
   const likeCount = numberFormatter.format(country.likes);
   const dislikeCount = numberFormatter.format(country.dislikes);
+  const totalVotes = country.likes + country.dislikes;
+  const likeRatio = totalVotes === 0 ? 50 : (country.likes / totalVotes) * 100;
+  const dislikeRatio = totalVotes === 0 ? 50 : 100 - likeRatio;
+  const roundedLikeRatio = totalVotes === 0 ? 0 : Math.round(likeRatio);
+  const roundedDislikeRatio = totalVotes === 0 ? 0 : 100 - roundedLikeRatio;
   const openVoteDialog = (voteType: VoteType) => {
     setVoteIntent({ country, voteType });
 
@@ -68,16 +73,34 @@ export function CountryCard({
             </p>
           </div>
 
-          <dl className="grid grid-cols-2 gap-2 text-sm sm:max-w-sm">
-            <div className="rounded-base border-2 border-border bg-vote-like p-2 text-main-foreground">
-              <dt className="font-heading">Likes</dt>
-              <dd>{likeCount}</dd>
+          <div
+            className="grid gap-2 text-sm sm:max-w-sm"
+            role="img"
+            aria-label={`${country.name} vote ratio: ${likeCount} likes (${roundedLikeRatio}%) and ${dislikeCount} dislikes (${roundedDislikeRatio}%).`}
+          >
+            <div className="flex items-center justify-between gap-3">
+              <span className="inline-flex items-center gap-1 font-heading">
+                <ThumbsUp aria-hidden="true" className="size-4" />
+                {likeCount} likes
+              </span>
+              <span className="inline-flex items-center gap-1 font-heading">
+                <ThumbsDown aria-hidden="true" className="size-4" />
+                {dislikeCount} dislikes
+              </span>
             </div>
-            <div className="rounded-base border-2 border-border bg-vote-dislike p-2 text-main-foreground">
-              <dt className="font-heading">Dislikes</dt>
-              <dd>{dislikeCount}</dd>
+            <div className="flex h-4 overflow-hidden rounded-base border-2 border-border bg-background">
+              <div
+                className="h-full bg-vote-like"
+                style={{ width: `${likeRatio}%` }}
+                aria-hidden="true"
+              />
+              <div
+                className="h-full bg-vote-dislike"
+                style={{ width: `${dislikeRatio}%` }}
+                aria-hidden="true"
+              />
             </div>
-          </dl>
+          </div>
 
           <div className="grid grid-cols-2 gap-2 sm:max-w-sm">
             <Button

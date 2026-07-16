@@ -1,8 +1,17 @@
 import { useMemo, useState } from "react";
 import { Search } from "lucide-react";
+import { useLoaderData } from "react-router";
 
 import { CountryCard } from "~/components/country-card/country-card";
-import { countryFixtures, type Country } from "~/countries";
+import type { Country } from "~/countries";
+
+import { loadHomeCountries } from "./home.server";
+
+export async function loader() {
+  return {
+    countries: await loadHomeCountries(),
+  };
+}
 
 export function meta() {
   return [
@@ -28,11 +37,17 @@ export function filterCountriesByName(
 
 const ignoreVoteClick = () => undefined;
 
-export function HomeContent({ initialSearch = "" }: { initialSearch?: string }) {
+export function HomeCountriesContent({
+  countries,
+  initialSearch = "",
+}: {
+  countries: readonly Country[];
+  initialSearch?: string;
+}) {
   const [searchQuery, setSearchQuery] = useState(initialSearch);
   const filteredCountries = useMemo(
-    () => filterCountriesByName(countryFixtures, searchQuery),
-    [searchQuery],
+    () => filterCountriesByName(countries, searchQuery),
+    [countries, searchQuery],
   );
   const resultCount = filteredCountries.length;
 
@@ -97,5 +112,7 @@ export function HomeContent({ initialSearch = "" }: { initialSearch?: string }) 
 }
 
 export default function Home() {
-  return <HomeContent />;
+  const { countries } = useLoaderData<typeof loader>();
+
+  return <HomeCountriesContent countries={countries} />;
 }

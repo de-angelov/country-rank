@@ -37,6 +37,7 @@ Country Ranking is a TypeScript React Router framework-mode app for browsing cou
 - Start the local Redis dependency with `docker compose up -d redis`.
 - The development Compose service exposes Redis at `redis://localhost:6379`.
 - Copy `.env.example` to `.env` or otherwise set `REDIS_URL=redis://localhost:6379` before running app flows that read or write vote totals.
+- Seed dummy local vote totals from the current country fixtures with `REDIS_URL=redis://localhost:6379 npm run seed:redis:votes`.
 - Redis data is persisted in the `redis-data` Docker volume across container restarts.
 
 ### Request And Data Flow

@@ -11,6 +11,7 @@ import {
 } from "~/components/paid-vote-dialog/paid-vote-dialog";
 import { Button } from "~/components/ui/button";
 import { Card } from "~/components/ui/card";
+import { Progress } from "~/components/ui/progress";
 
 export type CountryVoteHandler = (country: Country) => void;
 
@@ -34,7 +35,6 @@ export function CountryCard({
   const dislikeCount = numberFormatter.format(country.dislikes);
   const totalVotes = country.likes + country.dislikes;
   const likeRatio = totalVotes === 0 ? 50 : (country.likes / totalVotes) * 100;
-  const dislikeRatio = totalVotes === 0 ? 50 : 100 - likeRatio;
   const roundedLikeRatio = totalVotes === 0 ? 0 : Math.round(likeRatio);
   const roundedDislikeRatio = totalVotes === 0 ? 0 : 100 - roundedLikeRatio;
   const openVoteDialog = (voteType: VoteType) => {
@@ -90,18 +90,12 @@ export function CountryCard({
                   {dislikeCount} dislikes
                 </span>
               </div>
-              <div className="flex h-4 overflow-hidden rounded-base border-2 border-border bg-background">
-                <div
-                  className="h-full bg-vote-like"
-                  style={{ width: `${likeRatio}%` }}
-                  aria-hidden="true"
-                />
-                <div
-                  className="h-full bg-vote-dislike"
-                  style={{ width: `${dislikeRatio}%` }}
-                  aria-hidden="true"
-                />
-              </div>
+              <Progress
+                value={likeRatio}
+                className="bg-vote-dislike shadow-none"
+                indicatorClassName="bg-vote-like transition-none"
+                aria-hidden="true"
+              />
             </div>
 
             <div className="grid grid-cols-2 gap-2 sm:max-w-sm">

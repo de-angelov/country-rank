@@ -18,6 +18,7 @@ function Progress({
         "relative h-4 w-full overflow-hidden rounded-base border-2 border-border bg-secondary-background shadow-shadow",
         className,
       )}
+      value={value}
       {...props}
     >
       <ProgressPrimitive.Indicator

@@ -32,5 +32,7 @@ describe("CountryCard", () => {
     expect(html).toContain("56");
     expect(html).toContain("Like Japan");
     expect(html).toContain("Dislike Japan");
+    expect(html).toContain("bg-vote-like");
+    expect(html).toContain("bg-vote-dislike");
   });
 });

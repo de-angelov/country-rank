@@ -62,11 +62,11 @@ export function CountryCard({
           </div>
 
           <dl className="grid grid-cols-2 gap-2 text-sm sm:max-w-sm">
-            <div className="rounded-base border-2 border-border bg-background p-2">
+            <div className="rounded-base border-2 border-border bg-vote-like p-2 text-main-foreground">
               <dt className="font-heading">Likes</dt>
               <dd>{likeCount}</dd>
             </div>
-            <div className="rounded-base border-2 border-border bg-background p-2">
+            <div className="rounded-base border-2 border-border bg-vote-dislike p-2 text-main-foreground">
               <dt className="font-heading">Dislikes</dt>
               <dd>{dislikeCount}</dd>
             </div>
@@ -75,6 +75,7 @@ export function CountryCard({
           <div className="grid grid-cols-2 gap-2 sm:max-w-sm">
             <Button
               type="button"
+              variant="like"
               aria-label={`Like ${country.name}`}
               onClick={() => openVoteDialog("like")}
             >
@@ -83,7 +84,7 @@ export function CountryCard({
             </Button>
             <Button
               type="button"
-              variant="neutral"
+              variant="dislike"
               aria-label={`Dislike ${country.name}`}
               onClick={() => openVoteDialog("dislike")}
             >

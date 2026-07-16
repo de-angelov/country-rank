@@ -1,0 +1,37 @@
+{
+  "name": "country-ranking",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "react-router build",
+    "dev": "react-router dev",
+    "lint": "react-router typegen && eslint . --max-warnings=0",
+    "start": "react-router-serve ./build/server/index.js",
+    "test": "react-router typegen && vitest run",
+    "typecheck": "react-router typegen && tsc"
+  },
+  "dependencies": {
+    "@react-router/node": "7.18.1",
+    "@react-router/serve": "7.18.1",
+    "isbot": "^5.1.36",
+    "neverthrow": "^8.2.0",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
+    "react-router": "7.18.1",
+    "remeda": "^2.30.0",
+    "ts-pattern": "^5.8.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.31.0",
+    "@react-router/dev": "7.18.1",
+    "@types/node": "^20.19.9",
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "eslint": "^9.31.0",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.37.0",
+    "vite": "^7.0.6",
+    "vite-tsconfig-paths": "^5.1.4",
+    "vitest": "^3.2.4"
+  }
+}

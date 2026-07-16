@@ -16,7 +16,7 @@ const styles = {
   root: "min-h-screen",
   header: "border-b-2 border-border bg-secondary-background",
   bannerFrame: "relative overflow-hidden border-b-2 border-border bg-background",
-  bannerImage: "block h-auto w-full max-w-full",
+  bannerImage: "mx-auto block h-full max-h-full w-auto max-w-full object-contain",
   ribbon:
     "mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-4 py-2 max-md:flex-col max-md:items-stretch max-md:gap-2 sm:px-6 lg:px-8",
   brandLink:

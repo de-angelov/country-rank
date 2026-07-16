@@ -7,6 +7,7 @@ const country = {
   code: "JP",
   name: "Japan",
   capital: "Tokyo",
+  factSnippet: "Vending machines, bullet trains, and stationery with main-character energy.",
   flagImageUrl: "https://example.com/japan.svg",
   likes: 1234,
   dislikes: 56,
@@ -25,6 +26,9 @@ describe("CountryCard", () => {
     expect(html).toContain("Japan");
     expect(html).toContain("Capital:");
     expect(html).toContain("Tokyo");
+    expect(html).toContain(
+      "Vending machines, bullet trains, and stationery with main-character energy.",
+    );
     expect(html).toContain("Japan flag");
     expect(html).toContain("Likes");
     expect(html).toContain("1,234");

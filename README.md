@@ -116,6 +116,59 @@ The seed script reloads fixture vote totals into Redis. It is not a production
 restore path and should not be used as evidence that a GitHub backup artifact can
 be recovered into a live deployment.
 
+### Redis Backup Sidecar
+
+Docker Compose includes a `redis-backup` sidecar service for running the Redis
+backup runner on a cadence. Normal local development does not start the sidecar:
+`docker compose up -d redis` starts only Redis, and the sidecar is also idle by
+default because `REDIS_BACKUP_SIDECAR_ENABLED` defaults to `false`.
+
+The sidecar runs `npm run redis:backup:sidecar`, which starts
+`npm run backup:redis` with either `--dry-run` or `--push`. The runner variables
+documented in [Redis Backup Runner](#redis-backup-runner) pass through the
+sidecar environment; keep the runner section as the source of truth for backup
+repository, branch, path, retention, and credential behavior.
+
+Docker Compose environment variables used by the sidecar:
+
+| Variable | Required | Used for | Compose default |
+| --- | --- | --- | --- |
+| `REDIS_URL` | Always supplied by Compose | Redis connection URL used inside the Compose network. | `redis://redis:6379` |
+| `REDIS_BACKUP_SIDECAR_ENABLED` | Optional | Enables the sidecar loop when set to `true`, `1`, `yes`, or `on`; otherwise the sidecar logs that it is idle and exits. | `false` |
+| `REDIS_BACKUP_CADENCE_SECONDS` | Optional | Delay between backup runs when the sidecar is enabled and not running once. Must be a positive integer. | `86400` |
+| `REDIS_BACKUP_DRY_RUN` | Optional | Runs the backup runner with `--dry-run` when truthy, or `--push` when false. | `true` |
+| `REDIS_BACKUP_SIDECAR_RUN_ONCE` | Optional | Runs one backup and exits when truthy; otherwise repeats after each cadence delay. | `false` |
+| `REDIS_BACKUP_GITHUB_REPOSITORY` | Required only when `REDIS_BACKUP_DRY_RUN=false` | Passed to the backup runner for GitHub-backed push mode. | Empty |
+| `REDIS_BACKUP_GITHUB_TOKEN` | Required only when `REDIS_BACKUP_DRY_RUN=false` | Passed to the backup runner for GitHub-backed push mode. | Empty |
+| `REDIS_BACKUP_BRANCH` | Optional | Passed to the backup runner as the backup repository branch. | `main` |
+| `REDIS_BACKUP_PATH` | Optional | Passed to the backup runner as the relative artifact directory in the backup repository. | `redis` |
+| `REDIS_BACKUP_RETENTION_COUNT` | Optional | Passed to the backup runner as the number of newest artifacts to keep in push mode. | `30` |
+
+Use this one-off dry-run to verify the sidecar locally without GitHub backup
+credentials:
+
+```sh
+docker compose up -d redis
+REDIS_URL=redis://localhost:6379 npm run seed:redis:votes
+REDIS_BACKUP_SIDECAR_ENABLED=true \
+REDIS_BACKUP_DRY_RUN=true \
+REDIS_BACKUP_SIDECAR_RUN_ONCE=true \
+docker compose --profile backup up --abort-on-container-exit --exit-code-from redis-backup redis-backup
+```
+
+The sidecar should print `Created Redis backup artifact:` and
+`Exported ... country vote record(s).`, then exit successfully. Inspect the
+generated JSON file under `tmp/redis-backups/`.
+
+For regular local app work, leave the `backup` profile off and keep
+`REDIS_BACKUP_SIDECAR_ENABLED` unset or set to `false`. If the profile is
+started accidentally while the sidecar remains disabled, the service exits after
+printing that `REDIS_BACKUP_SIDECAR_ENABLED` is not enabled.
+
+Supply secrets only through environment variables from the shell, runtime, or
+secret manager. Do not commit GitHub tokens, Redis URLs, `.env` files containing
+secrets, or generated backup artifacts.
+
 ### Redis Restore Runner
 
 The Redis restore runner is available through `npm run restore:redis`. It reads

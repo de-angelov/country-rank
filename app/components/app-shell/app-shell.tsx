@@ -46,7 +46,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       >
         <div className="relative overflow-hidden border-b-2 border-border bg-background">
           <img
-            className="block h-28 w-full object-cover sm:h-36 lg:h-48 xl:h-56"
+            className="block h-auto w-full max-w-full"
             src={bannerImageSrc}
             alt="The Internet Judges Earth"
           />

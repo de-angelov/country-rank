@@ -1,7 +1,8 @@
-import { CreditCard } from "lucide-react";
+import { CreditCard, ThumbsDown, ThumbsUp } from "lucide-react";
 import { match } from "ts-pattern";
 
 import type { Country } from "~/countries";
+import { cn } from "~/lib/utils";
 
 import { Button } from "~/components/ui/button";
 import {
@@ -30,6 +31,23 @@ const voteTypeLabels: Record<VoteType, string> = {
   like: "like",
 };
 
+const voteTypeThemes = {
+  dislike: {
+    Icon: ThumbsDown,
+    className: "bg-vote-dislike text-main-foreground",
+  },
+  like: {
+    Icon: ThumbsUp,
+    className: "bg-vote-like text-main-foreground",
+  },
+} satisfies Record<
+  VoteType,
+  Readonly<{
+    Icon: typeof ThumbsUp;
+    className: string;
+  }>
+>;
+
 export function PaidVoteDialog({
   intent,
   onOpenChange,
@@ -51,6 +69,8 @@ export function PaidVoteDialogBody({ intent }: { intent: VoteIntent }) {
     .with("like", () => `Confirm paid like for ${countryName}`)
     .with("dislike", () => `Confirm paid dislike for ${countryName}`)
     .exhaustive();
+  const theme = voteTypeThemes[voteType];
+  const VoteIcon = theme.Icon;
 
   return (
     <>
@@ -62,11 +82,19 @@ export function PaidVoteDialogBody({ intent }: { intent: VoteIntent }) {
         </DialogDescription>
       </DialogHeader>
 
-      <div className="rounded-base border-2 border-border bg-background p-4">
-        <p className="text-sm font-heading">Selected vote</p>
-        <p className="mt-1 text-base">
-          {countryName} - {voteLabel}
-        </p>
+      <div
+        className={cn(
+          "flex items-center gap-3 rounded-base border-2 border-border p-4",
+          theme.className,
+        )}
+      >
+        <VoteIcon aria-hidden="true" className="size-5 shrink-0" />
+        <div>
+          <p className="text-sm font-heading">Selected vote</p>
+          <p className="mt-1 text-base">
+            {countryName} - {voteLabel}
+          </p>
+        </div>
       </div>
 
       <DialogFooter>

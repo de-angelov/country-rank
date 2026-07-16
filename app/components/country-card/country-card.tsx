@@ -24,6 +24,24 @@ export type CountryCardProps = Readonly<{
 
 const numberFormatter = new Intl.NumberFormat("en-US");
 
+const styles = {
+  article: "grid gap-4 bg-secondary-background p-4",
+  header: "grid gap-4 sm:grid-cols-[minmax(5rem,7rem)_1fr] sm:items-center",
+  flagFrame:
+    "aspect-[4/3] overflow-hidden rounded-base border-2 border-border bg-background",
+  flagImage: "h-full w-full object-cover",
+  textBlock: "min-w-0",
+  title: "truncate text-xl font-heading",
+  capital: "mt-1 text-sm",
+  fact: "mt-2 text-sm text-foreground/75",
+  voteSection: "grid gap-3 border-t-2 border-border pt-4",
+  voteRatio: "grid gap-2 text-sm",
+  voteTotalsRow: "flex items-center justify-between gap-3",
+  voteTotalLabel: "inline-flex items-center gap-1 font-heading",
+  actions: "grid grid-cols-2 gap-2",
+  voteButton: "min-h-9 min-w-0 px-3",
+} as const;
+
 export function CountryCard({
   country,
   onLikeClick,
@@ -51,43 +69,38 @@ export function CountryCard({
   return (
     <>
       <Card asChild>
-        <article
-          className={cn(
-            "grid gap-4 bg-secondary-background p-4",
-            className,
-          )}
-        >
-          <div className="grid gap-4 sm:grid-cols-[minmax(5rem,7rem)_1fr] sm:items-center">
-            <div className="aspect-[4/3] overflow-hidden rounded-base border-2 border-border bg-background">
+        <article className={cn(styles.article, className)}>
+          <div className={styles.header}>
+            <div className={styles.flagFrame}>
               <img
                 src={country.flagImageUrl}
                 alt={`${country.name} flag`}
-                className="h-full w-full object-cover"
+                className={styles.flagImage}
                 loading="lazy"
               />
             </div>
 
-            <div className="min-w-0">
-              <h2 className="truncate text-xl font-heading">{country.name}</h2>
-              <p className="mt-1 text-sm">Capital: {country.capital}</p>
-              <p className="mt-2 text-sm text-foreground/75">
+            <div className={styles.textBlock}>
+              <h2 className={styles.title}>{country.name}</h2>
+              <p className={styles.capital}>Capital: {country.capital}</p>
+              <p className={styles.fact}>
                 {country.factSnippet}
               </p>
             </div>
           </div>
 
-          <div className="grid gap-3 border-t-2 border-border pt-4">
+          <div className={styles.voteSection}>
             <div
-              className="grid gap-2 text-sm"
+              className={styles.voteRatio}
               role="img"
               aria-label={`${country.name} vote ratio: ${likeCount} likes (${roundedLikeRatio}%) and ${dislikeCount} dislikes (${roundedDislikeRatio}%).`}
             >
-              <div className="flex items-center justify-between gap-3">
-                <span className="inline-flex items-center gap-1 font-heading">
+              <div className={styles.voteTotalsRow}>
+                <span className={styles.voteTotalLabel}>
                   <ThumbsUp aria-hidden="true" className="size-4" />
                   {likeCount} likes
                 </span>
-                <span className="inline-flex items-center gap-1 font-heading">
+                <span className={styles.voteTotalLabel}>
                   <ThumbsDown aria-hidden="true" className="size-4" />
                   {dislikeCount} dislikes
                 </span>
@@ -100,12 +113,12 @@ export function CountryCard({
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-2">
+            <div className={styles.actions}>
               <Button
                 type="button"
                 variant="like"
                 size="sm"
-                className="min-h-9 min-w-0 px-3"
+                className={styles.voteButton}
                 aria-label={`Like ${country.name}`}
                 onClick={() => openVoteDialog("like")}
               >
@@ -116,7 +129,7 @@ export function CountryCard({
                 type="button"
                 variant="dislike"
                 size="sm"
-                className="min-h-9 min-w-0 px-3"
+                className={styles.voteButton}
                 aria-label={`Dislike ${country.name}`}
                 onClick={() => openVoteDialog("dislike")}
               >

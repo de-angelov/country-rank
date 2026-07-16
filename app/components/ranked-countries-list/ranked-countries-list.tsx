@@ -23,12 +23,12 @@ export function RankedCountriesList({
     <ol className="grid list-none gap-5 p-0" aria-label={ariaLabel}>
       {countries.map((country, index) => (
         <li
-          className="grid gap-2 sm:grid-cols-[5rem_minmax(0,1fr)] sm:items-stretch sm:gap-4"
+          className="grid gap-2 sm:grid-cols-[minmax(9rem,12rem)_minmax(0,1fr)] sm:items-stretch sm:gap-4 lg:grid-cols-[minmax(12rem,14rem)_minmax(0,1fr)]"
           key={country.code}
         >
           <div
             className={cn(
-              "flex min-h-12 items-center justify-center rounded-base border-2 border-border px-4 py-2 text-3xl font-heading leading-none text-main-foreground shadow-shadow sm:h-full sm:px-2 sm:py-4 sm:text-5xl",
+              "flex min-h-14 items-center justify-center whitespace-nowrap rounded-base border-2 border-border px-4 py-2 text-3xl font-heading leading-none text-main-foreground shadow-shadow sm:h-full sm:min-h-full sm:px-4 sm:py-4 sm:text-6xl",
               rankToneClassNames[rankTone],
             )}
             aria-label={`Rank ${index + 1}`}

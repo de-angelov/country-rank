@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { Search } from "lucide-react";
 
-import { CountryCard } from "~/components/country-card";
+import { CountryCard } from "~/components/country-card/country-card";
 import { countryFixtures, type Country } from "~/countries";
 
 export function meta() {

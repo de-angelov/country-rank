@@ -48,13 +48,35 @@ const voteTypeThemes = {
   }>
 >;
 
+const styles = {
+  dialogContent: "sm:max-w-md",
+  voteSummary: "space-y-3",
+  voteSummaryRow: "flex items-center gap-3",
+  flagImage:
+    "h-12 w-16 shrink-0 rounded-base border-2 border-border bg-main object-cover",
+  voteBadge:
+    "inline-flex min-w-0 flex-1 items-center gap-2 rounded-base border-2 border-border px-3 py-2 font-heading text-sm shadow-shadow sm:text-base",
+  voteBadgeIcon: "size-4",
+  voteBadgeText: "truncate",
+  paymentCard:
+    "rounded-base border-2 border-border bg-background p-4 shadow-shadow",
+  paymentRow: "flex items-center justify-between gap-4",
+  paymentLabel: "flex items-center gap-3",
+  paymentIcon: "size-5 shrink-0 text-muted-foreground",
+  paymentText: "font-heading text-sm text-muted-foreground",
+  paymentPrice: "font-heading text-xl",
+  paymentDescription: "mt-2 text-sm text-muted-foreground",
+  payButton: "min-w-32",
+  payButtonIcon: "size-4",
+} as const;
+
 export function PaidVoteDialog({
   intent,
   onOpenChange,
 }: PaidVoteDialogProps) {
   return (
     <Dialog open={intent !== null} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className={styles.dialogContent}>
         {intent ? <PaidVoteDialogBody intent={intent} /> : null}
       </DialogContent>
     </Dialog>
@@ -85,40 +107,40 @@ export function PaidVoteDialogBody({
         </DialogDescription>
       </DialogHeader>
 
-      <div className="space-y-3">
-        <div className="flex items-center gap-3">
+      <div className={styles.voteSummary}>
+        <div className={styles.voteSummaryRow}>
           <img
             alt={`${countryName} flag`}
-            className="h-12 w-16 shrink-0 rounded-base border-2 border-border bg-main object-cover"
+            className={styles.flagImage}
             src={intent.country.flagImageUrl}
           />
           <div
             className={cn(
-              "inline-flex min-w-0 flex-1 items-center gap-2 rounded-base border-2 border-border px-3 py-2 font-heading text-sm shadow-shadow sm:text-base",
+              styles.voteBadge,
               theme.badgeClassName,
             )}
           >
-            <VoteIcon aria-hidden="true" className="size-4" />
-            <span className="truncate">
+            <VoteIcon aria-hidden="true" className={styles.voteBadgeIcon} />
+            <span className={styles.voteBadgeText}>
               {voteLabel} {countryName}
             </span>
           </div>
         </div>
 
-        <div className="rounded-base border-2 border-border bg-background p-4 shadow-shadow">
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
+        <div className={styles.paymentCard}>
+          <div className={styles.paymentRow}>
+            <div className={styles.paymentLabel}>
               <CreditCard
                 aria-hidden="true"
-                className="size-5 shrink-0 text-muted-foreground"
+                className={styles.paymentIcon}
               />
-              <span className="font-heading text-sm text-muted-foreground">
+              <span className={styles.paymentText}>
                 Price
               </span>
             </div>
-            <strong className="font-heading text-xl">{price}</strong>
+            <strong className={styles.paymentPrice}>{price}</strong>
           </div>
-          <p className="mt-2 text-sm text-muted-foreground">
+          <p className={styles.paymentDescription}>
             Pay to submit your vote.
           </p>
         </div>
@@ -129,8 +151,8 @@ export function PaidVoteDialogBody({
           Cancel
         </Button>
 
-        <Button type="button" disabled className="min-w-32">
-          <CreditCard aria-hidden="true" className="size-4" />
+        <Button type="button" disabled className={styles.payButton}>
+          <CreditCard aria-hidden="true" className={styles.payButtonIcon} />
           Pay {price}
         </Button>
       </DialogFooter>

@@ -67,6 +67,47 @@ REDIS_URL=redis://localhost:6379 npm run seed:redis:votes
 Redis-only development still uses `docker compose up -d redis` and does not
 start the app service.
 
+### Environment Configuration
+
+Use `.env.example` as the safe template for local configuration. Copy it to
+`.env` or set the same variables through your shell, deployment environment, or
+secret manager. Never commit real Redis credentials, Stripe secrets, GitHub
+tokens, generated backup artifacts, or `.env` files that contain secrets.
+
+Runtime and integration variables currently supported by the app and scripts:
+
+| Variable | Required when | Used by | Safe local/default value |
+| --- | --- | --- | --- |
+| `REDIS_URL` | Browsing Redis-backed country pages, reading/writing votes, seeding, restore, and Redis backup commands. Optional for backup dry-run only because the runner defaults to local Redis. | App loaders/actions and Redis scripts | `redis://localhost:6379` |
+| `APP_HOST_PORT` | Optional when starting the app service through Docker Compose and the host port must differ from `5173`. | `docker-compose.yml` app port mapping | `5173` |
+| `REDIS_HOST_PORT` | Optional when starting Redis through Docker Compose and the host port must differ from `6379`. | `docker-compose.yml` Redis port mapping | `6379` |
+| `STRIPE_WEBHOOK_SECRET` | Handling Stripe webhook requests. | `/webhooks/stripe` signature verification | `whsec_replace_with_local_or_deployment_secret` |
+| `REDIS_BACKUP_SIDECAR_ENABLED` | Optional when running the Compose `backup` profile. Must be truthy to run backups from the sidecar. | Redis backup sidecar | `false` |
+| `REDIS_BACKUP_CADENCE_SECONDS` | Optional when the backup sidecar loops instead of running once. | Redis backup sidecar | `86400` |
+| `REDIS_BACKUP_DRY_RUN` | Optional when running the backup sidecar. Set to `false` only for GitHub-backed push mode. | Redis backup sidecar | `true` |
+| `REDIS_BACKUP_SIDECAR_RUN_ONCE` | Optional when running the backup sidecar. | Redis backup sidecar | `false` |
+| `REDIS_BACKUP_GITHUB_REPOSITORY` | GitHub-backed backup push mode, including sidecar push mode. | Redis backup runner and sidecar | Empty placeholder |
+| `REDIS_BACKUP_GITHUB_TOKEN` | GitHub-backed backup push mode, including sidecar push mode. | Redis backup runner and sidecar | Empty placeholder |
+| `REDIS_BACKUP_BRANCH` | Optional for GitHub-backed backup push mode. | Redis backup runner and sidecar | `main` |
+| `REDIS_BACKUP_PATH` | Optional for GitHub-backed backup push mode. | Redis backup runner and sidecar | `redis` |
+| `REDIS_BACKUP_RETENTION_COUNT` | Optional for GitHub-backed backup push mode. | Redis backup runner and sidecar | `30` |
+
+Configuration by workflow:
+
+| Workflow | Required variables |
+| --- | --- |
+| Local browsing and vote reads/writes | `REDIS_URL`; start Redis first with `docker compose up -d redis`. |
+| Redis seeding | `REDIS_URL`. |
+| Stripe webhook verification | `STRIPE_WEBHOOK_SECRET`; webhook vote application also needs `REDIS_URL`. |
+| Redis backup dry-run | No GitHub variables; set `REDIS_URL` when targeting anything other than local Redis. |
+| GitHub-backed Redis backup push | `REDIS_BACKUP_GITHUB_REPOSITORY` and `REDIS_BACKUP_GITHUB_TOKEN`; set `REDIS_URL` for the source Redis instance and override branch/path/retention only when needed. |
+
+Stripe integration status: the app currently verifies Stripe webhook signatures
+with `STRIPE_WEBHOOK_SECRET` and applies paid votes from verified
+`checkout.session.completed` events that include the approved metadata. Stripe
+checkout/session creation and live Stripe API secret-key usage are not currently
+implemented, so there is no supported `STRIPE_SECRET_KEY` configuration yet.
+
 ### Redis Backup Runner
 
 The Redis backup runner is available through `npm run backup:redis`. It exports

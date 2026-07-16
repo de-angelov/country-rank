@@ -7,23 +7,44 @@
   background: var(--secondary-background);
 }
 
-.headerInner {
+.banner {
+  overflow: hidden;
+  border-bottom: 2px solid var(--border);
+  background: var(--background);
+}
+
+.bannerImage {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 5;
+  object-fit: cover;
+}
+
+.ribbon {
   display: flex;
   width: min(100%, 72rem);
   margin: 0 auto;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
-  padding: 1rem;
+  gap: 0.75rem;
+  padding: 0.625rem 1rem;
 }
 
 .brand {
   display: inline-flex;
   min-width: max-content;
   color: inherit;
-  font-size: 1.25rem;
+  font-size: 1rem;
   font-weight: var(--heading-font-weight);
   text-decoration: none;
+}
+
+.tagline {
+  margin: 0;
+  color: var(--foreground);
+  font-size: 0.875rem;
+  line-height: 1.25;
+  text-align: center;
 }
 
 .nav {
@@ -31,27 +52,14 @@
   flex: 1 1 auto;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
+  justify-content: flex-end;
+  gap: 0.5rem;
 }
 
 .navLink {
-  min-width: 8.25rem;
-}
-
-.mediaPlaceholder {
-  display: grid;
-  width: 9.5rem;
-  min-height: 4.75rem;
-  flex: 0 0 auto;
-  place-items: center;
-  border: 2px dashed var(--border);
-  border-radius: var(--border-radius);
-  background: var(--background);
-  padding: 0.75rem;
-  text-align: center;
-  font-size: 0.8125rem;
-  line-height: 1.2;
+  min-width: 7rem;
+  min-height: 2.25rem;
+  padding-inline: 0.625rem;
 }
 
 .content {
@@ -60,7 +68,11 @@
 }
 
 @media (max-width: 48rem) {
-  .headerInner {
+  .bannerImage {
+    min-height: 9rem;
+  }
+
+  .ribbon {
     align-items: stretch;
     flex-direction: column;
   }
@@ -78,10 +90,5 @@
   .navLink {
     flex: 1 1 9rem;
     min-width: 0;
-  }
-
-  .mediaPlaceholder {
-    width: 100%;
-    min-height: 4rem;
   }
 }

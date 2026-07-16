@@ -1,14 +1,17 @@
-import { sortBy } from "remeda";
+import { useLoaderData } from "react-router";
 
 import { CountryCard } from "~/components/country-card/country-card";
-import { countryFixtures, type Country } from "~/countries";
+import type { Country } from "~/countries";
 
 import styles from "./top-liked.module.css";
+import { loadTopLikedCountries } from "./top-liked.server";
 
 const noopVoteHandler = () => {};
 
-export function getTopLikedCountries(): Country[] {
-  return sortBy(countryFixtures, [(country) => country.likes, "desc"]);
+export async function loader() {
+  return {
+    countries: await loadTopLikedCountries(),
+  };
 }
 
 export function meta() {
@@ -21,14 +24,16 @@ export function meta() {
   ];
 }
 
-export function TopLikedContent() {
-  const countries = getTopLikedCountries();
-
+export function TopLikedContent({
+  countries,
+}: {
+  countries: readonly Country[];
+}) {
   return (
     <main className={styles.page}>
       <header className={styles.header}>
         <h1>Top Liked Countries</h1>
-        <p>Countries ordered by the highest fixture like counts.</p>
+        <p>Countries ordered by the highest like counts.</p>
       </header>
 
       <ol className={styles.list} aria-label="Countries ranked by likes">
@@ -48,5 +53,7 @@ export function TopLikedContent() {
 }
 
 export default function TopLiked() {
-  return <TopLikedContent />;
+  const { countries } = useLoaderData<typeof loader>();
+
+  return <TopLikedContent countries={countries} />;
 }

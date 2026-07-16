@@ -4,7 +4,12 @@ import tseslint from "typescript-eslint";
 
 export default tseslint.config(
   {
-    ignores: ["build/**", ".react-router/**", "node_modules/**"],
+    ignores: [
+      "build/**",
+      "build.root-owned-local/**",
+      ".react-router/**",
+      "node_modules/**",
+    ],
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,

@@ -12,7 +12,7 @@ describe("AppShell", () => {
     );
 
     const bannerIndex = html.indexOf(
-      'src="/images/country-ranking-banner-placeholder.svg"',
+      'src="/images/country-ranking-banner-v5.png"',
     );
     const navIndex = html.indexOf('aria-label="Primary navigation"');
 

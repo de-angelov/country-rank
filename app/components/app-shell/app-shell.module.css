@@ -1,5 +1,13 @@
 .bannerFrame {
+  --banner-frame-height: clamp(6.75rem, 18vw, 13.5rem);
+  --banner-image-aspect-ratio: 3.2905;
+  --banner-visible-image-width: min(
+    100cqw,
+    calc(var(--banner-frame-height) * var(--banner-image-aspect-ratio))
+  );
+
   container-type: inline-size;
+  height: var(--banner-frame-height);
 }
 
 .bannerTagline {
@@ -7,10 +15,14 @@
   bottom: 45%;
   left: 50%;
   z-index: 1;
-  width: min(52rem, 31cqw, calc(100cqw - 2rem));
+  width: min(
+    52rem,
+    calc(var(--banner-visible-image-width) * 0.31),
+    calc(100cqw - 2rem)
+  );
   margin: 0;
   color: var(--foreground);
-  font-size: clamp(0.9rem, 2.2cqw, 2rem);
+  font-size: clamp(0.9rem, calc(var(--banner-visible-image-width) * 0.022), 2rem);
   font-weight: 900;
   line-height: 1.05;
   pointer-events: none;
@@ -34,11 +46,23 @@
 }
 
 @media (max-width: 48rem) {
+  .bannerFrame {
+    --banner-frame-height: clamp(6rem, 28vw, 7.5rem);
+  }
+
   .bannerTagline {
     bottom: 50%;
-    width: min(16rem, 70cqw, calc(100cqw - var(--space-5)));
-    font-size: clamp(0.62rem, 4.2cqw, 1.08rem);
-    line-height: 1;
+    width: min(
+      8.5rem,
+      calc(var(--banner-visible-image-width) * 0.38),
+      calc(100cqw - var(--space-5))
+    );
+    font-size: clamp(
+      0.5rem,
+      calc(var(--banner-visible-image-width) * 0.024),
+      0.62rem
+    );
+    line-height: 0.95;
   }
 
   .bannerTagline::after {

@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { flushSync } from "react-dom";
 import { Search } from "lucide-react";
 import { useLoaderData } from "react-router";
 
@@ -37,6 +38,34 @@ export function filterCountriesByName(
 }
 
 const ignoreVoteClick = () => undefined;
+
+type SearchViewTransitionDocument = Document & {
+  startViewTransition?: (updateCallback: () => void) => unknown;
+};
+
+function updateSearchQueryWithTransition(
+  nextSearchQuery: string,
+  setSearchQuery: (nextSearchQuery: string) => void,
+) {
+  const prefersReducedMotion =
+    typeof window !== "undefined" &&
+    typeof window.matchMedia === "function" &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const canStartViewTransition =
+    typeof document !== "undefined" &&
+    !prefersReducedMotion &&
+    (document as SearchViewTransitionDocument).startViewTransition !==
+      undefined;
+
+  if (!canStartViewTransition) {
+    setSearchQuery(nextSearchQuery);
+    return;
+  }
+
+  (document as SearchViewTransitionDocument).startViewTransition?.(() => {
+    flushSync(() => setSearchQuery(nextSearchQuery));
+  });
+}
 
 export function HomeCountriesContent({
   countries,
@@ -77,7 +106,12 @@ export function HomeCountriesContent({
               name="country-search"
               type="search"
               value={searchQuery}
-              onChange={(event) => setSearchQuery(event.currentTarget.value)}
+              onChange={(event) =>
+                updateSearchQueryWithTransition(
+                  event.currentTarget.value,
+                  setSearchQuery,
+                )
+              }
               placeholder="Country name"
               className="pl-10"
             />
@@ -85,29 +119,28 @@ export function HomeCountriesContent({
         </div>
       </div>
 
-      <p className="text-sm" aria-live="polite">
-        Showing {resultCount} {resultCount === 1 ? "country" : "countries"}
-      </p>
-
-      {resultCount > 0 ? (
-        <section
-          aria-label="Countries"
-          className="grid gap-4 lg:grid-cols-2"
-        >
-          {filteredCountries.map((country) => (
-            <CountryCard
-              country={country}
-              key={country.code}
-              onDislikeClick={ignoreVoteClick}
-              onLikeClick={ignoreVoteClick}
-            />
-          ))}
-        </section>
-      ) : (
-        <p className="rounded-base border-2 border-border bg-secondary-background p-4">
-          No countries match that search.
+      <div className="country-filter-transition grid gap-6">
+        <p className="text-sm" aria-live="polite">
+          Showing {resultCount} {resultCount === 1 ? "country" : "countries"}
         </p>
-      )}
+
+        {resultCount > 0 ? (
+          <section aria-label="Countries" className="grid gap-4 lg:grid-cols-2">
+            {filteredCountries.map((country) => (
+              <CountryCard
+                country={country}
+                key={country.code}
+                onDislikeClick={ignoreVoteClick}
+                onLikeClick={ignoreVoteClick}
+              />
+            ))}
+          </section>
+        ) : (
+          <p className="rounded-base border-2 border-border bg-secondary-background p-4">
+            No countries match that search.
+          </p>
+        )}
+      </div>
     </main>
   );
 }

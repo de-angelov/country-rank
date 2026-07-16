@@ -120,3 +120,60 @@
     @apply font-heading;
   }
 }
+
+@layer utilities {
+  .country-filter-transition {
+    view-transition-name: country-filter-results;
+    contain: layout;
+  }
+}
+
+::view-transition-old(country-filter-results),
+::view-transition-new(country-filter-results) {
+  animation-duration: 180ms;
+  animation-timing-function: cubic-bezier(0.2, 0, 0, 1);
+  mix-blend-mode: normal;
+}
+
+::view-transition-old(country-filter-results) {
+  animation-name: countryFilterOut;
+}
+
+::view-transition-new(country-filter-results) {
+  animation-name: countryFilterIn;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .country-filter-transition {
+    view-transition-name: none;
+  }
+
+  ::view-transition-old(country-filter-results),
+  ::view-transition-new(country-filter-results) {
+    animation: none;
+  }
+}
+
+@keyframes countryFilterOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(-0.25rem);
+  }
+}
+
+@keyframes countryFilterIn {
+  from {
+    opacity: 0;
+    transform: translateY(0.25rem);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

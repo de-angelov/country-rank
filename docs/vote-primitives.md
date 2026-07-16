@@ -1,8 +1,9 @@
 # Vote primitives for paid voting
 
 This document records the existing vote contracts that paid voting must reuse.
-It intentionally describes only current app behavior; Stripe price, currency,
-checkout mode, metadata names, and webhook behavior remain pending decisions.
+It intentionally describes only current app behavior. Stripe price, currency,
+checkout mode, metadata names, and webhook behavior are recorded separately in
+`docs/stripe-paid-voting.md`.
 
 ## Canonical values
 

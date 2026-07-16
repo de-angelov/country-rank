@@ -32,6 +32,13 @@ Country Ranking is a TypeScript React Router framework-mode app for browsing cou
 - Redis keys use the `country:votes:{COUNTRY_CODE}` pattern with `likes` and `dislikes` hash fields.
 - Redis configuration is read from `REDIS_URL`.
 
+### Development Redis
+
+- Start the local Redis dependency with `docker compose up -d redis`.
+- The development Compose service exposes Redis at `redis://localhost:6379`.
+- Copy `.env.example` to `.env` or otherwise set `REDIS_URL=redis://localhost:6379` before running app flows that read or write vote totals.
+- Redis data is persisted in the `redis-data` Docker volume across container restarts.
+
 ### Request And Data Flow
 
 - Browsing: React Router renders the index route from `app/routes/home.tsx`. Country browsing UI should source country records from `app/countries/fixtures.ts` until a later task introduces a different data source.

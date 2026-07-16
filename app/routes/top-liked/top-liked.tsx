@@ -40,6 +40,7 @@ export function TopLikedContent({
       <RankedCountriesList
         ariaLabel="Countries ranked by likes"
         countries={countries}
+        rankTone="like"
       />
     </main>
   );

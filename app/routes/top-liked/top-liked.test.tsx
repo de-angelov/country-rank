@@ -92,13 +92,17 @@ describe("TopLiked", () => {
     expect(html).toContain("United States");
     expect(html).toContain("25");
     expect(html).toContain("Like United States");
-    expect(html.indexOf("Rank 1")).toBeLessThan(
+    expect(html).toContain("bg-vote-like");
+    expect(html).not.toContain("Rank 1</");
+    expect(html.indexOf('aria-label="Rank 1"')).toBeLessThan(
       html.indexOf("United States"),
     );
-    expect(html.indexOf("Rank 2")).toBeLessThan(
+    expect(html.indexOf('aria-label="Rank 2"')).toBeLessThan(
       html.indexOf("India"),
     );
-    expect(html.indexOf("Rank 3")).toBeLessThan(html.indexOf("Japan"));
+    expect(html.indexOf('aria-label="Rank 3"')).toBeLessThan(
+      html.indexOf("Japan"),
+    );
     expect(html.indexOf("United States")).toBeLessThan(html.indexOf("India"));
     expect(html.indexOf("India")).toBeLessThan(html.indexOf("Japan"));
   });

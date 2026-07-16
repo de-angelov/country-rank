@@ -4,8 +4,12 @@ import { ThumbsDown, ThumbsUp } from "lucide-react";
 import type { Country } from "~/countries";
 import { cn } from "~/lib/utils";
 
-import { PaidVoteDialog, type VoteIntent, type VoteType } from "./paid-vote-dialog";
-import { Button } from "./ui/button";
+import {
+  PaidVoteDialog,
+  type VoteIntent,
+  type VoteType,
+} from "~/components/paid-vote-dialog/paid-vote-dialog";
+import { Button } from "~/components/ui/button";
 
 export type CountryVoteHandler = (country: Country) => void;
 

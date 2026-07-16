@@ -1,6 +1,6 @@
 import { sortBy } from "remeda";
 
-import { CountryCard } from "~/components/country-card";
+import { CountryCard } from "~/components/country-card/country-card";
 import { countryFixtures, type Country } from "~/countries";
 
 import styles from "./top-liked.module.css";

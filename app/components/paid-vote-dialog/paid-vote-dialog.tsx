@@ -3,7 +3,7 @@ import { match } from "ts-pattern";
 
 import type { Country } from "~/countries";
 
-import { Button } from "./ui/button";
+import { Button } from "~/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -11,7 +11,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "./ui/dialog";
+} from "~/components/ui/dialog";
 
 export type VoteType = "like" | "dislike";
 

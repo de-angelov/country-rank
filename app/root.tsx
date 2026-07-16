@@ -8,7 +8,7 @@ import {
 } from "react-router";
 
 import type { Route } from "./+types/root";
-import { AppShell } from "./components/app-shell";
+import { AppShell } from "./components/app-shell/app-shell";
 import "./app.css";
 
 export function Layout({ children }: { children: React.ReactNode }) {

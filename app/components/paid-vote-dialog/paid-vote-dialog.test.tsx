@@ -2,7 +2,7 @@ import { renderToString } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
 import { PaidVoteDialogBody } from "./paid-vote-dialog";
-import { Dialog } from "./ui/dialog";
+import { Dialog } from "~/components/ui/dialog";
 
 const country = {
   code: "JP",

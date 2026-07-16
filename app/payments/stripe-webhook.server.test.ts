@@ -14,6 +14,16 @@ const payload = JSON.stringify({
   id: "evt_test_signature_shell",
   object: "event",
   type: "checkout.session.completed",
+  data: {
+    object: {
+      id: "cs_test_signature_shell",
+      object: "checkout.session",
+      metadata: {
+        countryCode: "JP",
+        voteType: "like",
+      },
+    },
+  },
 });
 
 const signedHeader = Stripe.webhooks.generateTestHeaderString({
@@ -55,6 +65,10 @@ describe("verifyStripeWebhookSignature", () => {
     expect(result._unsafeUnwrap()).toEqual({
       id: "evt_test_signature_shell",
       type: "checkout.session.completed",
+      metadata: {
+        countryCode: "JP",
+        voteType: "like",
+      },
     });
   });
 

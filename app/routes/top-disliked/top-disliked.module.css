@@ -28,3 +28,34 @@
   padding: 0;
   list-style: none;
 }
+
+.item {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.75rem;
+  align-items: start;
+}
+
+.rank {
+  min-width: 4.75rem;
+  padding: 0.5rem 0.625rem;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-base);
+  background: var(--main);
+  color: var(--main-foreground);
+  font-family: var(--font-heading);
+  line-height: 1;
+  text-align: center;
+  box-shadow: var(--shadow-shadow);
+}
+
+@media (max-width: 40rem) {
+  .item {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  .rank {
+    width: fit-content;
+  }
+}

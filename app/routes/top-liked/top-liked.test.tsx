@@ -27,6 +27,11 @@ describe("TopLiked", () => {
     expect(html).toContain("Japan");
     expect(html).toContain("917");
     expect(html).toContain("Like Japan");
+    expect(html.indexOf("Rank 1")).toBeLessThan(html.indexOf("Japan"));
+    expect(html.indexOf("Rank 2")).toBeLessThan(
+      html.indexOf("United States"),
+    );
+    expect(html.indexOf("Rank 3")).toBeLessThan(html.indexOf("India"));
     expect(html.indexOf("Japan")).toBeLessThan(html.indexOf("United States"));
     expect(html.indexOf("United States")).toBeLessThan(html.indexOf("India"));
   });

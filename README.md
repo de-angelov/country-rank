@@ -65,6 +65,11 @@ Local dry-run verification does not require real backup credentials:
 3. Confirm the command prints `Created Redis backup artifact:` and `Exported ... country vote record(s).`.
 4. Inspect the generated JSON file under `tmp/redis-backups/`.
 
+Restore a backup artifact into Redis with `npm run restore:redis -- <artifact-path>`.
+The restore runner requires `REDIS_URL`, validates the artifact shape before
+connecting to Redis, and replaces the `likes` and `dislikes` hash fields for
+each country present in the artifact.
+
 ### Request And Data Flow
 
 - Browsing: React Router renders the index route from `app/routes/home.tsx`. Country browsing UI should source country records from `app/countries/fixtures.ts` until a later task introduces a different data source.

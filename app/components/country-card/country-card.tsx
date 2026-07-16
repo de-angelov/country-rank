@@ -10,6 +10,7 @@ import {
   type VoteType,
 } from "~/components/paid-vote-dialog/paid-vote-dialog";
 import { Button } from "~/components/ui/button";
+import { Card } from "~/components/ui/card";
 
 export type CountryVoteHandler = (country: Country) => void;
 
@@ -49,81 +50,83 @@ export function CountryCard({
 
   return (
     <>
-      <article
-        className={cn(
-          "grid gap-4 rounded-base border-2 border-border bg-secondary-background p-4 shadow-shadow sm:grid-cols-[minmax(5rem,7rem)_1fr] sm:items-center",
-          className,
-        )}
-      >
-        <div className="aspect-[4/3] overflow-hidden rounded-base border-2 border-border bg-background">
-          <img
-            src={country.flagImageUrl}
-            alt={`${country.name} flag`}
-            className="h-full w-full object-cover"
-            loading="lazy"
-          />
-        </div>
-
-        <div className="grid min-w-0 gap-4">
-          <div className="min-w-0">
-            <h2 className="truncate text-xl font-heading">{country.name}</h2>
-            <p className="mt-1 text-sm">Capital: {country.capital}</p>
-            <p className="mt-2 text-sm text-foreground/75">
-              {country.factSnippet}
-            </p>
+      <Card asChild>
+        <article
+          className={cn(
+            "grid gap-4 bg-secondary-background p-4 sm:grid-cols-[minmax(5rem,7rem)_1fr] sm:items-center",
+            className,
+          )}
+        >
+          <div className="aspect-[4/3] overflow-hidden rounded-base border-2 border-border bg-background">
+            <img
+              src={country.flagImageUrl}
+              alt={`${country.name} flag`}
+              className="h-full w-full object-cover"
+              loading="lazy"
+            />
           </div>
 
-          <div
-            className="grid gap-2 text-sm sm:max-w-sm"
-            role="img"
-            aria-label={`${country.name} vote ratio: ${likeCount} likes (${roundedLikeRatio}%) and ${dislikeCount} dislikes (${roundedDislikeRatio}%).`}
-          >
-            <div className="flex items-center justify-between gap-3">
-              <span className="inline-flex items-center gap-1 font-heading">
-                <ThumbsUp aria-hidden="true" className="size-4" />
-                {likeCount} likes
-              </span>
-              <span className="inline-flex items-center gap-1 font-heading">
-                <ThumbsDown aria-hidden="true" className="size-4" />
-                {dislikeCount} dislikes
-              </span>
+          <div className="grid min-w-0 gap-4">
+            <div className="min-w-0">
+              <h2 className="truncate text-xl font-heading">{country.name}</h2>
+              <p className="mt-1 text-sm">Capital: {country.capital}</p>
+              <p className="mt-2 text-sm text-foreground/75">
+                {country.factSnippet}
+              </p>
             </div>
-            <div className="flex h-4 overflow-hidden rounded-base border-2 border-border bg-background">
-              <div
-                className="h-full bg-vote-like"
-                style={{ width: `${likeRatio}%` }}
-                aria-hidden="true"
-              />
-              <div
-                className="h-full bg-vote-dislike"
-                style={{ width: `${dislikeRatio}%` }}
-                aria-hidden="true"
-              />
+
+            <div
+              className="grid gap-2 text-sm sm:max-w-sm"
+              role="img"
+              aria-label={`${country.name} vote ratio: ${likeCount} likes (${roundedLikeRatio}%) and ${dislikeCount} dislikes (${roundedDislikeRatio}%).`}
+            >
+              <div className="flex items-center justify-between gap-3">
+                <span className="inline-flex items-center gap-1 font-heading">
+                  <ThumbsUp aria-hidden="true" className="size-4" />
+                  {likeCount} likes
+                </span>
+                <span className="inline-flex items-center gap-1 font-heading">
+                  <ThumbsDown aria-hidden="true" className="size-4" />
+                  {dislikeCount} dislikes
+                </span>
+              </div>
+              <div className="flex h-4 overflow-hidden rounded-base border-2 border-border bg-background">
+                <div
+                  className="h-full bg-vote-like"
+                  style={{ width: `${likeRatio}%` }}
+                  aria-hidden="true"
+                />
+                <div
+                  className="h-full bg-vote-dislike"
+                  style={{ width: `${dislikeRatio}%` }}
+                  aria-hidden="true"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2 sm:max-w-sm">
+              <Button
+                type="button"
+                variant="like"
+                aria-label={`Like ${country.name}`}
+                onClick={() => openVoteDialog("like")}
+              >
+                <ThumbsUp aria-hidden="true" />
+                Like
+              </Button>
+              <Button
+                type="button"
+                variant="dislike"
+                aria-label={`Dislike ${country.name}`}
+                onClick={() => openVoteDialog("dislike")}
+              >
+                <ThumbsDown aria-hidden="true" />
+                Dislike
+              </Button>
             </div>
           </div>
-
-          <div className="grid grid-cols-2 gap-2 sm:max-w-sm">
-            <Button
-              type="button"
-              variant="like"
-              aria-label={`Like ${country.name}`}
-              onClick={() => openVoteDialog("like")}
-            >
-              <ThumbsUp aria-hidden="true" />
-              Like
-            </Button>
-            <Button
-              type="button"
-              variant="dislike"
-              aria-label={`Dislike ${country.name}`}
-              onClick={() => openVoteDialog("dislike")}
-            >
-              <ThumbsDown aria-hidden="true" />
-              Dislike
-            </Button>
-          </div>
-        </div>
-      </article>
+        </article>
+      </Card>
       <PaidVoteDialog
         intent={voteIntent}
         onOpenChange={(open) => {

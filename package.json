@@ -6,6 +6,7 @@
     "backup:redis": "node scripts/backup-redis.mjs",
     "build": "react-router build",
     "compose:dev": "docker compose up app redis",
+    "compose:dev:seed": "node scripts/compose-dev-seed.mjs",
     "compose:prod": "docker compose up app-prod redis",
     "dev": "react-router dev",
     "lint": "react-router typegen && eslint . --max-warnings=0",

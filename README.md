@@ -61,6 +61,25 @@ APP_HOST_PORT=5174 npm run compose:dev
 
 Open `http://localhost:${APP_HOST_PORT}` when `APP_HOST_PORT` is set.
 
+To start the same local dev stack and seed Redis vote totals in one command,
+run:
+
+```sh
+npm run compose:dev:seed
+```
+
+The `compose:dev:seed` preset starts the Compose `app` and `redis` services in
+the background, then runs the existing `seed:redis:votes` command against the
+host-mapped Compose Redis instance. It honors the same port overrides as
+Compose. For example:
+
+```sh
+APP_HOST_PORT=5174 REDIS_HOST_PORT=6380 npm run compose:dev:seed
+```
+
+Open `http://localhost:5174` after the command reports that Redis country vote
+totals were seeded.
+
 For production-style local execution through Compose, run:
 
 ```sh
@@ -79,7 +98,8 @@ Use `compose:dev` while changing app code and `compose:prod` when checking the
 production build/start path locally. Direct host commands remain available:
 `npm run dev`, `npm run build`, and `npm run start`.
 
-Seed Redis before or while using the Compose app stack with:
+For Redis-only development or manual reset workflows, keep using the explicit
+standalone seed command:
 
 ```sh
 docker compose up -d redis
@@ -87,7 +107,8 @@ REDIS_URL=redis://localhost:6379 npm run seed:redis:votes
 ```
 
 Redis-only development still uses `docker compose up -d redis` and does not
-start the app service.
+start the app service. When `REDIS_HOST_PORT` is set for Compose, point
+`REDIS_URL` at the same host port before running the seed command.
 
 ### Environment Configuration
 

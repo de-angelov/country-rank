@@ -19,6 +19,8 @@ describe("countryFixtures", () => {
     for (const country of countryFixtures) {
       expect(country.name).not.toBe("");
       expect(country.capital).not.toBe("");
+      expect(country.factSnippet.trim()).not.toBe("");
+      expect(country.factSnippet.length).toBeLessThanOrEqual(80);
       expect(country.likes).toBeGreaterThanOrEqual(0);
       expect(country.dislikes).toBeGreaterThanOrEqual(0);
 
@@ -26,6 +28,12 @@ describe("countryFixtures", () => {
       expect(flagUrl.protocol).toBe("https:");
       expect(flagUrl.hostname).toBe("commons.wikimedia.org");
     }
+  });
+
+  it("gives every country a distinct fact snippet", () => {
+    const snippets = countryFixtures.map((country) => country.factSnippet);
+
+    expect(new Set(snippets).size).toBe(snippets.length);
   });
 
   it("varies vote totals enough to manually verify liked and disliked rankings", () => {
@@ -38,4 +46,3 @@ describe("countryFixtures", () => {
     expect(dislikeTotals.size).toBeGreaterThan(1);
   });
 });
-

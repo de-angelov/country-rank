@@ -63,6 +63,9 @@ export function CountryCard({
           <div className="min-w-0">
             <h2 className="truncate text-xl font-heading">{country.name}</h2>
             <p className="mt-1 text-sm">Capital: {country.capital}</p>
+            <p className="mt-2 text-sm text-foreground/75">
+              {country.factSnippet}
+            </p>
           </div>
 
           <dl className="grid grid-cols-2 gap-2 text-sm sm:max-w-sm">

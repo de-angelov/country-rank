@@ -53,6 +53,7 @@ export const isLocalPortAvailable = (redisHostPort) =>
 export const resolveRedisEndpoint = async ({
   env = process.env,
   isPortAvailable = isLocalPortAvailable,
+  commandName = "npm run compose:dev:seed",
 } = {}) => {
   const explicitRedisHostPort = env.REDIS_HOST_PORT?.trim();
   const requestedRedisHostPort = parseRedisHostPort(
@@ -68,7 +69,7 @@ export const resolveRedisEndpoint = async ({
 
   if (explicitRedisHostPort) {
     throw new Error(
-      `REDIS_HOST_PORT=${requestedRedisHostPort} is already in use on ${redisHost}. Choose another free port and rerun npm run compose:dev:seed.`,
+      `REDIS_HOST_PORT=${requestedRedisHostPort} is already in use on ${redisHost}. Choose another free port and rerun ${commandName}.`,
     );
   }
 
@@ -86,17 +87,20 @@ export const resolveRedisEndpoint = async ({
   }
 
   throw new Error(
-    `No available localhost Redis host port found from ${requestedRedisHostPort} to ${maxRedisHostPort}. Set REDIS_HOST_PORT to a free port and rerun npm run compose:dev:seed.`,
+    `No available localhost Redis host port found from ${requestedRedisHostPort} to ${maxRedisHostPort}. Set REDIS_HOST_PORT to a free port and rerun ${commandName}.`,
   );
 };
 
 export const runCommand = (command, args, options = {}) =>
   new Promise((resolve) => {
+    const { onStart, ...spawnOptions } = options;
     const child = spawn(command, args, {
       env: process.env,
       stdio: "inherit",
-      ...options,
+      ...spawnOptions,
     });
+
+    onStart?.(child);
 
     child.on("error", (error) => {
       console.error(error instanceof Error ? error.message : error);

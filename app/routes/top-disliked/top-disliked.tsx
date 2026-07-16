@@ -32,8 +32,9 @@ export function TopDislikedContent() {
       </header>
 
       <ol className={styles.list} aria-label="Countries ranked by dislikes">
-        {countries.map((country) => (
-          <li key={country.code}>
+        {countries.map((country, index) => (
+          <li className={styles.item} key={country.code}>
+            <span className={styles.rank}>Rank {index + 1}</span>
             <CountryCard
               country={country}
               onLikeClick={noopVoteHandler}

@@ -31,6 +31,11 @@ describe("TopDisliked", () => {
     expect(html).toContain("United States");
     expect(html).toContain("318");
     expect(html).toContain("Dislike United States");
+    expect(html.indexOf("Rank 1")).toBeLessThan(
+      html.indexOf("United States"),
+    );
+    expect(html.indexOf("Rank 2")).toBeLessThan(html.indexOf("France"));
+    expect(html.indexOf("Rank 3")).toBeLessThan(html.indexOf("India"));
     expect(html.indexOf("United States")).toBeLessThan(html.indexOf("France"));
     expect(html.indexOf("France")).toBeLessThan(html.indexOf("India"));
   });

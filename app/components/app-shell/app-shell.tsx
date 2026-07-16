@@ -46,7 +46,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       >
         <div className="relative overflow-hidden border-b-2 border-border bg-background">
           <img
-            className="block aspect-[16/5] w-full object-cover max-md:min-h-36"
+            className="block h-28 w-full object-cover sm:h-36 lg:h-48 xl:h-56"
             src={bannerImageSrc}
             alt="The Internet Judges Earth"
           />
@@ -54,9 +54,9 @@ export function AppShell({ children }: { children: ReactNode }) {
             {bannerTagline}
           </p>
         </div>
-        <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 px-4 py-3 max-md:flex-col max-md:items-stretch sm:px-6 lg:px-8">
+        <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-4 py-2 max-md:flex-col max-md:items-stretch max-md:gap-2 sm:px-6 lg:px-8">
           <a
-            className="inline-flex min-w-max text-base font-heading text-inherit no-underline max-md:min-w-0 max-md:justify-center max-md:text-center"
+            className="inline-flex min-w-max text-sm font-heading text-inherit no-underline max-md:min-w-0 max-md:justify-center max-md:text-center sm:text-base"
             href="/"
           >
             Country Ranking
@@ -68,7 +68,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             {navigationLinks.map((link) => (
               <Button
                 asChild
-                className="min-h-9 min-w-28 px-3 max-md:min-w-0 max-md:flex-1 max-md:basis-36"
+                className="h-9 min-w-28 px-3 max-md:min-w-0 max-md:flex-1 max-md:basis-28"
                 key={link.href}
                 variant="neutral"
               >

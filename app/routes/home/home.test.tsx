@@ -73,7 +73,6 @@ describe("Home", () => {
 
   it("renders a searchable list of loaded countries with Redis-backed totals", () => {
     const html = renderToString(<HomeCountriesContent countries={countries} />);
-    const text = visibleText(html);
 
     expect(html).toContain("Countries");
     expect(html).toContain('type="search"');
@@ -81,7 +80,7 @@ describe("Home", () => {
     expect(html).toContain("Search countries");
     expect(html).toContain("country-filter-transition");
     expect(html).toContain('id="country-results"');
-    expect(text).toContain(`Showing ${countries.length} countries`);
+    expect(visibleText(html)).not.toContain("Showing");
 
     for (const country of countries) {
       expect(html).toContain(country.name);
@@ -95,10 +94,9 @@ describe("Home", () => {
     const html = renderToString(
       <HomeCountriesContent countries={countries} initialSearch="jap" />,
     );
-    const text = visibleText(html);
 
     expect(html).toContain('value="jap"');
-    expect(text).toContain("Showing 1 country");
+    expect(visibleText(html)).not.toContain("Showing");
     expect(html).toContain("Japan");
     expect(html).not.toContain("United States");
     expect(html).not.toContain("United Kingdom");
@@ -111,7 +109,7 @@ describe("Home", () => {
     const text = visibleText(html);
 
     expect(html).toContain('value="zzzz"');
-    expect(text).toContain("Showing 0 countries");
+    expect(text).not.toContain("Showing");
     expect(html).toContain("No countries match that search.");
 
     for (const country of countries) {

@@ -3,9 +3,30 @@ services:
     image: redis:7-alpine
     command: ["redis-server", "--appendonly", "yes"]
     ports:
-      - "127.0.0.1:6379:6379"
+      - "127.0.0.1:${REDIS_HOST_PORT:-6379}:6379"
     volumes:
       - redis-data:/data
+
+  redis-backup:
+    image: node:20-alpine
+    profiles: ["backup"]
+    working_dir: /workspace
+    command: ["npm", "run", "redis:backup:sidecar"]
+    depends_on:
+      - redis
+    environment:
+      REDIS_URL: redis://redis:6379
+      REDIS_BACKUP_SIDECAR_ENABLED: ${REDIS_BACKUP_SIDECAR_ENABLED:-false}
+      REDIS_BACKUP_CADENCE_SECONDS: ${REDIS_BACKUP_CADENCE_SECONDS:-86400}
+      REDIS_BACKUP_DRY_RUN: ${REDIS_BACKUP_DRY_RUN:-true}
+      REDIS_BACKUP_SIDECAR_RUN_ONCE: ${REDIS_BACKUP_SIDECAR_RUN_ONCE:-false}
+      REDIS_BACKUP_GITHUB_REPOSITORY: ${REDIS_BACKUP_GITHUB_REPOSITORY:-}
+      REDIS_BACKUP_GITHUB_TOKEN: ${REDIS_BACKUP_GITHUB_TOKEN:-}
+      REDIS_BACKUP_BRANCH: ${REDIS_BACKUP_BRANCH:-main}
+      REDIS_BACKUP_PATH: ${REDIS_BACKUP_PATH:-redis}
+      REDIS_BACKUP_RETENTION_COUNT: ${REDIS_BACKUP_RETENTION_COUNT:-30}
+    volumes:
+      - .:/workspace
 
 volumes:
   redis-data:

@@ -7,6 +7,7 @@
     "build": "react-router build",
     "dev": "react-router dev",
     "lint": "react-router typegen && eslint . --max-warnings=0",
+    "redis:backup:sidecar": "node scripts/redis-backup-sidecar.mjs",
     "restore:redis": "node scripts/restore-redis.mjs",
     "seed:redis:votes": "node scripts/seed-redis-votes.mjs",
     "start": "react-router-serve ./build/server/index.js",

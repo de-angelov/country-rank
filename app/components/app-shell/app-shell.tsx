@@ -2,7 +2,7 @@ import { useEffect, useState, type ReactNode } from "react";
 
 import { Button } from "~/components/ui/button";
 
-import styles from "./app-shell.module.css";
+import moduleStyles from "./app-shell.module.css";
 
 const navigationLinks = [
   { href: "/", label: "Countries" },
@@ -11,6 +11,20 @@ const navigationLinks = [
 ] as const;
 
 const bannerImageSrc = "/images/country-ranking-banner-v5.png";
+
+const styles = {
+  root: "min-h-screen",
+  header: "border-b-2 border-border bg-secondary-background",
+  bannerFrame: "relative overflow-hidden border-b-2 border-border bg-background",
+  bannerImage: "block h-28 w-full object-cover sm:h-36 lg:h-48 xl:h-56",
+  ribbon:
+    "mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-4 py-2 max-md:flex-col max-md:items-stretch max-md:gap-2 sm:px-6 lg:px-8",
+  brandLink:
+    "inline-flex min-w-max text-sm font-heading text-inherit no-underline max-md:min-w-0 max-md:justify-center max-md:text-center sm:text-base",
+  nav: "flex flex-1 flex-wrap items-center justify-end gap-2 max-md:justify-stretch",
+  navButton: "h-9 min-w-28 px-3 max-md:min-w-0 max-md:flex-1 max-md:basis-28",
+  content: "mx-auto w-full max-w-6xl",
+} as const;
 
 export const bannerTaglines = [
   "Rankings Without Borders",
@@ -39,36 +53,36 @@ export function AppShell({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <div className="min-h-screen">
+    <div className={styles.root}>
       <header
-        className="border-b-2 border-border bg-secondary-background"
+        className={styles.header}
         aria-label="Site header"
       >
-        <div className="relative overflow-hidden border-b-2 border-border bg-background">
+        <div className={styles.bannerFrame}>
           <img
-            className="block h-28 w-full object-cover sm:h-36 lg:h-48 xl:h-56"
+            className={styles.bannerImage}
             src={bannerImageSrc}
             alt="The Internet Judges Earth"
           />
-          <p className={styles.bannerTagline} aria-label="Banner tagline">
+          <p className={moduleStyles.bannerTagline} aria-label="Banner tagline">
             {bannerTagline}
           </p>
         </div>
-        <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-4 py-2 max-md:flex-col max-md:items-stretch max-md:gap-2 sm:px-6 lg:px-8">
+        <div className={styles.ribbon}>
           <a
-            className="inline-flex min-w-max text-sm font-heading text-inherit no-underline max-md:min-w-0 max-md:justify-center max-md:text-center sm:text-base"
+            className={styles.brandLink}
             href="/"
           >
             Country Ranking
           </a>
           <nav
-            className="flex flex-1 flex-wrap items-center justify-end gap-2 max-md:justify-stretch"
+            className={styles.nav}
             aria-label="Primary navigation"
           >
             {navigationLinks.map((link) => (
               <Button
                 asChild
-                className="h-9 min-w-28 px-3 max-md:min-w-0 max-md:flex-1 max-md:basis-28"
+                className={styles.navButton}
                 key={link.href}
                 variant="neutral"
               >
@@ -78,7 +92,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           </nav>
         </div>
       </header>
-      <div className="mx-auto w-full max-w-6xl">{children}</div>
+      <div className={styles.content}>{children}</div>
     </div>
   );
 }

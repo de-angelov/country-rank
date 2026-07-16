@@ -13,7 +13,8 @@ const country = {
   dislikes: 56,
 };
 
-const visibleText = (html: string) => html.replaceAll("<!-- -->", "");
+const visibleText = (html: string) =>
+  html.replaceAll("<!-- -->", "").replace(/<[^>]*>/g, "");
 
 describe("PaidVoteDialog", () => {
   it("identifies the selected country and like vote", () => {
@@ -27,6 +28,9 @@ describe("PaidVoteDialog", () => {
     expect(html).toContain("Confirm paid like for Japan");
     expect(text).toContain("Your like vote for Japan");
     expect(text).toContain("Japan - like");
+    expect(html).toContain('src="https://example.com/japan.svg"');
+    expect(html).toContain('alt="Japan flag"');
+    expect(html).toContain("<strong>Japan</strong>");
     expect(html).toContain("bg-vote-like");
     expect(html).toContain("lucide-thumbs-up");
     expect(html).toContain("Payment coming soon");
@@ -44,6 +48,9 @@ describe("PaidVoteDialog", () => {
     expect(html).toContain("Confirm paid dislike for Japan");
     expect(text).toContain("Your dislike vote for Japan");
     expect(text).toContain("Japan - dislike");
+    expect(html).toContain('src="https://example.com/japan.svg"');
+    expect(html).toContain('alt="Japan flag"');
+    expect(html).toContain("<strong>Japan</strong>");
     expect(html).toContain("bg-vote-dislike");
     expect(html).toContain("lucide-thumbs-down");
   });

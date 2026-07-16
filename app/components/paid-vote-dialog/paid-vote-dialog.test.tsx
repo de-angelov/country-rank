@@ -25,12 +25,17 @@ describe("PaidVoteDialog", () => {
     );
     const text = visibleText(html);
 
-    expect(html).toContain("Confirm paid like for Japan");
-    expect(text).toContain("Your like vote for Japan");
-    expect(text).toContain("Japan - like");
+    expect(html).toContain('data-slot="dialog-title"');
+    expect(text).toContain("Confirm your like");
+    expect(text).toContain("Review your vote before continuing to payment.");
+    expect(text).toContain("Japan");
+    expect(text).toContain("Like");
+    expect(text).toContain("Payment required: A like costs $1");
+    expect(text).toContain(
+      "Your vote will be submitted immediately after payment is completed.",
+    );
     expect(html).toContain('src="https://example.com/japan.svg"');
     expect(html).toContain('alt="Japan flag"');
-    expect(html).toContain("<strong>Japan</strong>");
     expect(html).toContain("bg-vote-like");
     expect(html).toContain("lucide-thumbs-up");
     expect(html).toContain("Payment coming soon");
@@ -45,13 +50,20 @@ describe("PaidVoteDialog", () => {
     );
     const text = visibleText(html);
 
-    expect(html).toContain("Confirm paid dislike for Japan");
-    expect(text).toContain("Your dislike vote for Japan");
-    expect(text).toContain("Japan - dislike");
+    expect(html).toContain('data-slot="dialog-title"');
+    expect(text).toContain("Confirm your dislike");
+    expect(text).toContain("Review your vote before continuing to payment.");
+    expect(text).toContain("Japan");
+    expect(text).toContain("Dislike");
+    expect(text).toContain("Payment required: A dislike costs $2");
+    expect(text).toContain(
+      "Your vote will be submitted immediately after payment is completed.",
+    );
     expect(html).toContain('src="https://example.com/japan.svg"');
     expect(html).toContain('alt="Japan flag"');
-    expect(html).toContain("<strong>Japan</strong>");
     expect(html).toContain("bg-vote-dislike");
     expect(html).toContain("lucide-thumbs-down");
+    expect(html).toContain("Payment coming soon");
+    expect(html).toContain("disabled");
   });
 });

@@ -1,12 +1,9 @@
 import { useLoaderData } from "react-router";
 
-import { CountryCard } from "~/components/country-card/country-card";
-import { Badge } from "~/components/ui/badge";
+import { RankedCountriesList } from "~/components/ranked-countries-list/ranked-countries-list";
 import type { Country } from "~/countries";
 
 import { loadTopDislikedCountries } from "./top-disliked.server";
-
-const noopVoteHandler = () => {};
 
 export async function loader() {
   return {
@@ -40,26 +37,10 @@ export function TopDislikedContent({
         </p>
       </header>
 
-      <ol
-        className="grid list-none gap-5 p-0"
-        aria-label="Countries ranked by dislikes"
-      >
-        {countries.map((country, index) => (
-          <li
-            className="grid gap-2 sm:grid-cols-[auto_minmax(0,1fr)] sm:items-start sm:gap-4"
-            key={country.code}
-          >
-            <Badge size="rank">
-              Rank {index + 1}
-            </Badge>
-            <CountryCard
-              country={country}
-              onLikeClick={noopVoteHandler}
-              onDislikeClick={noopVoteHandler}
-            />
-          </li>
-        ))}
-      </ol>
+      <RankedCountriesList
+        ariaLabel="Countries ranked by dislikes"
+        countries={countries}
+      />
     </main>
   );
 }

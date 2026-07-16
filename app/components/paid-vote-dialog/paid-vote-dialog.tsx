@@ -89,7 +89,6 @@ export function PaidVoteDialogBody({ intent }: { intent: VoteIntent }) {
           theme.className,
         )}
       >
-        <VoteIcon aria-hidden="true" className="size-5 shrink-0" />
         <img
           alt={flagAltText}
           className="h-12 w-16 shrink-0 rounded-base border-2 border-border bg-main object-cover"
@@ -98,7 +97,7 @@ export function PaidVoteDialogBody({ intent }: { intent: VoteIntent }) {
         <div>
           <p className="text-sm font-heading">Selected vote</p>
           <p className="mt-1 text-base font-heading">
-            <strong>{countryName}</strong> - {voteLabel}
+            <strong>{countryName}</strong> -  <VoteIcon aria-hidden="true" className="size-5 shrink-0" />  {voteLabel}
           </p>
         </div>
       </div>

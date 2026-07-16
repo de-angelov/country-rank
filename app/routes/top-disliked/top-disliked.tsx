@@ -1,6 +1,7 @@
 import { useLoaderData } from "react-router";
 
 import { CountryCard } from "~/components/country-card/country-card";
+import { Badge } from "~/components/ui/badge";
 import type { Country } from "~/countries";
 
 import { loadTopDislikedCountries } from "./top-disliked.server";
@@ -48,9 +49,9 @@ export function TopDislikedContent({
             className="grid gap-2 sm:grid-cols-[auto_minmax(0,1fr)] sm:items-start sm:gap-4"
             key={country.code}
           >
-            <span className="w-fit min-w-[4.75rem] rounded-base border-2 border-border bg-main px-3 py-2 text-center font-heading leading-none text-main-foreground shadow-shadow">
+            <Badge size="rank">
               Rank {index + 1}
-            </span>
+            </Badge>
             <CountryCard
               country={country}
               onLikeClick={noopVoteHandler}

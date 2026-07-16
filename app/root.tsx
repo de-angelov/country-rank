@@ -9,6 +9,7 @@ import {
 
 import type { Route } from "./+types/root";
 import { AppShell } from "./components/app-shell/app-shell";
+import { Badge } from "./components/ui/badge";
 import { Button } from "./components/ui/button";
 import "./app.css";
 
@@ -61,9 +62,9 @@ export function RootErrorPage({ error }: Route.ErrorBoundaryProps) {
           className="w-full rounded-base border-2 border-border bg-secondary-background p-6 shadow-shadow sm:p-8"
           aria-labelledby="error-title"
         >
-          <p className="mb-3 inline-flex rounded-base border-2 border-border bg-main px-3 py-1 text-sm font-heading text-main-foreground">
+          <Badge variant="noShadow" className="mb-3">
             Country Ranking
-          </p>
+          </Badge>
           <h1
             id="error-title"
             className="mb-3 text-3xl font-heading leading-tight sm:text-4xl"

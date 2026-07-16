@@ -26,7 +26,10 @@ export type StripeWebhookVerificationError =
 export type VerifiedStripeWebhookEvent = Readonly<{
   id: string;
   type: string;
+  metadata: Readonly<Record<string, string>> | null;
 }>;
+
+export const stripePaidVoteSuccessEventType = "checkout.session.completed";
 
 export const getStripeWebhookConfig = (
   env: NodeJS.ProcessEnv = process.env,
@@ -72,6 +75,7 @@ export const verifyStripeWebhookSignature = (
     return ok({
       id: event.id,
       type: event.type,
+      metadata: getVerifiedEventMetadata(event),
     });
   } catch (cause) {
     return err({
@@ -80,4 +84,16 @@ export const verifyStripeWebhookSignature = (
       cause,
     });
   }
+};
+
+const getVerifiedEventMetadata = (
+  event: Stripe.Event,
+): Readonly<Record<string, string>> | null => {
+  if (event.type !== stripePaidVoteSuccessEventType) {
+    return null;
+  }
+
+  const eventObject = event.data.object as Stripe.Checkout.Session;
+
+  return eventObject.metadata ?? null;
 };

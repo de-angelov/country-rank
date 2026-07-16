@@ -1,19 +1,31 @@
 import Stripe from "stripe";
+import { okAsync } from "neverthrow";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { createStripeWebhookHandler } from "./webhooks.stripe.server";
 import { action } from "./webhooks.stripe";
 
 const webhookSecret = "whsec_route_test_secret";
-const payload = JSON.stringify({
+const verifiedCheckoutPayload = JSON.stringify({
   id: "evt_route_signature_shell",
   object: "event",
   type: "checkout.session.completed",
+  data: {
+    object: {
+      id: "cs_route_signature_shell",
+      object: "checkout.session",
+      metadata: {
+        countryCode: "JP",
+        voteType: "like",
+      },
+    },
+  },
 });
 
 const readJson = async (response: Response) =>
   (await response.json()) as unknown;
 
-const createRequest = (signature: string | null) =>
+const createRequest = (payload: string, signature: string | null) =>
   new Request("https://example.test/webhooks/stripe", {
     method: "POST",
     headers: signature
@@ -22,6 +34,12 @@ const createRequest = (signature: string | null) =>
         }
       : undefined,
     body: payload,
+  });
+
+const signPayload = (payload: string) =>
+  Stripe.webhooks.generateTestHeaderString({
+    payload,
+    secret: webhookSecret,
   });
 
 describe("Stripe webhook route", () => {
@@ -33,7 +51,7 @@ describe("Stripe webhook route", () => {
     vi.stubEnv("STRIPE_WEBHOOK_SECRET", "");
 
     const response = await action({
-      request: createRequest("t=1,v1=invalid"),
+      request: createRequest(verifiedCheckoutPayload, "t=1,v1=invalid"),
       params: {},
       context: {},
     });
@@ -53,7 +71,7 @@ describe("Stripe webhook route", () => {
     vi.stubEnv("STRIPE_WEBHOOK_SECRET", webhookSecret);
 
     const response = await action({
-      request: createRequest("t=1,v1=invalid"),
+      request: createRequest(verifiedCheckoutPayload, "t=1,v1=invalid"),
       params: {},
       context: {},
     });
@@ -68,29 +86,124 @@ describe("Stripe webhook route", () => {
     });
   });
 
-  it("returns a placeholder success response for valid signatures", async () => {
+  it("applies a paid vote after a verified successful checkout event", async () => {
     vi.stubEnv("STRIPE_WEBHOOK_SECRET", webhookSecret);
-    const signature = Stripe.webhooks.generateTestHeaderString({
-      payload,
-      secret: webhookSecret,
-    });
+    const applyPaidVote = vi.fn(() =>
+      okAsync({
+        status: "applied" as const,
+        countryCode: "JP",
+        voteType: "like" as const,
+        totals: {
+          countryCode: "JP",
+          likes: 3,
+          dislikes: 1,
+        },
+      }),
+    );
+    const handleStripeWebhook = createStripeWebhookHandler({ applyPaidVote });
 
-    const response = await action({
-      request: createRequest(signature),
-      params: {},
-      context: {},
-    });
+    const response = await handleStripeWebhook(
+      createRequest(verifiedCheckoutPayload, signPayload(verifiedCheckoutPayload)),
+    );
 
     expect(response.status).toBe(200);
     expect(await readJson(response)).toEqual({
       ok: true,
       data: {
-        status: "verified",
+        status: "applied",
         event: {
           id: "evt_route_signature_shell",
           type: "checkout.session.completed",
         },
+        vote: {
+          countryCode: "JP",
+          voteType: "like",
+          totals: {
+            countryCode: "JP",
+            likes: 3,
+            dislikes: 1,
+          },
+        },
       },
     });
+    expect(applyPaidVote).toHaveBeenCalledWith({
+      countryCode: "JP",
+      voteType: "like",
+    });
+  });
+
+  it("returns a typed metadata error without applying a vote", async () => {
+    vi.stubEnv("STRIPE_WEBHOOK_SECRET", webhookSecret);
+    const payload = JSON.stringify({
+      id: "evt_route_missing_metadata",
+      object: "event",
+      type: "checkout.session.completed",
+      data: {
+        object: {
+          id: "cs_route_missing_metadata",
+          object: "checkout.session",
+          metadata: {
+            countryCode: "JP",
+          },
+        },
+      },
+    });
+    const applyPaidVote = vi.fn();
+    const handleStripeWebhook = createStripeWebhookHandler({ applyPaidVote });
+
+    const response = await handleStripeWebhook(
+      createRequest(payload, signPayload(payload)),
+    );
+
+    expect(response.status).toBe(400);
+    expect(await readJson(response)).toEqual({
+      ok: false,
+      error: {
+        code: "invalid_stripe_paid_vote_metadata",
+        message: "Stripe paid vote metadata is invalid.",
+        fieldErrors: {
+          voteType: "Stripe paid vote metadata must include voteType.",
+        },
+      },
+    });
+    expect(applyPaidVote).not.toHaveBeenCalled();
+  });
+
+  it("ignores unsupported verified events without applying a vote", async () => {
+    vi.stubEnv("STRIPE_WEBHOOK_SECRET", webhookSecret);
+    const payload = JSON.stringify({
+      id: "evt_route_payment_intent_succeeded",
+      object: "event",
+      type: "payment_intent.succeeded",
+      data: {
+        object: {
+          id: "pi_route_ignored",
+          object: "payment_intent",
+          metadata: {
+            countryCode: "JP",
+            voteType: "like",
+          },
+        },
+      },
+    });
+    const applyPaidVote = vi.fn();
+    const handleStripeWebhook = createStripeWebhookHandler({ applyPaidVote });
+
+    const response = await handleStripeWebhook(
+      createRequest(payload, signPayload(payload)),
+    );
+
+    expect(response.status).toBe(200);
+    expect(await readJson(response)).toEqual({
+      ok: true,
+      data: {
+        status: "ignored",
+        event: {
+          id: "evt_route_payment_intent_succeeded",
+          type: "payment_intent.succeeded",
+        },
+      },
+    });
+    expect(applyPaidVote).not.toHaveBeenCalled();
   });
 });

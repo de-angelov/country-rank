@@ -11,6 +11,7 @@ import type { Route } from "./+types/root";
 import { AppShell } from "./components/app-shell/app-shell";
 import { Badge } from "./components/ui/badge";
 import { Button } from "./components/ui/button";
+import { Card } from "./components/ui/card";
 import "./app.css";
 
 export function Layout({ children }: { children: React.ReactNode }) {
@@ -58,29 +59,32 @@ export function RootErrorPage({ error }: Route.ErrorBoundaryProps) {
   return (
     <AppShell>
       <main className="mx-auto flex min-h-[calc(100vh-18rem)] w-full max-w-3xl items-center px-4 py-12">
-        <section
-          className="w-full rounded-base border-2 border-border bg-secondary-background p-6 shadow-shadow sm:p-8"
+        <Card
+          asChild
+          className="w-full gap-0 bg-secondary-background p-6 sm:p-8"
           aria-labelledby="error-title"
         >
-          <Badge variant="noShadow" className="mb-3">
-            Country Ranking
-          </Badge>
-          <h1
-            id="error-title"
-            className="mb-3 text-3xl font-heading leading-tight sm:text-4xl"
-          >
-            {message}
-          </h1>
-          <p className="mb-6 max-w-prose text-base leading-7">{details}</p>
-          <Button asChild variant="neutral">
-            <a href="/">Back to countries</a>
-          </Button>
-          {stack && (
-            <pre className="mt-6 max-h-72 overflow-auto rounded-base border-2 border-border bg-background p-4 text-sm leading-6">
-              <code>{stack}</code>
-            </pre>
-          )}
-        </section>
+          <section>
+            <Badge variant="noShadow" className="mb-3">
+              Country Ranking
+            </Badge>
+            <h1
+              id="error-title"
+              className="mb-3 text-3xl font-heading leading-tight sm:text-4xl"
+            >
+              {message}
+            </h1>
+            <p className="mb-6 max-w-prose text-base leading-7">{details}</p>
+            <Button asChild variant="neutral">
+              <a href="/">Back to countries</a>
+            </Button>
+            {stack && (
+              <pre className="mt-6 max-h-72 overflow-auto rounded-base border-2 border-border bg-background p-4 text-sm leading-6">
+                <code>{stack}</code>
+              </pre>
+            )}
+          </section>
+        </Card>
       </main>
     </AppShell>
   );

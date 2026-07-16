@@ -4,6 +4,7 @@ import { Search } from "lucide-react";
 import { useLoaderData } from "react-router";
 
 import { CountryCard } from "~/components/country-card/country-card";
+import { Card } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
 import type { Country } from "~/countries";
 
@@ -136,9 +137,9 @@ export function HomeCountriesContent({
             ))}
           </section>
         ) : (
-          <p className="rounded-base border-2 border-border bg-secondary-background p-4">
-            No countries match that search.
-          </p>
+          <Card className="gap-0 bg-secondary-background p-4 py-4 shadow-none">
+            <p>No countries match that search.</p>
+          </Card>
         )}
       </div>
     </main>

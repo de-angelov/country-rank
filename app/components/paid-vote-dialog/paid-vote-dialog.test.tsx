@@ -26,19 +26,17 @@ describe("PaidVoteDialog", () => {
     const text = visibleText(html);
 
     expect(html).toContain('data-slot="dialog-title"');
-    expect(text).toContain("Confirm your like");
+    expect(text).toContain("Confirm vote");
     expect(text).toContain("Review your vote before continuing to payment.");
-    expect(text).toContain("Japan");
-    expect(text).toContain("Like");
-    expect(text).toContain("Payment required: A like costs $1");
-    expect(text).toContain(
-      "Your vote will be submitted immediately after payment is completed.",
-    );
+    expect(text).toContain("Like Japan");
+    expect(text).toContain("Price");
+    expect(text).toContain("$1");
+    expect(text).toContain("Pay to submit your vote.");
     expect(html).toContain('src="https://example.com/japan.svg"');
     expect(html).toContain('alt="Japan flag"');
     expect(html).toContain("bg-vote-like");
     expect(html).toContain("lucide-thumbs-up");
-    expect(html).toContain("Payment coming soon");
+    expect(text).toContain("Pay $1");
     expect(html).toContain("disabled");
   });
 
@@ -51,19 +49,17 @@ describe("PaidVoteDialog", () => {
     const text = visibleText(html);
 
     expect(html).toContain('data-slot="dialog-title"');
-    expect(text).toContain("Confirm your dislike");
+    expect(text).toContain("Confirm vote");
     expect(text).toContain("Review your vote before continuing to payment.");
-    expect(text).toContain("Japan");
-    expect(text).toContain("Dislike");
-    expect(text).toContain("Payment required: A dislike costs $2");
-    expect(text).toContain(
-      "Your vote will be submitted immediately after payment is completed.",
-    );
+    expect(text).toContain("Dislike Japan");
+    expect(text).toContain("Price");
+    expect(text).toContain("$2");
+    expect(text).toContain("Pay to submit your vote.");
     expect(html).toContain('src="https://example.com/japan.svg"');
     expect(html).toContain('alt="Japan flag"');
     expect(html).toContain("bg-vote-dislike");
     expect(html).toContain("lucide-thumbs-down");
-    expect(html).toContain("Payment coming soon");
+    expect(text).toContain("Pay $2");
     expect(html).toContain("disabled");
   });
 });

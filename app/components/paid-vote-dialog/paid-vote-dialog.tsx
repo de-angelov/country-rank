@@ -63,6 +63,7 @@ export function PaidVoteDialog({
 
 export function PaidVoteDialogBody({ intent }: { intent: VoteIntent }) {
   const countryName = intent?.country.name ?? "this country";
+  const flagAltText = `${countryName} flag`;
   const voteType = intent?.voteType ?? "like";
   const voteLabel = voteTypeLabels[voteType];
   const title = match(voteType)
@@ -89,10 +90,15 @@ export function PaidVoteDialogBody({ intent }: { intent: VoteIntent }) {
         )}
       >
         <VoteIcon aria-hidden="true" className="size-5 shrink-0" />
+        <img
+          alt={flagAltText}
+          className="h-12 w-16 shrink-0 rounded-base border-2 border-border bg-main object-cover"
+          src={intent.country.flagImageUrl}
+        />
         <div>
           <p className="text-sm font-heading">Selected vote</p>
-          <p className="mt-1 text-base">
-            {countryName} - {voteLabel}
+          <p className="mt-1 text-base font-heading">
+            <strong>{countryName}</strong> - {voteLabel}
           </p>
         </div>
       </div>

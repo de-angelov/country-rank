@@ -1,13 +1,96 @@
 #!/usr/bin/env node
 /* global console, process, setTimeout */
 import { spawn } from "node:child_process";
+import net from "node:net";
+import { fileURLToPath } from "node:url";
 
-const redisHostPort = process.env.REDIS_HOST_PORT?.trim() || "6379";
-const redisUrl = `redis://localhost:${redisHostPort}`;
+const defaultRedisHostPort = 6379;
+const maxRedisHostPort = 65_535;
+const redisHost = "127.0.0.1";
 const seedAttempts = 10;
 const seedRetryDelayMs = 1_000;
 
-const runCommand = (command, args, options = {}) =>
+const toRedisUrl = (redisHostPort) => `redis://localhost:${redisHostPort}`;
+
+const parseRedisHostPort = (value) => {
+  const redisHostPort = Number(value);
+
+  if (
+    !Number.isInteger(redisHostPort) ||
+    redisHostPort < 1 ||
+    redisHostPort > maxRedisHostPort
+  ) {
+    throw new Error(
+      `REDIS_HOST_PORT must be an integer between 1 and ${maxRedisHostPort}.`,
+    );
+  }
+
+  return redisHostPort;
+};
+
+export const isLocalPortAvailable = (redisHostPort) =>
+  new Promise((resolve, reject) => {
+    const server = net.createServer();
+
+    server.once("error", (error) => {
+      if (error?.code === "EADDRINUSE") {
+        resolve(false);
+        return;
+      }
+
+      reject(error);
+    });
+
+    server.once("listening", () => {
+      server.close(() => {
+        resolve(true);
+      });
+    });
+
+    server.listen(redisHostPort, redisHost);
+  });
+
+export const resolveRedisEndpoint = async ({
+  env = process.env,
+  isPortAvailable = isLocalPortAvailable,
+} = {}) => {
+  const explicitRedisHostPort = env.REDIS_HOST_PORT?.trim();
+  const requestedRedisHostPort = parseRedisHostPort(
+    explicitRedisHostPort || `${defaultRedisHostPort}`,
+  );
+
+  if (await isPortAvailable(requestedRedisHostPort)) {
+    return {
+      redisHostPort: requestedRedisHostPort,
+      redisUrl: toRedisUrl(requestedRedisHostPort),
+    };
+  }
+
+  if (explicitRedisHostPort) {
+    throw new Error(
+      `REDIS_HOST_PORT=${requestedRedisHostPort} is already in use on ${redisHost}. Choose another free port and rerun npm run compose:dev:seed.`,
+    );
+  }
+
+  for (
+    let redisHostPort = requestedRedisHostPort + 1;
+    redisHostPort <= maxRedisHostPort;
+    redisHostPort += 1
+  ) {
+    if (await isPortAvailable(redisHostPort)) {
+      return {
+        redisHostPort,
+        redisUrl: toRedisUrl(redisHostPort),
+      };
+    }
+  }
+
+  throw new Error(
+    `No available localhost Redis host port found from ${requestedRedisHostPort} to ${maxRedisHostPort}. Set REDIS_HOST_PORT to a free port and rerun npm run compose:dev:seed.`,
+  );
+};
+
+export const runCommand = (command, args, options = {}) =>
   new Promise((resolve) => {
     const child = spawn(command, args, {
       env: process.env,
@@ -30,11 +113,16 @@ const sleep = (milliseconds) =>
     setTimeout(resolve, milliseconds);
   });
 
-const seedRedisVotes = async () => {
+export const seedRedisVotes = async ({
+  env = process.env,
+  redisUrl,
+  commandRunner = runCommand,
+  sleeper = sleep,
+} = {}) => {
   for (let attempt = 1; attempt <= seedAttempts; attempt += 1) {
-    const exitCode = await runCommand("npm", ["run", "seed:redis:votes"], {
+    const exitCode = await commandRunner("npm", ["run", "seed:redis:votes"], {
       env: {
-        ...process.env,
+        ...env,
         REDIS_URL: redisUrl,
       },
     });
@@ -47,34 +135,56 @@ const seedRedisVotes = async () => {
       console.log(
         `Redis seed attempt ${attempt} failed; retrying in ${seedRetryDelayMs}ms...`,
       );
-      await sleep(seedRetryDelayMs);
+      await sleeper(seedRetryDelayMs);
     }
   }
 
   return 1;
 };
 
-const main = async () => {
-  const composeExitCode = await runCommand("docker", [
-    "compose",
-    "up",
-    "-d",
-    "app",
-    "redis",
-  ]);
+export const runComposeDevSeed = async ({
+  env = process.env,
+  commandRunner = runCommand,
+  isPortAvailable = isLocalPortAvailable,
+  logger = console,
+} = {}) => {
+  const { redisHostPort, redisUrl } = await resolveRedisEndpoint({
+    env,
+    isPortAvailable,
+  });
+  const childEnv = {
+    ...env,
+    REDIS_HOST_PORT: `${redisHostPort}`,
+  };
+
+  const composeExitCode = await commandRunner(
+    "docker",
+    ["compose", "up", "-d", "app", "redis"],
+    {
+      env: childEnv,
+    },
+  );
 
   if (composeExitCode !== 0) {
-    process.exitCode = composeExitCode;
-    return;
+    return composeExitCode;
   }
 
-  console.log(`Seeding Redis vote totals at ${redisUrl}.`);
+  logger.log(`Seeding Redis vote totals at ${redisUrl}.`);
 
-  const seedExitCode = await seedRedisVotes();
-  process.exitCode = seedExitCode;
+  return seedRedisVotes({
+    env,
+    redisUrl,
+    commandRunner,
+  });
 };
 
-main().catch((error) => {
-  console.error(error instanceof Error ? error.message : error);
-  process.exitCode = 1;
-});
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  runComposeDevSeed()
+    .then((exitCode) => {
+      process.exitCode = exitCode;
+    })
+    .catch((error) => {
+      console.error(error instanceof Error ? error.message : error);
+      process.exitCode = 1;
+    });
+}

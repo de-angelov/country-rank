@@ -53,20 +53,20 @@ export function CountryCard({
       <Card asChild>
         <article
           className={cn(
-            "grid gap-4 bg-secondary-background p-4 sm:grid-cols-[minmax(5rem,7rem)_1fr] sm:items-center",
+            "grid gap-4 bg-secondary-background p-4",
             className,
           )}
         >
-          <div className="aspect-[4/3] overflow-hidden rounded-base border-2 border-border bg-background">
-            <img
-              src={country.flagImageUrl}
-              alt={`${country.name} flag`}
-              className="h-full w-full object-cover"
-              loading="lazy"
-            />
-          </div>
+          <div className="grid gap-4 sm:grid-cols-[minmax(5rem,7rem)_1fr] sm:items-center">
+            <div className="aspect-[4/3] overflow-hidden rounded-base border-2 border-border bg-background">
+              <img
+                src={country.flagImageUrl}
+                alt={`${country.name} flag`}
+                className="h-full w-full object-cover"
+                loading="lazy"
+              />
+            </div>
 
-          <div className="grid min-w-0 gap-4">
             <div className="min-w-0">
               <h2 className="truncate text-xl font-heading">{country.name}</h2>
               <p className="mt-1 text-sm">Capital: {country.capital}</p>
@@ -74,9 +74,11 @@ export function CountryCard({
                 {country.factSnippet}
               </p>
             </div>
+          </div>
 
+          <div className="grid gap-3 border-t-2 border-border pt-4">
             <div
-              className="grid gap-2 text-sm sm:max-w-sm"
+              className="grid gap-2 text-sm"
               role="img"
               aria-label={`${country.name} vote ratio: ${likeCount} likes (${roundedLikeRatio}%) and ${dislikeCount} dislikes (${roundedDislikeRatio}%).`}
             >
@@ -98,7 +100,7 @@ export function CountryCard({
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-2 sm:max-w-sm">
+            <div className="grid grid-cols-2 gap-2">
               <Button
                 type="button"
                 variant="like"

@@ -39,6 +39,31 @@ Country Ranking is a TypeScript React Router framework-mode app for browsing cou
 - Copy `.env.example` to `.env` or otherwise set `REDIS_URL=redis://localhost:6379` before running app flows that read or write vote totals.
 - Redis data is persisted in the `redis-data` Docker volume across container restarts.
 
+### Redis Backup Runner
+
+The Redis backup runner is available through `npm run backup:redis`. It exports
+the `country:votes:*` hashes to a timestamped JSON artifact. Real backup
+credentials must be supplied through environment variables and must never be
+committed to the repository.
+
+Environment variables read by the runner:
+
+| Variable | Required | Used for | Default |
+| --- | --- | --- | --- |
+| `REDIS_URL` | Optional | Redis connection URL for dry-run and push modes. | `redis://localhost:6379` |
+| `REDIS_BACKUP_GITHUB_REPOSITORY` | Required for `--push` only | Backup repository destination as `owner/repo` or an `https://github.com/...` URL. | None |
+| `REDIS_BACKUP_GITHUB_TOKEN` | Required for `--push` only | GitHub token used to clone and push to the backup repository. | None |
+| `REDIS_BACKUP_BRANCH` | Optional | Branch to clone and push in the backup repository. | `main` |
+| `REDIS_BACKUP_PATH` | Optional | Relative directory inside the backup repository where artifacts are stored. | `redis` |
+| `REDIS_BACKUP_RETENTION_COUNT` | Optional | Number of newest backup artifacts to keep during push mode. | `30` |
+
+Local dry-run verification does not require real backup credentials:
+
+1. Start local Redis with `docker compose up -d redis`.
+2. Run `REDIS_URL=redis://localhost:6379 npm run backup:redis -- --dry-run`.
+3. Confirm the command prints `Created Redis backup artifact:` and `Exported ... country vote record(s).`.
+4. Inspect the generated JSON file under `tmp/redis-backups/`.
+
 ### Request And Data Flow
 
 - Browsing: React Router renders the index route from `app/routes/home.tsx`. Country browsing UI should source country records from `app/countries/fixtures.ts` until a later task introduces a different data source.

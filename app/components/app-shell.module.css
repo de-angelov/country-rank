@@ -8,6 +8,7 @@
 }
 
 .banner {
+  position: relative;
   overflow: hidden;
   border-bottom: 2px solid var(--border);
   background: var(--background);
@@ -18,6 +19,37 @@
   width: 100%;
   aspect-ratio: 16 / 5;
   object-fit: cover;
+}
+
+.bannerTagline {
+  position: absolute;
+  bottom: 7%;
+  left: 50%;
+  z-index: 1;
+  width: min(50rem, calc(100% - 2rem));
+  margin: 0;
+  color: var(--foreground);
+  font-size: clamp(1rem, 2.6vw, 2.125rem);
+  font-weight: 900;
+  line-height: 1.05;
+  pointer-events: none;
+  text-align: center;
+  text-wrap: balance;
+  transform: translateX(-50%) rotate(-0.5deg);
+  animation: taglineStamp 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.bannerTagline::after {
+  position: absolute;
+  right: 12%;
+  bottom: -0.22em;
+  left: 12%;
+  height: 0.22em;
+  border: 2px solid var(--border);
+  background: #ffe05c;
+  content: "";
+  transform: skewX(-8deg);
+  animation: taglineUnderline 900ms steps(2, end) 420ms 2;
 }
 
 .ribbon {
@@ -37,14 +69,6 @@
   font-size: 1rem;
   font-weight: var(--heading-font-weight);
   text-decoration: none;
-}
-
-.tagline {
-  margin: 0;
-  color: var(--foreground);
-  font-size: 0.875rem;
-  line-height: 1.25;
-  text-align: center;
 }
 
 .nav {
@@ -72,6 +96,18 @@
     min-height: 9rem;
   }
 
+  .bannerTagline {
+    bottom: 8%;
+    width: calc(100% - 1rem);
+    font-size: clamp(0.875rem, 5.3vw, 1.35rem);
+    line-height: 1;
+  }
+
+  .bannerTagline::after {
+    right: 18%;
+    left: 18%;
+  }
+
   .ribbon {
     align-items: stretch;
     flex-direction: column;
@@ -90,5 +126,40 @@
   .navLink {
     flex: 1 1 9rem;
     min-width: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bannerTagline,
+  .bannerTagline::after {
+    animation: none;
+  }
+}
+
+@keyframes taglineStamp {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(0.45rem) rotate(-2deg) scale(0.96);
+  }
+
+  65% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-0.08rem) rotate(0.75deg) scale(1.02);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) rotate(-0.5deg) scale(1);
+  }
+}
+
+@keyframes taglineUnderline {
+  0%,
+  100% {
+    transform: skewX(-8deg) scaleX(1);
+  }
+
+  50% {
+    transform: skewX(-8deg) scaleX(0.94);
   }
 }

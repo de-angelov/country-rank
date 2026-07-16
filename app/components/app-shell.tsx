@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
 import { Button } from "~/components/ui/button";
 
@@ -12,7 +12,32 @@ const navigationLinks = [
 
 const bannerImageSrc = "/images/country-ranking-banner-placeholder.svg";
 
+export const bannerTaglines = [
+  "Rankings Without Borders",
+  "Global Rankings. Local Beef.",
+  "The Internet Judges Earth.",
+  "Diplomacy Not Included.",
+  "No Chill. Just Rankings.",
+  "Earth, Reviewed.",
+  "Petty by Popular Vote.",
+] as const;
+
+export function pickBannerTagline(random = Math.random): string {
+  const taglineIndex = Math.min(
+    Math.floor(random() * bannerTaglines.length),
+    bannerTaglines.length - 1,
+  );
+
+  return bannerTaglines[taglineIndex];
+}
+
 export function AppShell({ children }: { children: ReactNode }) {
+  const [bannerTagline, setBannerTagline] = useState<string>(bannerTaglines[0]);
+
+  useEffect(() => {
+    setBannerTagline(pickBannerTagline());
+  }, []);
+
   return (
     <div className={styles.shell}>
       <header className={styles.header} aria-label="Site header">
@@ -22,12 +47,14 @@ export function AppShell({ children }: { children: ReactNode }) {
             src={bannerImageSrc}
             alt="The Internet Judges Earth"
           />
+          <p className={styles.bannerTagline} aria-label="Banner tagline">
+            {bannerTagline}
+          </p>
         </div>
         <div className={styles.ribbon}>
           <a className={styles.brand} href="/">
             Country Ranking
           </a>
-          <p className={styles.tagline}>Rankings Without Borders</p>
           <nav className={styles.nav} aria-label="Primary navigation">
             {navigationLinks.map((link) => (
               <Button

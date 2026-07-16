@@ -27,24 +27,24 @@ export type PaidVoteDialogProps = Readonly<{
 }>;
 
 const voteTypeLabels: Record<VoteType, string> = {
-  dislike: "dislike",
-  like: "like",
+  dislike: "Dislike",
+  like: "Like",
 };
 
 const voteTypeThemes = {
   dislike: {
     Icon: ThumbsDown,
-    className: "bg-vote-dislike text-main-foreground",
+    badgeClassName: "bg-vote-dislike text-main-foreground",
   },
   like: {
     Icon: ThumbsUp,
-    className: "bg-vote-like text-main-foreground",
+    badgeClassName: "bg-vote-like text-main-foreground",
   },
 } satisfies Record<
   VoteType,
   Readonly<{
     Icon: typeof ThumbsUp;
-    className: string;
+    badgeClassName: string;
   }>
 >;
 
@@ -52,63 +52,96 @@ export function PaidVoteDialog({
   intent,
   onOpenChange,
 }: PaidVoteDialogProps) {
-  const open = intent !== null;
-
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>{intent ? <PaidVoteDialogBody intent={intent} /> : null}</DialogContent>
+    <Dialog open={intent !== null} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-md">
+        {intent ? <PaidVoteDialogBody intent={intent} /> : null}
+      </DialogContent>
     </Dialog>
   );
 }
 
-export function PaidVoteDialogBody({ intent }: { intent: VoteIntent }) {
-  const countryName = intent?.country.name ?? "this country";
-  const flagAltText = `${countryName} flag`;
-  const voteType = intent?.voteType ?? "like";
+export function PaidVoteDialogBody({
+  intent,
+}: {
+  intent: VoteIntent;
+}) {
+  const countryName = intent.country.name;
+  const voteType = intent.voteType;
   const voteLabel = voteTypeLabels[voteType];
-  const title = match(voteType)
-    .with("like", () => `Confirm paid like for ${countryName}`)
-    .with("dislike", () => `Confirm paid dislike for ${countryName}`)
-    .exhaustive();
   const theme = voteTypeThemes[voteType];
   const VoteIcon = theme.Icon;
 
-  return (
-    <>
-      <DialogHeader>
-        <DialogTitle>{title}</DialogTitle>
-        <DialogDescription>
-          Your {voteLabel} vote for {countryName} will be submitted after
-          payment is connected.
-        </DialogDescription>
-      </DialogHeader>
+  const title = match(voteType)
+    .with("like", () => `Confirm your like`)
+    .with("dislike", () => `Confirm your dislike`)
+    .exhaustive();
 
-      <div
-        className={cn(
-          "flex items-center gap-3 rounded-base border-2 border-border p-4",
-          theme.className,
-        )}
-      >
-        <VoteIcon aria-hidden="true" className="size-5 shrink-0" />
+ return (
+  <>
+    <DialogHeader>
+      <DialogTitle>{title}</DialogTitle>
+      <DialogDescription>
+        Review your vote before continuing to payment.
+      </DialogDescription>
+    </DialogHeader>
+
+    <div className="overflow-hidden rounded-base border-2 border-border bg-background">
+      {/* Vote summary */}
+      <div className="flex items-center gap-4 p-4">
         <img
-          alt={flagAltText}
-          className="h-12 w-16 shrink-0 rounded-base border-2 border-border bg-main object-cover"
+          alt={`${countryName} flag`}
+          className="h-14 w-20 shrink-0 rounded-base border-2 border-border bg-main object-cover"
           src={intent.country.flagImageUrl}
         />
-        <div>
-          <p className="text-sm font-heading">Selected vote</p>
-          <p className="mt-1 text-base font-heading">
-            <strong>{countryName}</strong> - {voteLabel}
-          </p>
+
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-lg font-heading">{countryName}</p>
+
+          <div
+            className={cn(
+              "mt-2 inline-flex items-center gap-2 rounded-base border-2 border-border px-3 py-1.5 text-sm font-heading",
+              theme.badgeClassName,
+            )}
+          >
+            <VoteIcon aria-hidden="true" className="size-4" />
+            {voteLabel}
+          </div>
         </div>
       </div>
 
-      <DialogFooter>
-        <Button type="button" variant="neutral" disabled>
-          <CreditCard aria-hidden="true" />
-          Payment coming soon
-        </Button>
-      </DialogFooter>
-    </>
-  );
+      <div className="border-t-2 border-border bg-muted/40 p-4">
+        <div className="flex items-start gap-3">
+          <CreditCard
+            aria-hidden="true"
+            className="mt-0.5 size-5 shrink-0 text-muted-foreground"
+          />
+
+          <div className="flex-1">
+            <strong className="font-heading mt-2 text-sm text-muted-foreground">
+              {voteType === "like"
+                ? "Payment required: A like costs $1"
+                : "Payment required: A dislike costs $2"}
+            </strong>
+
+            <p className="mt-1 text-sm text-muted-foreground">
+              Your vote will be submitted immediately after payment is completed.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <DialogFooter>
+      <Button type="button" variant="neutral">
+        Cancel
+      </Button>
+
+      <Button type="button" disabled className="min-w-44">
+        <CreditCard aria-hidden="true" className="size-4" />
+        Payment coming soon
+      </Button>
+    </DialogFooter>
+  </>
+);
 }

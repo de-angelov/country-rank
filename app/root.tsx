@@ -86,5 +86,5 @@ export function RootErrorPage({ error }: Route.ErrorBoundaryProps) {
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
-  return <RootErrorPage error={error} />;
+  return <RootErrorPage params={{}} error={error} />;
 }

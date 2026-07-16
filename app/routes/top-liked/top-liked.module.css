@@ -1,12 +1,12 @@
 .page {
   display: grid;
-  gap: 1.5rem;
-  padding: 1.5rem 1rem 2rem;
+  gap: var(--space-6);
+  padding: var(--space-6) var(--space-5) var(--space-7);
 }
 
 .header {
   display: grid;
-  gap: 0.5rem;
+  gap: var(--space-2);
 }
 
 .header h1 {
@@ -16,14 +16,14 @@
 }
 
 .header p {
-  max-width: 42rem;
+  max-width: var(--size-readable-max);
   margin: 0;
   line-height: 1.5;
 }
 
 .list {
   display: grid;
-  gap: 1rem;
+  gap: var(--space-5);
   margin: 0;
   padding: 0;
   list-style: none;
@@ -32,27 +32,27 @@
 .item {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
-  gap: 0.75rem;
+  gap: var(--space-4);
   align-items: start;
 }
 
 .rank {
   min-width: 4.75rem;
-  padding: 0.5rem 0.625rem;
-  border: 2px solid var(--border);
-  border-radius: var(--radius-base);
+  padding: var(--space-2) var(--space-3);
+  border: var(--border-neobrutal);
+  border-radius: var(--radius-neobrutal);
   background: var(--main);
   color: var(--main-foreground);
   font-family: var(--font-heading);
   line-height: 1;
   text-align: center;
-  box-shadow: var(--shadow-shadow);
+  box-shadow: var(--shadow);
 }
 
 @media (max-width: 40rem) {
   .item {
     grid-template-columns: 1fr;
-    gap: 0.5rem;
+    gap: var(--space-2);
   }
 
   .rank {

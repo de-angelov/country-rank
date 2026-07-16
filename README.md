@@ -307,8 +307,9 @@ environment is intentionally non-production.
 
 - Shared styling is based on shadcn UI components configured with neobrutalism-components tokens.
 - Global Tailwind and neobrutalism CSS variables live in `app/app.css`.
+- Project-wide CSS custom properties in `app/app.css` use the `--size-*`, `--space-*`, `--border-*`, `--radius-*`, `--shadow`, and `--accent-*` names for reusable content widths, spacing, neobrutalist borders, radius, shadow, and shared accents.
 - Shared UI primitives live under `app/components/ui/`; `app/components/ui/button.tsx` is the current generated shadcn-style primitive.
-- Use CSS Modules only for local route/component layout needs that are not covered by shared primitives or tokens.
+- Use CSS Modules only for local route/component layout needs that are not covered by shared primitives or tokens; keep one-off positioning, grid structure, and route-specific responsive rules in the module.
 
 ### Pending Paid Vote Work
 

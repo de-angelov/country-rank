@@ -1,14 +1,17 @@
-import { sortBy } from "remeda";
+import { useLoaderData } from "react-router";
 
 import { CountryCard } from "~/components/country-card/country-card";
-import { countryFixtures, type Country } from "~/countries";
+import type { Country } from "~/countries";
 
 import styles from "./top-disliked.module.css";
+import { loadTopDislikedCountries } from "./top-disliked.server";
 
 const noopVoteHandler = () => {};
 
-export function getTopDislikedCountries(): Country[] {
-  return sortBy(countryFixtures, [(country) => country.dislikes, "desc"]);
+export async function loader() {
+  return {
+    countries: await loadTopDislikedCountries(),
+  };
 }
 
 export function meta() {
@@ -21,14 +24,16 @@ export function meta() {
   ];
 }
 
-export function TopDislikedContent() {
-  const countries = getTopDislikedCountries();
-
+export function TopDislikedContent({
+  countries,
+}: {
+  countries: readonly Country[];
+}) {
   return (
     <main className={styles.page}>
       <header className={styles.header}>
         <h1>Top Disliked Countries</h1>
-        <p>Countries ordered by the highest fixture dislike counts.</p>
+        <p>Countries ordered by the highest dislike counts.</p>
       </header>
 
       <ol className={styles.list} aria-label="Countries ranked by dislikes">
@@ -48,5 +53,7 @@ export function TopDislikedContent() {
 }
 
 export default function TopDisliked() {
-  return <TopDislikedContent />;
+  const { countries } = useLoaderData<typeof loader>();
+
+  return <TopDislikedContent countries={countries} />;
 }

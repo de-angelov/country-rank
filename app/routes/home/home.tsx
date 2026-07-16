@@ -100,11 +100,11 @@ export function HomeCountriesContent({
   };
 
   return (
-    <main className="mx-auto grid w-full max-w-6xl gap-6 px-4 py-6 sm:px-6 lg:px-8">
-      <div className="grid gap-4 md:grid-cols-[1fr_minmax(18rem,24rem)] md:items-end">
+    <main className="mx-auto grid w-full max-w-6xl gap-4 px-4 py-4 sm:px-6 sm:py-5 lg:px-8">
+      <div className="grid gap-3 md:grid-cols-[1fr_minmax(18rem,24rem)] md:items-end md:gap-4">
         <div>
           <h1 className="text-3xl font-heading sm:text-4xl">Countries</h1>
-          <p className="mt-2 max-w-2xl text-base">
+          <p className="mt-1 max-w-2xl text-base">
             Browse the current country rankings and narrow the list by country
             name.
           </p>
@@ -139,7 +139,7 @@ export function HomeCountriesContent({
       </div>
 
       <div
-        className="country-filter-transition grid gap-6"
+        className="country-filter-transition grid gap-4"
         id="country-results"
         ref={resultsRef}
       >

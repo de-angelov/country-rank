@@ -39,11 +39,14 @@ export function AppShell({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <div className={styles.shell}>
-      <header className={styles.header} aria-label="Site header">
-        <div className={styles.banner}>
+    <div className="min-h-screen">
+      <header
+        className="border-b-2 border-border bg-secondary-background"
+        aria-label="Site header"
+      >
+        <div className="relative overflow-hidden border-b-2 border-border bg-background">
           <img
-            className={styles.bannerImage}
+            className="block aspect-[16/5] w-full object-cover max-md:min-h-36"
             src={bannerImageSrc}
             alt="The Internet Judges Earth"
           />
@@ -51,15 +54,21 @@ export function AppShell({ children }: { children: ReactNode }) {
             {bannerTagline}
           </p>
         </div>
-        <div className={styles.ribbon}>
-          <a className={styles.brand} href="/">
+        <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-4 px-4 py-3 max-md:flex-col max-md:items-stretch sm:px-6 lg:px-8">
+          <a
+            className="inline-flex min-w-max text-base font-heading text-inherit no-underline max-md:min-w-0 max-md:justify-center max-md:text-center"
+            href="/"
+          >
             Country Ranking
           </a>
-          <nav className={styles.nav} aria-label="Primary navigation">
+          <nav
+            className="flex flex-1 flex-wrap items-center justify-end gap-2 max-md:justify-stretch"
+            aria-label="Primary navigation"
+          >
             {navigationLinks.map((link) => (
               <Button
                 asChild
-                className={styles.navLink}
+                className="min-h-9 min-w-28 px-3 max-md:min-w-0 max-md:flex-1 max-md:basis-36"
                 key={link.href}
                 variant="neutral"
               >
@@ -69,7 +78,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           </nav>
         </div>
       </header>
-      <div className={styles.content}>{children}</div>
+      <div className="mx-auto w-full max-w-6xl">{children}</div>
     </div>
   );
 }

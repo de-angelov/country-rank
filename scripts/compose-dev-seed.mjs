@@ -5,12 +5,20 @@ import net from "node:net";
 import { fileURLToPath } from "node:url";
 
 const defaultRedisHostPort = 6379;
+const defaultAppHostPort = "5173";
 const maxRedisHostPort = 65_535;
+const composeRedisUrl = "redis://redis:6379";
 const redisHost = "127.0.0.1";
 const seedAttempts = 10;
 const seedRetryDelayMs = 1_000;
 
 const toRedisUrl = (redisHostPort) => `redis://localhost:${redisHostPort}`;
+
+export const resolveAppUrl = (env = process.env) => {
+  const appHostPort = env.APP_HOST_PORT?.trim() || defaultAppHostPort;
+
+  return `http://localhost:${appHostPort}`;
+};
 
 const parseRedisHostPort = (value) => {
   const redisHostPort = Number(value);
@@ -119,17 +127,28 @@ const sleep = (milliseconds) =>
 
 export const seedRedisVotes = async ({
   env = process.env,
-  redisUrl,
+  redisUrl = composeRedisUrl,
   commandRunner = runCommand,
   sleeper = sleep,
 } = {}) => {
   for (let attempt = 1; attempt <= seedAttempts; attempt += 1) {
-    const exitCode = await commandRunner("npm", ["run", "seed:redis:votes"], {
-      env: {
-        ...env,
-        REDIS_URL: redisUrl,
+    const exitCode = await commandRunner(
+      "docker",
+      [
+        "compose",
+        "exec",
+        "-T",
+        "-e",
+        `REDIS_URL=${redisUrl}`,
+        "app",
+        "npm",
+        "run",
+        "seed:redis:votes",
+      ],
+      {
+        env,
       },
-    });
+    );
 
     if (exitCode === 0) {
       return 0;
@@ -160,6 +179,7 @@ export const runComposeDevSeed = async ({
     ...env,
     REDIS_HOST_PORT: `${redisHostPort}`,
   };
+  const appUrl = resolveAppUrl(env);
 
   const composeExitCode = await commandRunner(
     "docker",
@@ -173,11 +193,13 @@ export const runComposeDevSeed = async ({
     return composeExitCode;
   }
 
-  logger.log(`Seeding Redis vote totals at ${redisUrl}.`);
+  logger.log(`Compose dev app: ${appUrl}`);
+  logger.log(`Compose dev Redis for optional local tooling: ${redisUrl}`);
+  logger.log(`Seeding Redis vote totals inside Compose at ${composeRedisUrl}.`);
 
   return seedRedisVotes({
-    env,
-    redisUrl,
+    env: childEnv,
+    redisUrl: composeRedisUrl,
     commandRunner,
   });
 };

@@ -5,16 +5,9 @@ import { fileURLToPath } from "node:url";
 import {
   isLocalPortAvailable,
   resolveRedisEndpoint,
+  resolveAppUrl,
   runCommand,
 } from "./compose-dev-seed.mjs";
-
-const defaultAppHostPort = "5173";
-
-const resolveAppUrl = (env = process.env) => {
-  const appHostPort = env.APP_HOST_PORT?.trim() || defaultAppHostPort;
-
-  return `http://localhost:${appHostPort}`;
-};
 
 export const runComposeDev = async ({
   env = process.env,

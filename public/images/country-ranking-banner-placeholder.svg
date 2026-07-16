@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 500" role="img" aria-labelledby="title desc">
+  <title id="title">The Internet Judges Earth</title>
+  <desc id="desc">Placeholder banner generated from BANNER_PROMPT.txt. Replace with the final legacy image source before production approval.</desc>
+  <rect width="1600" height="500" fill="#f0f4ff"/>
+  <path d="M0 375h1600v125H0z" fill="#ffffff"/>
+  <path d="M80 88h1440v270H80z" fill="#ffe05c" stroke="#000000" stroke-width="12"/>
+  <path d="M130 140h330v175H130z" fill="#ff6b6b" stroke="#000000" stroke-width="10"/>
+  <path d="M1140 140h330v175h-330z" fill="#63d471" stroke="#000000" stroke-width="10"/>
+  <path d="M526 98h548v245H526z" fill="#ffffff" stroke="#000000" stroke-width="12"/>
+  <path d="M566 138h468v62H566z" fill="#7aa2ff" stroke="#000000" stroke-width="8"/>
+  <path d="M566 230h196v74H566z" fill="#63d471" stroke="#000000" stroke-width="8"/>
+  <path d="M838 230h196v74H838z" fill="#ff6b6b" stroke="#000000" stroke-width="8"/>
+  <text x="800" y="180" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-size="52" font-weight="900" fill="#000000">The Internet Judges Earth</text>
+  <text x="665" y="280" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-size="42" font-weight="900" fill="#000000">LIKE</text>
+  <text x="936" y="280" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-size="42" font-weight="900" fill="#000000">NOPE</text>
+  <g stroke="#000000" stroke-width="8" stroke-linejoin="round">
+    <path d="M232 238h42v-76h44l18-44c5-13 25-9 25 5v39h66c17 0 29 16 25 32l-22 82c-5 17-19 29-37 29H274v-67h-42z" fill="#63d471"/>
+    <path d="M1328 180h-42v76h-44l-18 44c-5 13-25 9-25-5v-39h-66c-17 0-29-16-25-32l22-82c5-17 19-29 37-29h119v67h42z" fill="#ff6b6b"/>
+  </g>
+  <g stroke="#000000" stroke-width="6">
+    <path d="M206 83v80" />
+    <path d="M206 83h96v54h-96z" fill="#7aa2ff"/>
+    <path d="M1360 83v80" />
+    <path d="M1360 83h96v54h-96z" fill="#ff6b6b"/>
+    <path d="M404 70v88" />
+    <path d="M404 70h104v58H404z" fill="#63d471"/>
+    <path d="M1092 70v88" />
+    <path d="M1092 70h104v58h-104z" fill="#ffe05c"/>
+  </g>
+  <g fill="#000000">
+    <circle cx="95" cy="65" r="10"/>
+    <circle cx="1498" cy="78" r="10"/>
+    <circle cx="146" cy="410" r="10"/>
+    <circle cx="1430" cy="408" r="10"/>
+    <circle cx="706" cy="72" r="10"/>
+    <circle cx="914" cy="72" r="10"/>
+  </g>
+  <g stroke="#000000" stroke-width="5" stroke-linecap="round">
+    <path d="M112 120l-48-38" />
+    <path d="M1526 128l45-44" />
+    <path d="M656 392l-54 40" />
+    <path d="M944 392l54 40" />
+    <path d="M305 382l-38 46" />
+    <path d="M1298 382l38 46" />
+  </g>
+  <g fill="#ff6b6b" stroke="#000000" stroke-width="5">
+    <rect x="230" y="378" width="36" height="36" transform="rotate(12 248 396)"/>
+    <rect x="458" y="382" width="30" height="30" transform="rotate(-18 473 397)"/>
+    <rect x="1120" y="382" width="30" height="30" transform="rotate(18 1135 397)"/>
+    <rect x="1362" y="378" width="36" height="36" transform="rotate(-12 1380 396)"/>
+  </g>
+  <g fill="#63d471" stroke="#000000" stroke-width="5">
+    <circle cx="348" cy="407" r="19"/>
+    <circle cx="1242" cy="407" r="19"/>
+    <circle cx="538" cy="426" r="15"/>
+    <circle cx="1062" cy="426" r="15"/>
+  </g>
+</svg>

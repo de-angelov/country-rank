@@ -10,14 +10,24 @@ const navigationLinks = [
   { href: "/top-disliked", label: "Top Disliked" },
 ] as const;
 
+const bannerImageSrc = "/images/country-ranking-banner-placeholder.svg";
+
 export function AppShell({ children }: { children: ReactNode }) {
   return (
     <div className={styles.shell}>
-      <header className={styles.header}>
-        <div className={styles.headerInner}>
+      <header className={styles.header} aria-label="Site header">
+        <div className={styles.banner}>
+          <img
+            className={styles.bannerImage}
+            src={bannerImageSrc}
+            alt="The Internet Judges Earth"
+          />
+        </div>
+        <div className={styles.ribbon}>
           <a className={styles.brand} href="/">
             Country Ranking
           </a>
+          <p className={styles.tagline}>Rankings Without Borders</p>
           <nav className={styles.nav} aria-label="Primary navigation">
             {navigationLinks.map((link) => (
               <Button
@@ -30,12 +40,6 @@ export function AppShell({ children }: { children: ReactNode }) {
               </Button>
             ))}
           </nav>
-          <div
-            className={styles.mediaPlaceholder}
-            aria-label="Reserved meme media placeholder"
-          >
-            Meme media placeholder
-          </div>
         </div>
       </header>
       <div className={styles.content}>{children}</div>

@@ -1,4 +1,23 @@
 services:
+  app:
+    image: node:20-alpine
+    working_dir: /workspace
+    command:
+      [
+        "sh",
+        "-c",
+        "npm install && chown -R node:node /workspace/node_modules && su node -s /bin/sh -c 'npm run dev -- --host 0.0.0.0'",
+      ]
+    depends_on:
+      - redis
+    environment:
+      REDIS_URL: redis://redis:6379
+    ports:
+      - "127.0.0.1:${APP_HOST_PORT:-5173}:5173"
+    volumes:
+      - .:/workspace
+      - app-node-modules:/workspace/node_modules
+
   redis:
     image: redis:7-alpine
     command: ["redis-server", "--appendonly", "yes"]
@@ -29,4 +48,5 @@ services:
       - .:/workspace
 
 volumes:
+  app-node-modules:
   redis-data:

@@ -27,12 +27,12 @@ export function TopDislikedContent({
   countries: readonly Country[];
 }) {
   return (
-    <main className="mx-auto grid w-full max-w-6xl gap-6 px-4 py-6 sm:px-6 lg:px-8">
-      <header className="grid gap-2">
-        <h1 className="text-3xl font-heading sm:text-4xl">
+    <main className="mx-auto grid w-full max-w-6xl gap-4 px-4 pb-6 pt-4 sm:px-6 sm:pt-5 lg:px-8">
+      <header className="grid gap-1">
+        <h1 className="text-2xl font-heading sm:text-3xl">
           Top Disliked Countries
         </h1>
-        <p className="max-w-2xl text-base">
+        <p className="max-w-2xl text-sm sm:text-base">
           Countries ordered by the highest dislike counts.
         </p>
       </header>

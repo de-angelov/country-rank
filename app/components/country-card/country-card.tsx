@@ -104,6 +104,8 @@ export function CountryCard({
               <Button
                 type="button"
                 variant="like"
+                size="sm"
+                className="min-h-9 min-w-0 px-3"
                 aria-label={`Like ${country.name}`}
                 onClick={() => openVoteDialog("like")}
               >
@@ -113,6 +115,8 @@ export function CountryCard({
               <Button
                 type="button"
                 variant="dislike"
+                size="sm"
+                className="min-h-9 min-w-0 px-3"
                 aria-label={`Dislike ${country.name}`}
                 onClick={() => openVoteDialog("dislike")}
               >

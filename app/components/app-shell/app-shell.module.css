@@ -1,12 +1,12 @@
 .bannerTagline {
   position: absolute;
-  bottom: 55%;
+  bottom: 45%;
   left: 50%;
   z-index: 1;
   width: min(50rem, calc(30% - 2rem));
   margin: 0;
   color: var(--foreground);
-  font-size: 2rem;
+  font-size: clamp(1.35rem, 2.25vw, 1.9rem);
   font-weight: 900;
   line-height: 1.05;
   pointer-events: none;
@@ -31,9 +31,9 @@
 
 @media (max-width: 48rem) {
   .bannerTagline {
-    bottom: 8%;
-    width: calc(100% - var(--space-5));
-    font-size: 1.25rem;
+    bottom: 50%;
+    width: min(15rem, calc(100% - var(--space-5)));
+    font-size: 1rem;
     line-height: 1;
   }
 

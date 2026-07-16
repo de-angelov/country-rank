@@ -58,7 +58,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         className={styles.header}
         aria-label="Site header"
       >
-        <div className={styles.bannerFrame}>
+        <div className={`${styles.bannerFrame} ${moduleStyles.bannerFrame}`}>
           <img
             className={styles.bannerImage}
             src={bannerImageSrc}

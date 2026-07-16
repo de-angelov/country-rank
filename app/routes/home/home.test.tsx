@@ -80,6 +80,7 @@ describe("Home", () => {
     expect(html).toContain('id="country-search"');
     expect(html).toContain("Search countries");
     expect(html).toContain("country-filter-transition");
+    expect(html).toContain('id="country-results"');
     expect(text).toContain(`Showing ${countries.length} countries`);
 
     for (const country of countries) {

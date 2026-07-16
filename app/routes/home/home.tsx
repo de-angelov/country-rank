@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import { flushSync } from "react-dom";
 import { Search } from "lucide-react";
 import { useLoaderData } from "react-router";
@@ -44,27 +44,35 @@ type SearchViewTransitionDocument = Document & {
   startViewTransition?: (updateCallback: () => void) => unknown;
 };
 
+function prefersReducedMotion() {
+  return (
+    typeof window !== "undefined" &&
+    typeof window.matchMedia === "function" &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  );
+}
+
 function updateSearchQueryWithTransition(
   nextSearchQuery: string,
   setSearchQuery: (nextSearchQuery: string) => void,
+  afterSearchQueryUpdate: () => void,
 ) {
-  const prefersReducedMotion =
-    typeof window !== "undefined" &&
-    typeof window.matchMedia === "function" &&
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const shouldReduceMotion = prefersReducedMotion();
   const canStartViewTransition =
     typeof document !== "undefined" &&
-    !prefersReducedMotion &&
+    !shouldReduceMotion &&
     (document as SearchViewTransitionDocument).startViewTransition !==
       undefined;
 
   if (!canStartViewTransition) {
     setSearchQuery(nextSearchQuery);
+    afterSearchQueryUpdate();
     return;
   }
 
   (document as SearchViewTransitionDocument).startViewTransition?.(() => {
     flushSync(() => setSearchQuery(nextSearchQuery));
+    afterSearchQueryUpdate();
   });
 }
 
@@ -76,11 +84,20 @@ export function HomeCountriesContent({
   initialSearch?: string;
 }) {
   const [searchQuery, setSearchQuery] = useState(initialSearch);
+  const resultsRef = useRef<HTMLDivElement>(null);
   const filteredCountries = useMemo(
     () => filterCountriesByName(countries, searchQuery),
     [countries, searchQuery],
   );
   const resultCount = filteredCountries.length;
+  const scrollToResults = () => {
+    window.requestAnimationFrame(() => {
+      resultsRef.current?.scrollIntoView({
+        block: "start",
+        behavior: prefersReducedMotion() ? "auto" : "smooth",
+      });
+    });
+  };
 
   return (
     <main className="mx-auto grid w-full max-w-6xl gap-6 px-4 py-6 sm:px-6 lg:px-8">
@@ -111,6 +128,7 @@ export function HomeCountriesContent({
                 updateSearchQueryWithTransition(
                   event.currentTarget.value,
                   setSearchQuery,
+                  scrollToResults,
                 )
               }
               placeholder="Country name"
@@ -120,7 +138,11 @@ export function HomeCountriesContent({
         </div>
       </div>
 
-      <div className="country-filter-transition grid gap-6">
+      <div
+        className="country-filter-transition grid gap-6"
+        id="country-results"
+        ref={resultsRef}
+      >
         <p className="text-sm" aria-live="polite">
           Showing {resultCount} {resultCount === 1 ? "country" : "countries"}
         </p>

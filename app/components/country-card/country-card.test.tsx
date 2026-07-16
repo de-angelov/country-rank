@@ -39,8 +39,9 @@ describe("CountryCard", () => {
     expect(html).toContain("Dislike Japan");
     expect(html).toContain("bg-vote-like");
     expect(html).toContain("bg-vote-dislike");
-    expect(html).toContain("width:95.");
-    expect(html).toContain("width:4.");
+    expect(html).toContain('role="progressbar"');
+    expect(html).toContain('aria-valuenow="95.');
+    expect(html).toContain("transform:translateX(-4.");
     expect(html).not.toContain("<dt");
     expect(html).not.toContain("<dd");
   });
@@ -59,6 +60,7 @@ describe("CountryCard", () => {
     expect(html).toContain(
       "Japan vote ratio: 0 likes (0%) and 0 dislikes (0%).",
     );
-    expect(html).toContain("width:50%");
+    expect(html).toContain('aria-valuenow="50"');
+    expect(html).toContain("transform:translateX(-50%)");
   });
 });

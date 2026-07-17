@@ -1,5 +1,11 @@
+import { useMemo, useState } from "react";
 import { useLoaderData } from "react-router";
 
+import {
+  orderRankedCountries,
+  RankingOrderControls,
+  type RankingOrder,
+} from "~/components/ranking-order-controls/ranking-order-controls";
 import { RankedCountriesList } from "~/components/ranked-countries-list/ranked-countries-list";
 import type { Country } from "~/countries";
 
@@ -26,6 +32,13 @@ export function TopDislikedContent({
 }: {
   countries: readonly Country[];
 }) {
+  const [rankingOrder, setRankingOrder] =
+    useState<RankingOrder>("highest-first");
+  const orderedCountries = useMemo(
+    () => orderRankedCountries(countries, rankingOrder),
+    [countries, rankingOrder],
+  );
+
   return (
     <main className="mx-auto grid w-full max-w-6xl gap-4 px-4 pb-6 pt-4 sm:px-6 sm:pt-5 lg:px-8">
       <header className="grid gap-1">
@@ -37,9 +50,16 @@ export function TopDislikedContent({
         </p>
       </header>
 
+      <RankingOrderControls
+        currentOrder={rankingOrder}
+        highestFirstLabel="Highest dislikes first"
+        lowestFirstLabel="Lowest dislikes first"
+        onOrderChange={setRankingOrder}
+      />
+
       <RankedCountriesList
         ariaLabel="Countries ranked by dislikes"
-        countries={countries}
+        countries={orderedCountries}
         rankTone="dislike"
       />
     </main>

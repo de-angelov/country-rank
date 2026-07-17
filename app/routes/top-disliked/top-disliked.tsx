@@ -41,21 +41,23 @@ export function TopDislikedContent({
 
   return (
     <main className="mx-auto grid w-full max-w-6xl gap-4 px-4 pb-6 pt-4 sm:px-6 sm:pt-5 lg:px-8">
-      <header className="grid gap-1">
-        <h1 className="text-2xl font-heading sm:text-3xl">
-          Top Disliked Countries
-        </h1>
-        <p className="max-w-2xl text-sm sm:text-base">
-          Countries ordered by the highest dislike counts.
-        </p>
-      </header>
+      <div className="grid gap-3 md:grid-cols-[1fr_minmax(18rem,24rem)] md:items-end md:gap-4">
+        <header className="grid gap-1">
+          <h1 className="text-2xl font-heading sm:text-3xl">
+            Top Disliked Countries
+          </h1>
+          <p className="max-w-2xl text-sm sm:text-base">
+            Countries ordered by the highest dislike counts.
+          </p>
+        </header>
 
-      <RankingOrderControls
-        currentOrder={rankingOrder}
-        highestFirstLabel="Highest dislikes first"
-        lowestFirstLabel="Lowest dislikes first"
-        onOrderChange={setRankingOrder}
-      />
+        <RankingOrderControls
+          currentOrder={rankingOrder}
+          highestFirstLabel="Highest dislikes first"
+          lowestFirstLabel="Lowest dislikes first"
+          onOrderChange={setRankingOrder}
+        />
+      </div>
 
       <RankedCountriesList
         ariaLabel="Countries ranked by dislikes"

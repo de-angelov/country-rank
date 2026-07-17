@@ -1,4 +1,5 @@
 import { useId } from "react";
+import { ArrowDownWideNarrow, ArrowUpNarrowWide } from "lucide-react";
 
 import { Button } from "~/components/ui/button";
 import type { Country } from "~/countries";
@@ -35,27 +36,36 @@ export function RankingOrderControls({
   ];
 
   return (
-    <div className="grid gap-2">
+    <div className="grid gap-2 md:justify-self-end">
       <p className="font-heading text-sm" id={labelId}>
         Ranking order
       </p>
       <div
         aria-labelledby={labelId}
-        className="flex flex-wrap gap-2"
+        className="flex w-fit gap-2"
         role="group"
       >
         {options.map((option) => {
           const isSelected = option.order === currentOrder;
+          const Icon =
+            option.order === "highest-first"
+              ? ArrowDownWideNarrow
+              : ArrowUpNarrowWide;
 
           return (
             <Button
+              aria-label={option.label}
               aria-pressed={isSelected}
+              className="size-10 shadow-shadow"
               key={option.order}
               onClick={() => onOrderChange(option.order)}
+              size="icon"
+              title={option.label}
               type="button"
               variant={isSelected ? "default" : "neutral"}
             >
-              {option.label}
+              <Icon aria-hidden="true" className="size-5" />
+              <span className="sr-only">{option.label}</span>
             </Button>
           );
         })}

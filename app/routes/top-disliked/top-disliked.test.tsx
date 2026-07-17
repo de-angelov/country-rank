@@ -95,9 +95,18 @@ describe("TopDisliked", () => {
     );
 
     expect(html).toContain("Top Disliked Countries");
+    expect(html).toContain(
+      "md:grid-cols-[1fr_minmax(18rem,24rem)] md:items-end",
+    );
     expect(html).toContain("Ranking order");
-    expect(html).toContain("Highest dislikes first");
-    expect(html).toContain("Lowest dislikes first");
+    expect(html).toContain(
+      'aria-label="Highest dislikes first" aria-pressed="true"',
+    );
+    expect(html).toContain('title="Highest dislikes first"');
+    expect(html).toContain(
+      'aria-label="Lowest dislikes first" aria-pressed="false"',
+    );
+    expect(html).toContain('title="Lowest dislikes first"');
     expect(html).toContain('aria-pressed="true"');
     expect(html).toContain('aria-label="Countries ranked by dislikes"');
     expect(html).toContain("India");

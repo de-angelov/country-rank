@@ -18,13 +18,29 @@ describe("AppShell", () => {
     const html = renderAppShell("/");
 
     const bannerIndex = html.indexOf(
-      'src="/images/country-ranking-banner-v7.png"',
+      'src="/images/banner/country-ranking-banner-v7-1600.png"',
     );
     const navIndex = html.indexOf('aria-label="Primary navigation"');
 
     expect(bannerIndex).toBeGreaterThan(-1);
     expect(navIndex).toBeGreaterThan(-1);
     expect(bannerIndex).toBeLessThan(navIndex);
+    expect(html).toContain('type="image/avif"');
+    expect(html).toContain(
+      'srcSet="/images/banner/country-ranking-banner-v7-960.avif 960w, /images/banner/country-ranking-banner-v7-1600.avif 1600w, /images/banner/country-ranking-banner-v7-2400.avif 2400w"',
+    );
+    expect(html).toContain('type="image/webp"');
+    expect(html).toContain(
+      'srcSet="/images/banner/country-ranking-banner-v7-960.webp 960w, /images/banner/country-ranking-banner-v7-1600.webp 1600w, /images/banner/country-ranking-banner-v7-2400.webp 2400w"',
+    );
+    expect(html).toContain(
+      'srcSet="/images/banner/country-ranking-banner-v7-960.png 960w, /images/banner/country-ranking-banner-v7-1600.png 1600w, /images/banner/country-ranking-banner-v7-2400.png 2400w"',
+    );
+    expect(html).toContain(
+      'sizes="(max-width: 640px) 100vw, (max-width: 1200px) 1600px, 1994px"',
+    );
+    expect(html).toContain('width="4800"');
+    expect(html).toContain('height="809"');
     expect(html).toContain('alt="The Internet Judges Earth"');
     expect(html).toContain('aria-label="Banner tagline"');
     expect(html).toMatch(

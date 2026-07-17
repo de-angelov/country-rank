@@ -146,6 +146,9 @@ const toStripeWebhookApplicationResponseError = (
 const toStripeWebhookResponseEvent = (event: VerifiedStripeWebhookEvent) => ({
   id: event.id,
   type: event.type,
+  ...(event.checkoutSessionId
+    ? { checkoutSessionId: event.checkoutSessionId }
+    : {}),
 });
 
 const toStripeWebhookAppliedVoteResponse = (vote: AppliedPaidVote) => ({

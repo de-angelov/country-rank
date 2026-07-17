@@ -12,7 +12,7 @@ const verifiedCheckoutPayload = JSON.stringify({
   type: "checkout.session.completed",
   data: {
     object: {
-      id: "cs_route_signature_shell",
+      id: "cs_test_route_signature_shell",
       object: "checkout.session",
       metadata: {
         countryCode: "JP",
@@ -114,6 +114,7 @@ describe("Stripe webhook route", () => {
         event: {
           id: "evt_route_signature_shell",
           type: "checkout.session.completed",
+          checkoutSessionId: "cs_test_route_signature_shell",
         },
         vote: {
           countryCode: "JP",
@@ -140,7 +141,7 @@ describe("Stripe webhook route", () => {
       type: "checkout.session.completed",
       data: {
         object: {
-          id: "cs_route_missing_metadata",
+          id: "cs_test_route_missing_metadata",
           object: "checkout.session",
           metadata: {
             countryCode: "JP",

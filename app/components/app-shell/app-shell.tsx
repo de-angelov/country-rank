@@ -10,7 +10,7 @@ const navigationLinks = [
   { href: "/top-disliked", label: "Top Disliked" },
 ] as const;
 
-const bannerImageSrc = "/images/country-ranking-banner-v5.png";
+const bannerImageSrc = "/images/country-ranking-banner-v6.png";
 
 const styles = {
   root: "min-h-screen",
@@ -60,10 +60,11 @@ export function AppShell({ children }: { children: ReactNode }) {
       >
         <div className={`${styles.bannerFrame} ${moduleStyles.bannerFrame}`}>
           <img
-            className={styles.bannerImage}
+            className={moduleStyles.bannerImage}
             src={bannerImageSrc}
             alt="The Internet Judges Earth"
           />
+
           <p className={moduleStyles.bannerTagline} aria-label="Banner tagline">
             {bannerTagline}
           </p>

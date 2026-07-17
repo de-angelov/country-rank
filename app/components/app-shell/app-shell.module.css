@@ -1,28 +1,47 @@
 .bannerFrame {
-  --banner-frame-height: clamp(6.75rem, 18vw, 13.5rem);
-  --banner-image-aspect-ratio: 3.2905;
-  --banner-visible-image-width: min(
-    100cqw,
-    calc(var(--banner-frame-height) * var(--banner-image-aspect-ratio))
-  );
+  --banner-frame-height: 21rem;
 
-  container-type: inline-size;
+  position: relative;
   height: var(--banner-frame-height);
+  overflow: hidden;
+  container-type: inline-size;
+}
+
+.bannerImage {
+  position: absolute;
+  top: 0;
+  left: 50%;
+
+  display: block;
+
+  /* Height always exactly matches the banner */
+  width: auto;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+
+  transform: translateX(-50%);
 }
 
 .bannerTagline {
+  --banner-visible-image-width: min(
+    100cqw,
+    calc(
+      var(--banner-frame-height) *
+      var(--banner-image-aspect-ratio)
+    )
+  );
+
   position: absolute;
-  bottom: 45%;
+  bottom: 55%;
   left: 50%;
   z-index: 1;
-  width: min(
-    52rem,
-    calc(var(--banner-visible-image-width) * 0.31),
-    calc(100cqw - 2rem)
-  );
+
+  width: 17rem;
   margin: 0;
   color: var(--foreground);
-  font-size: clamp(0.9rem, calc(var(--banner-visible-image-width) * 0.022), 2rem);
+  font-size: 1.4rem;
+
   font-weight: 900;
   line-height: 1.05;
   pointer-events: none;
@@ -45,7 +64,7 @@
   animation: taglineUnderline 900ms steps(2, end) 420ms 2;
 }
 
-@media (max-width: 48rem) {
+@media (max-width: 10rem) {
   .bannerFrame {
     --banner-frame-height: clamp(6rem, 28vw, 7.5rem);
   }

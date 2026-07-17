@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { ThumbsDown, ThumbsUp } from "lucide-react";
 
 import type { Country } from "~/countries";
 import { cn } from "~/lib/utils";
@@ -84,11 +83,9 @@ export function CountryCard({
             >
               <div className={styles.voteTotalsRow}>
                 <span className={styles.voteTotalLabel}>
-                  <ThumbsUp aria-hidden="true" className="size-4" />
                   {likeCount} likes
                 </span>
                 <span className={styles.voteTotalLabel}>
-                  <ThumbsDown aria-hidden="true" className="size-4" />
                   {dislikeCount} dislikes
                 </span>
               </div>
@@ -109,7 +106,6 @@ export function CountryCard({
                 aria-label={`Like ${country.name}`}
                 onClick={() => openVoteDialog("like")}
               >
-                <ThumbsUp aria-hidden="true" />
                 Like
               </Button>
               <Button
@@ -120,7 +116,6 @@ export function CountryCard({
                 aria-label={`Dislike ${country.name}`}
                 onClick={() => openVoteDialog("dislike")}
               >
-                <ThumbsDown aria-hidden="true" />
                 Dislike
               </Button>
             </div>

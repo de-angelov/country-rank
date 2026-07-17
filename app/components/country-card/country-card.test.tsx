@@ -33,11 +33,14 @@ describe("CountryCard", () => {
     );
     expect(html).toContain("Like Japan");
     expect(html).toContain("Dislike Japan");
+    expect(html).toContain(">Like</button>");
+    expect(html).toContain(">Dislike</button>");
     expect(html).toContain("bg-vote-like");
     expect(html).toContain("bg-vote-dislike");
     expect(html).toContain('role="progressbar"');
     expect(html).toContain('aria-valuenow="95.');
     expect(html).toContain("transform:translateX(-4.");
+    expect(html).not.toContain("<svg");
     expect(html).not.toContain("<dt");
     expect(html).not.toContain("<dd");
   });

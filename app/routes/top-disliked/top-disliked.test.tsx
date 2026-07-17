@@ -2,6 +2,7 @@ import { renderToString } from "react-dom/server";
 import { errAsync, okAsync } from "neverthrow";
 import { describe, expect, it } from "vitest";
 
+import { orderRankedCountries } from "~/components/ranking-order-control/ranking-order-control";
 import type { Country } from "~/countries";
 
 import {
@@ -39,6 +40,16 @@ const countries = [
     dislikes: 44,
   },
 ] as const satisfies readonly Country[];
+
+const expectNamesInHtmlOrder = (html: string, names: readonly string[]) => {
+  const nameIndexes = names.map((name) => html.indexOf(name));
+
+  expect(nameIndexes).not.toContain(-1);
+
+  for (let index = 1; index < nameIndexes.length; index += 1) {
+    expect(nameIndexes[index]).toBeGreaterThan(nameIndexes[index - 1]);
+  }
+};
 
 describe("TopDisliked", () => {
   it("sorts loaded countries by Redis-backed dislikes descending", async () => {
@@ -94,6 +105,9 @@ describe("TopDisliked", () => {
     );
 
     expect(html).toContain("Top Disliked Countries");
+    expect(html).toContain("Highest dislikes first");
+    expect(html).toContain("Lowest dislikes first");
+    expect(html).toContain('aria-pressed="true"');
     expect(html).toContain('aria-label="Countries ranked by dislikes"');
     expect(html).toContain("India");
     expect(html).toContain("44");
@@ -109,7 +123,21 @@ describe("TopDisliked", () => {
     expect(html.indexOf('aria-label="Rank 3"')).toBeLessThan(
       html.indexOf("Japan"),
     );
-    expect(html.indexOf("India")).toBeLessThan(html.indexOf("United States"));
-    expect(html.indexOf("United States")).toBeLessThan(html.indexOf("Japan"));
+    expectNamesInHtmlOrder(html, ["India", "United States", "Japan"]);
+  });
+
+  it("orders ranked countries highest-first by default and lowest-first when reversed", () => {
+    const rankedCountries = getTopDislikedCountries(countries);
+
+    expect(
+      orderRankedCountries(rankedCountries, "highest-first").map(
+        (country) => country.name,
+      ),
+    ).toEqual(["India", "United States", "Japan"]);
+    expect(
+      orderRankedCountries(rankedCountries, "lowest-first").map(
+        (country) => country.name,
+      ),
+    ).toEqual(["Japan", "United States", "India"]);
   });
 });

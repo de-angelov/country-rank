@@ -2,7 +2,6 @@ import { CountryCard } from "~/components/country-card/country-card";
 import type { Country } from "~/countries";
 import { cn } from "~/lib/utils";
 
-const noopVoteHandler = () => {};
 const styles = {
   list: "grid list-none gap-5 p-0",
   row: "grid gap-2 sm:grid-cols-[minmax(9rem,12rem)_minmax(0,1fr)] sm:items-stretch sm:gap-4 lg:grid-cols-[minmax(12rem,14rem)_minmax(0,1fr)]",
@@ -35,11 +34,7 @@ export function RankedCountriesList({
           >
             {index + 1}
           </div>
-          <CountryCard
-            country={country}
-            onLikeClick={noopVoteHandler}
-            onDislikeClick={noopVoteHandler}
-          />
+          <CountryCard country={country} />
         </li>
       ))}
     </ol>

@@ -38,8 +38,6 @@ export function filterCountriesByName(
   );
 }
 
-const ignoreVoteClick = () => undefined;
-
 type SearchViewTransitionDocument = Document & {
   startViewTransition?: (updateCallback: () => void) => unknown;
 };
@@ -152,8 +150,6 @@ export function HomeCountriesContent({
               <CountryCard
                 country={country}
                 key={country.code}
-                onDislikeClick={ignoreVoteClick}
-                onLikeClick={ignoreVoteClick}
               />
             ))}
           </section>

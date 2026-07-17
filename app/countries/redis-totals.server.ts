@@ -1,35 +1,56 @@
 import { ResultAsync } from "neverthrow";
 
 import type { Country } from "./country";
-import { countryFixtures } from "./fixtures";
 import {
-  readCountryVoteTotals,
+  readCountryCatalog,
+  type CountryCatalogProfile,
+  type RedisCountryCatalogError,
+} from "./redis-catalog.server";
+import {
+  readAllCountryVoteTotals,
   type RedisVoteStorageError,
-  type VoteTotals,
+  type VoteTotalsByCountry,
 } from "~/votes/storage.server";
 
-type ReadCountryVoteTotals = (
-  countryCode: string,
-) => ResultAsync<VoteTotals, RedisVoteStorageError>;
+type ReadCountryCatalog = () => ResultAsync<
+  readonly CountryCatalogProfile[],
+  RedisCountryCatalogError
+>;
+
+type ReadAllCountryVoteTotals = () => ResultAsync<
+  VoteTotalsByCountry,
+  RedisVoteStorageError
+>;
+
+export type RedisCountryTotalsLoaderError =
+  | RedisCountryCatalogError
+  | RedisVoteStorageError;
 
 export type RedisCountryTotalsLoaderOptions = Readonly<{
-  countries?: readonly Country[];
-  readVoteTotals?: ReadCountryVoteTotals;
+  readCatalog?: ReadCountryCatalog;
+  readVoteTotals?: ReadAllCountryVoteTotals;
 }>;
 
 export const readCountriesWithRedisVoteTotals = (
   options: RedisCountryTotalsLoaderOptions = {},
-): ResultAsync<readonly Country[], RedisVoteStorageError> => {
-  const countries = options.countries ?? countryFixtures;
-  const readVoteTotals = options.readVoteTotals ?? readCountryVoteTotals;
+): ResultAsync<readonly Country[], RedisCountryTotalsLoaderError> => {
+  const readCatalog = options.readCatalog ?? readCountryCatalog;
+  const readVoteTotals = options.readVoteTotals ?? readAllCountryVoteTotals;
 
   return ResultAsync.combine(
-    countries.map((country) =>
-      readVoteTotals(country.code).map((totals) => ({
-        ...country,
-        likes: totals.likes,
-        dislikes: totals.dislikes,
-      })),
-    ),
+    [
+      readCatalog(),
+      readVoteTotals(),
+    ],
+  ).map(([catalog, voteTotalsByCountry]) =>
+    catalog.map((profile) => {
+      const totals = voteTotalsByCountry.get(profile.code);
+
+      return {
+        ...profile,
+        likes: totals?.likes ?? 0,
+        dislikes: totals?.dislikes ?? 0,
+      };
+    }),
   );
 };

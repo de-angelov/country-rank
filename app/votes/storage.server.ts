@@ -21,6 +21,8 @@ export type VoteTotals = Readonly<{
   dislikes: number;
 }>;
 
+export type VoteTotalsByCountry = ReadonlyMap<string, VoteTotals>;
+
 export type RedisVoteStorageConfig = RedisConfig;
 
 export type RedisVoteStorageError =
@@ -43,6 +45,7 @@ export type RedisVoteStorageError =
 type RedisVoteClient = {
   connect: () => Promise<unknown>;
   hGet: (key: string, field: string) => Promise<string | null>;
+  hGetAll: (key: string) => Promise<Record<string, string>>;
   hIncrBy: (key: string, field: string, increment: number) => Promise<number>;
 };
 
@@ -119,6 +122,42 @@ export const createRedisVoteStorage = (
       ),
     );
 
+  const readAllCountryVoteTotals = (): ResultAsync<
+    VoteTotalsByCountry,
+    RedisVoteStorageError
+  > =>
+    getClient()
+      .andThen((client) =>
+        ResultAsync.fromPromise(
+          Promise.all([
+            client.hGetAll(voteTotalsKey("like")),
+            client.hGetAll(voteTotalsKey("dislike")),
+          ]),
+          (cause) => ({
+            code: "redis_command_failed",
+            message: "Failed to read country vote totals from Redis.",
+            cause,
+          }),
+        ),
+      )
+      .map(([likesByCountry, dislikesByCountry]) => {
+        const countryCodes = new Set([
+          ...Object.keys(likesByCountry),
+          ...Object.keys(dislikesByCountry),
+        ]);
+
+        return new Map(
+          [...countryCodes].map((countryCode) => [
+            countryCode,
+            {
+              countryCode,
+              likes: Number(likesByCountry[countryCode] ?? 0),
+              dislikes: Number(dislikesByCountry[countryCode] ?? 0),
+            },
+          ]),
+        );
+      });
+
   const incrementCountryVoteTotal = (
     countryCode: string,
     voteKind: VoteKind,
@@ -143,12 +182,14 @@ export const createRedisVoteStorage = (
     );
 
   return {
+    readAllCountryVoteTotals,
     readCountryVoteTotals,
     incrementCountryVoteTotal,
   };
 };
 
 export const {
+  readAllCountryVoteTotals,
   readCountryVoteTotals,
   incrementCountryVoteTotal,
 } = createRedisVoteStorage();

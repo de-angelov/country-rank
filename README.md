@@ -127,9 +127,9 @@ Runtime and integration variables currently supported by the app and scripts:
 
 | Variable | Required when | Used by | Safe local/default value |
 | --- | --- | --- | --- |
-| `REDIS_URL` | Browsing Redis-backed country pages, reading/writing votes, seeding, restore, and Redis backup commands. Optional for backup dry-run only because the runner defaults to local Redis. | App loaders/actions and Redis scripts | `redis://localhost:6379` |
+| `REDIS_URL` | Browsing Redis-backed country pages, reading/writing votes, seeding, restore, and Redis backup commands. Optional for backup dry-run and local restore only because those runners default to local Redis. | App loaders/actions and Redis scripts | `redis://localhost:6379` |
 | `APP_HOST_PORT` | Optional when starting the app service through Docker Compose and the host port must differ from `5173`. | `docker-compose.yml` app port mapping | `5173` |
-| `REDIS_HOST_PORT` | Optional when starting Redis through Docker Compose and the host port must differ from `6379`. | `docker-compose.yml` Redis port mapping | `6379` |
+| `REDIS_HOST_PORT` | Optional when starting Redis through Docker Compose and the host port must differ from `6379`. | `docker-compose.yml` Redis port mapping and local Redis restore wrapper | `6379` |
 | `STRIPE_WEBHOOK_SECRET` | Handling Stripe webhook requests. | `/webhooks/stripe` signature verification | `whsec_replace_with_local_or_deployment_secret` |
 | `REDIS_BACKUP_SIDECAR_ENABLED` | Optional when running the Compose `backup` profile. Must be truthy to run backups from the sidecar. | Redis backup sidecar | `false` |
 | `REDIS_BACKUP_CADENCE_SECONDS` | Optional when the backup sidecar loops instead of running once. | Redis backup sidecar | `86400` |
@@ -286,6 +286,35 @@ Supply secrets only through environment variables from the shell, runtime, or
 secret manager. Do not commit GitHub tokens, Redis URLs, `.env` files containing
 secrets, or generated backup artifacts.
 
+### Local Redis Restore
+
+The local Redis restore wrapper is available through
+`npm run restore:redis:local`. It restores an existing backup artifact into the
+Redis service already running through Docker Compose. The wrapper defaults to
+`redis://localhost:6379`, honors an explicit `REDIS_URL`, and can target a
+non-default Compose host port through `REDIS_HOST_PORT`.
+
+Run the local restore flow with:
+
+```sh
+docker compose up -d redis
+npm run restore:redis:local -- ./path/to/2026-07-16T12-00-00-000Z-country-votes.json
+docker compose exec redis redis-cli KEYS 'country:votes:*'
+```
+
+When Redis is exposed on a non-default host port, use the same port for Compose
+and restore:
+
+```sh
+REDIS_HOST_PORT=6380 docker compose up -d redis
+REDIS_HOST_PORT=6380 npm run restore:redis:local -- ./path/to/2026-07-16T12-00-00-000Z-country-votes.json
+```
+
+The local wrapper is a restore command, not a seed reset. It reads a selected
+backup artifact and replaces the vote totals for countries present in that
+artifact. `npm run seed:redis:votes` reloads fixture/demo data and should only
+be used as an explicit local reset fallback when that is the intended behavior.
+
 ### Redis Restore Runner
 
 The Redis restore runner is available through `npm run restore:redis`. It reads
@@ -338,7 +367,8 @@ Use Docker Compose Redis for a local backup-and-restore round trip:
 docker compose up -d redis
 REDIS_URL=redis://localhost:6379 npm run seed:redis:votes
 REDIS_URL=redis://localhost:6379 npm run backup:redis -- --dry-run
-REDIS_URL=redis://localhost:6379 npm run restore:redis -- tmp/redis-backups/<generated-backup-file>.json
+npm run restore:redis:local -- tmp/redis-backups/<generated-backup-file>.json
+docker compose exec redis redis-cli KEYS 'country:votes:*'
 ```
 
 The dummy seed command in this local example is only there to create demo data

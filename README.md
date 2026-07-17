@@ -170,6 +170,10 @@ session creation is not implemented yet. Use only Stripe test-mode
 
 ### Redis Backup Runner
 
+Operational checklists for deploy verification, rollback, restore drills,
+backup sidecar incidents, Redis corruption, and Stripe webhook replay live in
+the [operations runbook](docs/operations.md).
+
 The Redis backup runner is available through `npm run backup:redis`. It exports
 `country:catalog`, `country:votes:likes`, and `country:votes:dislikes` to a
 timestamped JSON artifact. Real backup credentials must be supplied through

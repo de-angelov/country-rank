@@ -12,10 +12,14 @@ import {
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { spawnSync } from "node:child_process";
+import { fileURLToPath } from "node:url";
 
 import { createClient } from "redis";
 
-const keyPattern = "country:votes:*";
+export const countryCatalogKey = "country:catalog";
+export const countryVoteLikesKey = "country:votes:likes";
+export const countryVoteDislikesKey = "country:votes:dislikes";
+
 const timestampPattern = /^\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}-\d{3}Z-country-votes\.json$/;
 
 const envNames = {
@@ -79,46 +83,54 @@ const parseRetentionCount = (value) => {
 const toBackupFileName = (date) =>
   `${date.toISOString().replaceAll(":", "-").replace(".", "-")}-country-votes.json`;
 
-const toCountryCode = (key) => key.slice("country:votes:".length);
+const toSortedHashFields = (fields) =>
+  Object.fromEntries(
+    Object.entries(fields).sort(([left], [right]) => left.localeCompare(right)),
+  );
 
-const toNumber = (value) => {
-  const parsed = Number(value ?? 0);
-
-  return Number.isFinite(parsed) ? parsed : 0;
-};
-
-const buildBackup = async ({ redisUrl, createdAt }) => {
-  const client = createClient({ url: redisUrl });
+export const buildBackup = async ({
+  redisUrl,
+  createdAt,
+  clientFactory = createClient,
+}) => {
+  const client = clientFactory({ url: redisUrl });
 
   await client.connect();
 
   try {
-    const records = [];
+    const catalogJson = await client.get(countryCatalogKey);
 
-    for await (const keys of client.scanIterator({
-      MATCH: keyPattern,
-      COUNT: 100,
-    })) {
-      for (const key of keys) {
-        const fields = await client.hGetAll(key);
-
-        records.push({
-          key,
-          countryCode: toCountryCode(key),
-          likes: toNumber(fields.likes),
-          dislikes: toNumber(fields.dislikes),
-          fields,
-        });
-      }
+    if (catalogJson === null) {
+      throw new Error(
+        `Redis country catalog key ${countryCatalogKey} is missing.`,
+      );
     }
 
-    records.sort((left, right) => left.key.localeCompare(right.key));
+    const likes = await client.hGetAll(countryVoteLikesKey);
+    const dislikes = await client.hGetAll(countryVoteDislikesKey);
 
     return {
-      schemaVersion: 1,
+      schemaVersion: 2,
       createdAt,
-      keyPattern,
-      records,
+      keys: {
+        catalog: countryCatalogKey,
+        likes: countryVoteLikesKey,
+        dislikes: countryVoteDislikesKey,
+      },
+      countryCatalog: {
+        key: countryCatalogKey,
+        value: catalogJson,
+      },
+      voteHashes: {
+        likes: {
+          key: countryVoteLikesKey,
+          fields: toSortedHashFields(likes),
+        },
+        dislikes: {
+          key: countryVoteDislikesKey,
+          fields: toSortedHashFields(dislikes),
+        },
+      },
     };
   } finally {
     await client.close();
@@ -318,7 +330,9 @@ const main = async () => {
 
   if (mode === "dry-run") {
     console.log(`Created Redis backup artifact: ${artifactPath}`);
-    console.log(`Exported ${backup.records.length} country vote record(s).`);
+    console.log(
+      `Exported Redis country catalog and ${Object.keys(backup.voteHashes.likes.fields).length} country vote total(s).`,
+    );
     return;
   }
 
@@ -339,7 +353,9 @@ const main = async () => {
   }
 };
 
-main().catch((error) => {
-  console.error(error instanceof Error ? error.message : error);
-  process.exitCode = 1;
-});
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  main().catch((error) => {
+    console.error(error instanceof Error ? error.message : error);
+    process.exitCode = 1;
+  });
+}

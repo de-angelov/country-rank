@@ -1,13 +1,18 @@
 #!/usr/bin/env node
-/* global console, process */
+/* global URL, console, process */
 import { readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 
 import { createClient } from "redis";
 
 const redisUrlEnvVar = "REDIS_URL";
-const keyPattern = "country:votes:*";
 const countryCodePattern = /^[A-Z]{2}$/;
+const integerStringPattern = /^(0|[1-9]\d*)$/;
+const unknownCountryCapital = "Unknown";
+
+export const countryCatalogKey = "country:catalog";
+export const countryVoteLikesKey = "country:votes:likes";
+export const countryVoteDislikesKey = "country:votes:dislikes";
 
 const usage = `Usage:
   REDIS_URL=redis://localhost:6379 npm run restore:redis -- <backup-artifact.json>
@@ -16,18 +21,111 @@ Environment:
   REDIS_URL    Redis connection URL.
 
 Behavior:
-  Replaces the Redis vote totals for countries present in the backup artifact.
+  Replaces the Redis country catalog and aggregate country vote hashes from the backup artifact.
 `;
 
 const isPlainObject = (value) =>
   typeof value === "object" && value !== null && !Array.isArray(value);
 
-const voteTotalsKey = (countryCode) => `country:votes:${countryCode}`;
-
-const assertNonNegativeInteger = ({ value, path }) => {
-  if (!Number.isInteger(value) || value < 0) {
-    throw new Error(`${path} must be a non-negative integer.`);
+const assertKey = ({ value, path, expectedKey }) => {
+  if (value !== expectedKey) {
+    throw new Error(`${path} must be ${expectedKey}.`);
   }
+};
+
+const assertCatalogJson = ({ value, path }) => {
+  if (typeof value !== "string" || !value.trim()) {
+    throw new Error(`${path} must be a non-empty JSON string.`);
+  }
+
+  let catalog;
+
+  try {
+    catalog = JSON.parse(value);
+  } catch {
+    throw new Error(`${path} must be valid JSON.`);
+  }
+
+  if (!Array.isArray(catalog)) {
+    throw new Error(`${path} must encode an array.`);
+  }
+
+  const seenCodes = new Set();
+
+  catalog.forEach((record, index) => {
+    const recordPath = `${path}[${index}]`;
+
+    if (!isPlainObject(record)) {
+      throw new Error(`${recordPath} must be an object.`);
+    }
+
+    if (
+      typeof record.code !== "string" ||
+      !countryCodePattern.test(record.code)
+    ) {
+      throw new Error(`${recordPath}.code must be a two-letter country code.`);
+    }
+
+    if (seenCodes.has(record.code)) {
+      throw new Error(`${recordPath}.code must be unique.`);
+    }
+
+    seenCodes.add(record.code);
+
+    if (typeof record.name !== "string" || !record.name.trim()) {
+      throw new Error(`${recordPath}.name must be a non-empty string.`);
+    }
+
+    if (
+      (typeof record.capital !== "string" || !record.capital.trim()) &&
+      record.capital !== unknownCountryCapital
+    ) {
+      throw new Error(
+        `${recordPath}.capital must be a non-empty string or ${unknownCountryCapital}.`,
+      );
+    }
+
+    if (typeof record.factSnippet !== "string" || !record.factSnippet.trim()) {
+      throw new Error(`${recordPath}.factSnippet must be a non-empty string.`);
+    }
+
+    try {
+      if (
+        typeof record.flagImageUrl !== "string" ||
+        new URL(record.flagImageUrl).protocol !== "https:"
+      ) {
+        throw new Error();
+      }
+    } catch {
+      throw new Error(`${recordPath}.flagImageUrl must be an HTTPS URL.`);
+    }
+  });
+};
+
+const validateVoteHashFields = ({ fields, path }) => {
+  if (!isPlainObject(fields)) {
+    throw new Error(`${path} must be an object.`);
+  }
+
+  return Object.fromEntries(
+    Object.entries(fields)
+      .sort(([left], [right]) => left.localeCompare(right))
+      .map(([countryCode, value]) => {
+        if (!countryCodePattern.test(countryCode)) {
+          throw new Error(
+            `${path}.${countryCode} must use a two-letter country code field.`,
+          );
+        }
+
+        if (typeof value !== "string" || !integerStringPattern.test(value)) {
+          throw new Error(
+            `${path}.${countryCode} must be a non-negative integer string.`,
+          );
+        }
+
+        return [countryCode, value];
+      }),
+  );
 };
 
 export const requireRedisUrl = (env) => {
@@ -59,8 +157,8 @@ export const validateBackupArtifact = (artifact) => {
     throw new Error("Backup artifact must be a JSON object.");
   }
 
-  if (artifact.schemaVersion !== 1) {
-    throw new Error("Backup artifact schemaVersion must be 1.");
+  if (artifact.schemaVersion !== 2) {
+    throw new Error("Backup artifact schemaVersion must be 2.");
   }
 
   if (typeof artifact.createdAt !== "string" || !artifact.createdAt.trim()) {
@@ -71,57 +169,95 @@ export const validateBackupArtifact = (artifact) => {
     throw new Error("Backup artifact createdAt must be a valid date string.");
   }
 
-  if (artifact.keyPattern !== keyPattern) {
-    throw new Error(`Backup artifact keyPattern must be ${keyPattern}.`);
+  if (!isPlainObject(artifact.keys)) {
+    throw new Error("Backup artifact keys must be an object.");
   }
 
-  if (!Array.isArray(artifact.records)) {
-    throw new Error("Backup artifact records must be an array.");
+  assertKey({
+    value: artifact.keys.catalog,
+    path: "keys.catalog",
+    expectedKey: countryCatalogKey,
+  });
+  assertKey({
+    value: artifact.keys.likes,
+    path: "keys.likes",
+    expectedKey: countryVoteLikesKey,
+  });
+  assertKey({
+    value: artifact.keys.dislikes,
+    path: "keys.dislikes",
+    expectedKey: countryVoteDislikesKey,
+  });
+
+  if (!isPlainObject(artifact.countryCatalog)) {
+    throw new Error("Backup artifact countryCatalog must be an object.");
   }
 
-  const records = artifact.records.map((record, index) => {
-    const path = `records[${index}]`;
+  assertKey({
+    value: artifact.countryCatalog.key,
+    path: "countryCatalog.key",
+    expectedKey: countryCatalogKey,
+  });
+  assertCatalogJson({
+    value: artifact.countryCatalog.value,
+    path: "countryCatalog.value",
+  });
 
-    if (!isPlainObject(record)) {
-      throw new Error(`${path} must be an object.`);
-    }
+  if (!isPlainObject(artifact.voteHashes)) {
+    throw new Error("Backup artifact voteHashes must be an object.");
+  }
 
-    if (
-      typeof record.countryCode !== "string" ||
-      !countryCodePattern.test(record.countryCode)
-    ) {
-      throw new Error(`${path}.countryCode must be a two-letter country code.`);
-    }
+  if (!isPlainObject(artifact.voteHashes.likes)) {
+    throw new Error("voteHashes.likes must be an object.");
+  }
 
-    const expectedKey = voteTotalsKey(record.countryCode);
+  assertKey({
+    value: artifact.voteHashes.likes.key,
+    path: "voteHashes.likes.key",
+    expectedKey: countryVoteLikesKey,
+  });
 
-    if (record.key !== expectedKey) {
-      throw new Error(`${path}.key must be ${expectedKey}.`);
-    }
+  if (!isPlainObject(artifact.voteHashes.dislikes)) {
+    throw new Error("voteHashes.dislikes must be an object.");
+  }
 
-    assertNonNegativeInteger({ value: record.likes, path: `${path}.likes` });
-    assertNonNegativeInteger({
-      value: record.dislikes,
-      path: `${path}.dislikes`,
-    });
+  assertKey({
+    value: artifact.voteHashes.dislikes.key,
+    path: "voteHashes.dislikes.key",
+    expectedKey: countryVoteDislikesKey,
+  });
 
-    if (!isPlainObject(record.fields)) {
-      throw new Error(`${path}.fields must be an object.`);
-    }
-
-    return {
-      key: record.key,
-      countryCode: record.countryCode,
-      likes: record.likes,
-      dislikes: record.dislikes,
-    };
+  const likeFields = validateVoteHashFields({
+    fields: artifact.voteHashes.likes.fields,
+    path: "voteHashes.likes.fields",
+  });
+  const dislikeFields = validateVoteHashFields({
+    fields: artifact.voteHashes.dislikes.fields,
+    path: "voteHashes.dislikes.fields",
   });
 
   return {
     schemaVersion: artifact.schemaVersion,
     createdAt: artifact.createdAt,
-    keyPattern: artifact.keyPattern,
-    records,
+    keys: {
+      catalog: countryCatalogKey,
+      likes: countryVoteLikesKey,
+      dislikes: countryVoteDislikesKey,
+    },
+    countryCatalog: {
+      key: countryCatalogKey,
+      value: artifact.countryCatalog.value,
+    },
+    voteHashes: {
+      likes: {
+        key: countryVoteLikesKey,
+        fields: likeFields,
+      },
+      dislikes: {
+        key: countryVoteDislikesKey,
+        fields: dislikeFields,
+      },
+    },
   };
 };
 
@@ -139,7 +275,19 @@ export const readBackupArtifact = async (artifactPath) => {
   return validateBackupArtifact(parsed);
 };
 
-export const restoreVoteTotals = async ({ backup, redisUrl, clientFactory }) => {
+const replaceHash = async ({ client, key, fields }) => {
+  await client.del(key);
+
+  if (Object.keys(fields).length > 0) {
+    await client.hSet(key, fields);
+  }
+};
+
+export const restoreCountryData = async ({
+  backup,
+  redisUrl,
+  clientFactory,
+}) => {
   const client = clientFactory({ url: redisUrl });
 
   try {
@@ -149,25 +297,29 @@ export const restoreVoteTotals = async ({ backup, redisUrl, clientFactory }) => 
   }
 
   try {
-    for (const record of backup.records) {
-      try {
-        await client.del(record.key);
-        await client.hSet(record.key, {
-          likes: record.likes.toString(),
-          dislikes: record.dislikes.toString(),
-        });
-      } catch (cause) {
-        throw new Error(
-          `Failed to restore Redis vote totals for ${record.countryCode}.`,
-          { cause },
-        );
-      }
+    try {
+      await client.set(backup.countryCatalog.key, backup.countryCatalog.value);
+      await replaceHash({
+        client,
+        key: backup.voteHashes.likes.key,
+        fields: backup.voteHashes.likes.fields,
+      });
+      await replaceHash({
+        client,
+        key: backup.voteHashes.dislikes.key,
+        fields: backup.voteHashes.dislikes.fields,
+      });
+    } catch (cause) {
+      throw new Error("Failed to restore Redis country data.", { cause });
     }
   } finally {
     await client.close();
   }
 
-  return backup.records.length;
+  return {
+    catalogKey: backup.countryCatalog.key,
+    voteHashCount: 2,
+  };
 };
 
 export const createRedisClient = (config) => createClient(config);
@@ -186,13 +338,15 @@ export const runRestore = async ({
 
   const redisUrl = requireRedisUrl(env);
   const backup = await readBackupArtifact(artifactPath);
-  const restoredCount = await restoreVoteTotals({
+  const restored = await restoreCountryData({
     backup,
     redisUrl,
     clientFactory,
   });
 
-  console.log(`Restored ${restoredCount} Redis country vote total(s).`);
+  console.log(
+    `Restored ${restored.catalogKey} and ${restored.voteHashCount} Redis country vote hash(es).`,
+  );
 };
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {

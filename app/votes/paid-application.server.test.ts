@@ -12,7 +12,7 @@ const envWithRedisUrl = {
 };
 
 const createClient = (
-  initialFields: Record<string, string> = {},
+  initialFields: Partial<Record<"likes" | "dislikes", Record<string, string>>> = {},
   options: Partial<{
     hIncrBy: (
       key: string,
@@ -21,16 +21,26 @@ const createClient = (
     ) => Promise<number>;
   }> = {},
 ) => {
-  const fields = { ...initialFields };
+  const fields = {
+    likes: { ...(initialFields.likes ?? {}) },
+    dislikes: { ...(initialFields.dislikes ?? {}) },
+  };
   const client = {
     connect: vi.fn(() => Promise.resolve()),
-    hGetAll: vi.fn(() => Promise.resolve({ ...fields })),
+    hGet: vi.fn((key: string, field: string) => {
+      const totals =
+        key === voteTotalsKey("like") ? fields.likes : fields.dislikes;
+
+      return Promise.resolve(totals[field] ?? null);
+    }),
     hIncrBy: vi.fn(
       options.hIncrBy ??
         ((_key: string, field: string, increment: number) => {
-          fields[field] = String(Number(fields[field] ?? 0) + increment);
+          const totals =
+            _key === voteTotalsKey("like") ? fields.likes : fields.dislikes;
+          totals[field] = String(Number(totals[field] ?? 0) + increment);
 
-          return Promise.resolve(Number(fields[field]));
+          return Promise.resolve(Number(totals[field]));
         }),
     ),
   };
@@ -57,7 +67,10 @@ const createApplicationWithClient = (
 
 describe("createPaidVoteApplication", () => {
   it("applies a valid paid like vote to only the like total", async () => {
-    const client = createClient({ likes: "4", dislikes: "9" });
+    const client = createClient({
+      likes: { JP: "4" },
+      dislikes: { JP: "9" },
+    });
     const application = createApplicationWithClient(client);
 
     const result = await application.applyPaidVote({
@@ -77,14 +90,17 @@ describe("createPaidVoteApplication", () => {
       },
     });
     expect(client.hIncrBy).toHaveBeenCalledWith(
-      voteTotalsKey("JP"),
-      "likes",
+      voteTotalsKey("like"),
+      "JP",
       1,
     );
   });
 
   it("applies a valid paid dislike vote to only the dislike total", async () => {
-    const client = createClient({ likes: "3", dislikes: "6" });
+    const client = createClient({
+      likes: { DE: "3" },
+      dislikes: { DE: "6" },
+    });
     const application = createApplicationWithClient(client);
 
     const result = await application.applyPaidVote({
@@ -104,8 +120,8 @@ describe("createPaidVoteApplication", () => {
       },
     });
     expect(client.hIncrBy).toHaveBeenCalledWith(
-      voteTotalsKey("DE"),
-      "dislikes",
+      voteTotalsKey("dislike"),
+      "DE",
       1,
     );
   });

@@ -1,7 +1,7 @@
 import { renderToString } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
-import { PaidVoteDialogBody } from "./paid-vote-dialog";
+import { PaidVoteDialog, PaidVoteDialogBody } from "./paid-vote-dialog";
 import { Dialog } from "~/components/ui/dialog";
 
 const country = {
@@ -17,6 +17,19 @@ const visibleText = (html: string) =>
   html.replaceAll("<!-- -->", "").replace(/<[^>]*>/g, "");
 
 describe("PaidVoteDialog", () => {
+  it("does not render the dialog body when the vote intent is null", () => {
+    const html = renderToString(
+      <PaidVoteDialog intent={null} onOpenChange={() => undefined} />,
+    );
+    const text = visibleText(html);
+
+    expect(text).not.toContain("Confirm vote");
+    expect(text).not.toContain("Review your vote before continuing to payment.");
+    expect(text).not.toContain("Pay to submit your vote.");
+    expect(text).not.toContain("Pay $1");
+    expect(text).not.toContain("Pay $2");
+  });
+
   it("renders Cancel as the dialog close action while Pay remains disabled", () => {
     const html = renderToString(
       <Dialog open>

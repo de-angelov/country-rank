@@ -1,5 +1,5 @@
 import Stripe from "stripe";
-import { okAsync } from "neverthrow";
+import { errAsync, okAsync } from "neverthrow";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { createStripeWebhookHandler } from "./webhooks.stripe.server";
@@ -128,6 +128,99 @@ describe("Stripe webhook route", () => {
       },
     });
     expect(applyPaidVote).toHaveBeenCalledWith({
+      checkoutSessionId: "cs_test_route_signature_shell",
+      countryCode: "JP",
+      voteType: "like",
+    });
+  });
+
+  it("returns a successful duplicate response without applying another vote", async () => {
+    vi.stubEnv("STRIPE_WEBHOOK_SECRET", webhookSecret);
+    const applyPaidVote = vi.fn(() =>
+      okAsync({
+        status: "duplicate" as const,
+        checkoutSessionId: "cs_test_route_signature_shell",
+        countryCode: "JP",
+        voteType: "like" as const,
+        totals: {
+          countryCode: "JP",
+          likes: 3,
+          dislikes: 1,
+        },
+      }),
+    );
+    const handleStripeWebhook = createStripeWebhookHandler({ applyPaidVote });
+
+    const response = await handleStripeWebhook(
+      createRequest(verifiedCheckoutPayload, signPayload(verifiedCheckoutPayload)),
+    );
+
+    expect(response.status).toBe(200);
+    expect(await readJson(response)).toEqual({
+      ok: true,
+      data: {
+        status: "duplicate",
+        event: {
+          id: "evt_route_signature_shell",
+          type: "checkout.session.completed",
+          checkoutSessionId: "cs_test_route_signature_shell",
+        },
+        vote: {
+          countryCode: "JP",
+          voteType: "like",
+          totals: {
+            countryCode: "JP",
+            likes: 3,
+            dislikes: 1,
+          },
+        },
+      },
+    });
+    expect(applyPaidVote).toHaveBeenCalledTimes(1);
+    expect(applyPaidVote).toHaveBeenCalledWith({
+      checkoutSessionId: "cs_test_route_signature_shell",
+      countryCode: "JP",
+      voteType: "like",
+    });
+  });
+
+  it("returns a typed fulfillment read error without applying a vote", async () => {
+    vi.stubEnv("STRIPE_WEBHOOK_SECRET", webhookSecret);
+    const applyPaidVote = vi.fn(() =>
+      errAsync({
+        code: "paid_vote_fulfillment_read_failed" as const,
+        message: "Failed to read paid vote fulfillment before applying vote.",
+        checkoutSessionId: "cs_test_route_signature_shell",
+        cause: {
+          code: "redis_command_failed" as const,
+          message:
+            "Failed to read paid vote fulfillment record from Redis.",
+          cause: new Error("redis get failed"),
+        },
+      }),
+    );
+    const handleStripeWebhook = createStripeWebhookHandler({ applyPaidVote });
+
+    const response = await handleStripeWebhook(
+      createRequest(verifiedCheckoutPayload, signPayload(verifiedCheckoutPayload)),
+    );
+
+    expect(response.status).toBe(500);
+    expect(await readJson(response)).toEqual({
+      ok: false,
+      error: {
+        code: "paid_vote_fulfillment_read_failed",
+        message: "Failed to read paid vote fulfillment before applying vote.",
+        checkoutSessionId: "cs_test_route_signature_shell",
+        cause: {
+          code: "redis_command_failed",
+          message:
+            "Failed to read paid vote fulfillment record from Redis.",
+        },
+      },
+    });
+    expect(applyPaidVote).toHaveBeenCalledWith({
+      checkoutSessionId: "cs_test_route_signature_shell",
       countryCode: "JP",
       voteType: "like",
     });

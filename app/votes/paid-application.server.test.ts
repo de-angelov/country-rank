@@ -1,6 +1,8 @@
+import { errAsync, okAsync } from "neverthrow";
 import { describe, expect, it, vi } from "vitest";
 
 import { createPaidVoteApplication } from "./paid-application.server";
+import type { RedisPaidVoteFulfillmentError } from "./fulfillment.server";
 import {
   createRedisVoteStorage,
   voteTotalsKey,
@@ -67,6 +69,11 @@ const createApplicationWithClient = (
 
   return createPaidVoteApplication({
     incrementVoteTotal: storage.incrementCountryVoteTotal,
+    readFulfillmentRecord: () =>
+      okAsync({
+        status: "not_found",
+        checkoutSessionId: "cs_test_missing",
+      }),
   });
 };
 
@@ -79,6 +86,7 @@ describe("createPaidVoteApplication", () => {
     const application = createApplicationWithClient(client);
 
     const result = await application.applyPaidVote({
+      checkoutSessionId: "cs_test_like",
       countryCode: "JP",
       voteType: "like",
     });
@@ -86,6 +94,7 @@ describe("createPaidVoteApplication", () => {
     expect(result.isOk()).toBe(true);
     expect(result._unsafeUnwrap()).toEqual({
       status: "applied",
+      checkoutSessionId: "cs_test_like",
       countryCode: "JP",
       voteType: "like",
       totals: {
@@ -109,6 +118,7 @@ describe("createPaidVoteApplication", () => {
     const application = createApplicationWithClient(client);
 
     const result = await application.applyPaidVote({
+      checkoutSessionId: "cs_test_dislike",
       countryCode: "DE",
       voteType: "dislike",
     });
@@ -116,6 +126,7 @@ describe("createPaidVoteApplication", () => {
     expect(result.isOk()).toBe(true);
     expect(result._unsafeUnwrap()).toEqual({
       status: "applied",
+      checkoutSessionId: "cs_test_dislike",
       countryCode: "DE",
       voteType: "dislike",
       totals: {
@@ -142,6 +153,7 @@ describe("createPaidVoteApplication", () => {
     const application = createApplicationWithClient(client);
 
     const result = await application.applyPaidVote({
+      checkoutSessionId: "cs_test_write_failure",
       countryCode: "CA",
       voteType: "like",
     });
@@ -156,5 +168,88 @@ describe("createPaidVoteApplication", () => {
         cause: commandError,
       },
     });
+  });
+
+  it("skips applying a paid vote when the fulfillment record is already applied", async () => {
+    const client = createClient({
+      likes: { JP: "4" },
+      dislikes: { JP: "9" },
+    });
+    const readFulfillmentRecord = vi.fn(() =>
+      okAsync({
+        status: "applied" as const,
+        checkoutSessionId: "cs_test_duplicate",
+        countryCode: "JP",
+        voteType: "like" as const,
+        totals: {
+          countryCode: "JP",
+          likes: 4,
+          dislikes: 9,
+        },
+      }),
+    );
+    const storage = createRedisVoteStorage({
+      env: envWithRedisUrl,
+      clientFactory: () => client,
+    });
+    const application = createPaidVoteApplication({
+      incrementVoteTotal: storage.incrementCountryVoteTotal,
+      readFulfillmentRecord,
+    });
+
+    const result = await application.applyPaidVote({
+      checkoutSessionId: "cs_test_duplicate",
+      countryCode: "JP",
+      voteType: "like",
+    });
+
+    expect(result.isOk()).toBe(true);
+    expect(result._unsafeUnwrap()).toEqual({
+      status: "duplicate",
+      checkoutSessionId: "cs_test_duplicate",
+      countryCode: "JP",
+      voteType: "like",
+      totals: {
+        countryCode: "JP",
+        likes: 4,
+        dislikes: 9,
+      },
+    });
+    expect(readFulfillmentRecord).toHaveBeenCalledWith("cs_test_duplicate");
+    expect(client.hIncrBy).not.toHaveBeenCalled();
+  });
+
+  it("returns a typed error before applying when fulfillment lookup fails", async () => {
+    const client = createClient({
+      likes: { JP: "4" },
+      dislikes: { JP: "9" },
+    });
+    const fulfillmentError: RedisPaidVoteFulfillmentError = {
+      code: "redis_command_failed",
+      message: "Failed to read paid vote fulfillment record from Redis.",
+      cause: new Error("redis get failed"),
+    };
+    const application = createPaidVoteApplication({
+      incrementVoteTotal: createRedisVoteStorage({
+        env: envWithRedisUrl,
+        clientFactory: () => client,
+      }).incrementCountryVoteTotal,
+      readFulfillmentRecord: () => errAsync(fulfillmentError),
+    });
+
+    const result = await application.applyPaidVote({
+      checkoutSessionId: "cs_test_read_failure",
+      countryCode: "JP",
+      voteType: "like",
+    });
+
+    expect(result.isErr()).toBe(true);
+    expect(result._unsafeUnwrapErr()).toEqual({
+      code: "paid_vote_fulfillment_read_failed",
+      message: "Failed to read paid vote fulfillment before applying vote.",
+      checkoutSessionId: "cs_test_read_failure",
+      cause: fulfillmentError,
+    });
+    expect(client.hIncrBy).not.toHaveBeenCalled();
   });
 });

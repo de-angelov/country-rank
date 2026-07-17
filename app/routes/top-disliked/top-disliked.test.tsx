@@ -3,6 +3,7 @@ import { errAsync, okAsync } from "neverthrow";
 import { describe, expect, it } from "vitest";
 
 import type { Country } from "~/countries";
+import { orderRankedCountries } from "~/components/ranking-order-controls/ranking-order-controls";
 
 import {
   getTopDislikedCountries,
@@ -94,6 +95,10 @@ describe("TopDisliked", () => {
     );
 
     expect(html).toContain("Top Disliked Countries");
+    expect(html).toContain("Ranking order");
+    expect(html).toContain("Highest dislikes first");
+    expect(html).toContain("Lowest dislikes first");
+    expect(html).toContain('aria-pressed="true"');
     expect(html).toContain('aria-label="Countries ranked by dislikes"');
     expect(html).toContain("India");
     expect(html).toContain("44");
@@ -111,5 +116,25 @@ describe("TopDisliked", () => {
     );
     expect(html.indexOf("India")).toBeLessThan(html.indexOf("United States"));
     expect(html.indexOf("United States")).toBeLessThan(html.indexOf("Japan"));
+    expect(html.indexOf("Countries ordered by the highest dislike counts."))
+      .toBeLessThan(html.indexOf("Ranking order"));
+    expect(html.indexOf("Ranking order")).toBeLessThan(
+      html.indexOf('aria-label="Countries ranked by dislikes"'),
+    );
+  });
+
+  it("orders ranked countries highest first by default and lowest first on request", () => {
+    const rankedCountries = getTopDislikedCountries(countries);
+
+    expect(
+      orderRankedCountries(rankedCountries, "highest-first").map(
+        ({ name }) => name,
+      ),
+    ).toEqual(["India", "United States", "Japan"]);
+    expect(
+      orderRankedCountries(rankedCountries, "lowest-first").map(
+        ({ name }) => name,
+      ),
+    ).toEqual(["Japan", "United States", "India"]);
   });
 });

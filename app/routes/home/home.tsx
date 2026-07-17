@@ -44,6 +44,23 @@ export function filterCountriesByName(
   );
 }
 
+const countryDisplayNameCollator = new Intl.Collator("en", {
+  sensitivity: "base",
+});
+
+export function sortCountriesByDisplayName(countries: readonly Country[]) {
+  return [...countries].sort((left, right) => {
+    const nameOrder = countryDisplayNameCollator.compare(
+      left.name,
+      right.name,
+    );
+
+    return nameOrder === 0
+      ? left.code.localeCompare(right.code, "en")
+      : nameOrder;
+  });
+}
+
 export type PaidVoteConfirmationState =
   | HomePaidVoteConfirmationState
   | Readonly<{
@@ -194,9 +211,13 @@ export function HomeCountriesContent({
 }) {
   const [searchQuery, setSearchQuery] = useState(initialSearch);
   const searchRef = useRef<HTMLDivElement>(null);
+  const sortedCountries = useMemo(
+    () => sortCountriesByDisplayName(countries),
+    [countries],
+  );
   const filteredCountries = useMemo(
-    () => filterCountriesByName(countries, searchQuery),
-    [countries, searchQuery],
+    () => filterCountriesByName(sortedCountries, searchQuery),
+    [sortedCountries, searchQuery],
   );
   const resultCount = filteredCountries.length;
   const scrollToResults = () => {

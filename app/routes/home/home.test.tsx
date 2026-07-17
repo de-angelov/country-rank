@@ -11,6 +11,7 @@ import {
   HomeCountriesContent,
   PaidVoteConfirmationDialog,
   PaidVoteConfirmationDialogContent,
+  sortCountriesByDisplayName,
 } from "./home";
 import { loadHomeCountries, loadHomeRouteData } from "./home.server";
 import {
@@ -22,6 +23,15 @@ import { mapPaidVoteStatusResponseToHomeState } from "./paid-vote-confirmation-s
 const visibleText = (html: string) => html.replaceAll("<!-- -->", "");
 const createHomeRequest = (url = "https://country-ranking.test/") =>
   new Request(url);
+const expectNamesInHtmlOrder = (html: string, names: readonly string[]) => {
+  const nameIndexes = names.map((name) => html.indexOf(name));
+
+  expect(nameIndexes).not.toContain(-1);
+
+  for (let index = 1; index < nameIndexes.length; index += 1) {
+    expect(nameIndexes[index]).toBeGreaterThan(nameIndexes[index - 1]);
+  }
+};
 
 const countries = [
   {
@@ -50,6 +60,54 @@ const countries = [
     flagImageUrl: "https://example.com/gb.svg",
     likes: 18,
     dislikes: 5,
+  },
+] as const satisfies readonly Country[];
+
+const displayNameSortCountries = [
+  {
+    code: "AE",
+    name: "United Arab Emirates",
+    capital: "Abu Dhabi",
+    factSnippet: "Test snippet for the United Arab Emirates.",
+    flagImageUrl: "https://example.com/ae.svg",
+    likes: 20,
+    dislikes: 3,
+  },
+  {
+    code: "AO",
+    name: "Angola",
+    capital: "Luanda",
+    factSnippet: "Test snippet for Angola.",
+    flagImageUrl: "https://example.com/ao.svg",
+    likes: 7,
+    dislikes: 1,
+  },
+  {
+    code: "AL",
+    name: "Albania",
+    capital: "Tirana",
+    factSnippet: "Test snippet for Albania.",
+    flagImageUrl: "https://example.com/al.svg",
+    likes: 9,
+    dislikes: 2,
+  },
+  {
+    code: "US",
+    name: "United States",
+    capital: "Washington, D.C.",
+    factSnippet: "Test snippet for the United States.",
+    flagImageUrl: "https://example.com/us.svg",
+    likes: 25,
+    dislikes: 6,
+  },
+  {
+    code: "AR",
+    name: "Argentina",
+    capital: "Buenos Aires",
+    factSnippet: "Test snippet for Argentina.",
+    flagImageUrl: "https://example.com/ar.svg",
+    likes: 11,
+    dislikes: 4,
   },
 ] as const satisfies readonly Country[];
 
@@ -274,6 +332,20 @@ describe("Home", () => {
     }
   });
 
+  it("renders the unfiltered country list in display-name order", () => {
+    const html = renderToString(
+      <HomeCountriesContent countries={displayNameSortCountries} />,
+    );
+
+    expectNamesInHtmlOrder(html, [
+      "Albania",
+      "Angola",
+      "Argentina",
+      "United Arab Emirates",
+      "United States",
+    ]);
+  });
+
   it("renders the filtered country cards from an initial search value", () => {
     const html = renderToString(
       <HomeCountriesContent countries={countries} initialSearch="jap" />,
@@ -284,6 +356,20 @@ describe("Home", () => {
     expect(html).toContain("Japan");
     expect(html).not.toContain("United States");
     expect(html).not.toContain("United Kingdom");
+  });
+
+  it("keeps matching search results in display-name order", () => {
+    const html = renderToString(
+      <HomeCountriesContent
+        countries={displayNameSortCountries}
+        initialSearch="united"
+      />,
+    );
+
+    expect(html).not.toContain("Albania");
+    expect(html).not.toContain("Angola");
+    expect(html).not.toContain("Argentina");
+    expectNamesInHtmlOrder(html, ["United Arab Emirates", "United States"]);
   });
 
   it("renders the no-match state for an initial search with no results", () => {
@@ -410,6 +496,20 @@ describe("Home", () => {
 
     expect(filterCountriesByName(countries, "").map(({ name }) => name))
       .toEqual(["Japan", "United States", "United Kingdom"]);
+  });
+
+  it("sorts countries by display name without using ISO code order", () => {
+    expect(
+      sortCountriesByDisplayName(displayNameSortCountries).map(
+        ({ name }) => name,
+      ),
+    ).toEqual([
+      "Albania",
+      "Angola",
+      "Argentina",
+      "United Arab Emirates",
+      "United States",
+    ]);
   });
 
   it("filters countries by partial name without matching other fields", () => {

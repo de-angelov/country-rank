@@ -13,7 +13,7 @@ export async function loader() {
 
 export function meta() {
   return [
-    { title: "Top Disliked Countries | Country Ranking" },
+    { title: "Top Disliked Countries | country-rank.online" },
     {
       name: "description",
       content: "Browse countries ordered by their total dislikes.",

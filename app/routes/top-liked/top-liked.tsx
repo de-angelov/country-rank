@@ -13,7 +13,7 @@ export async function loader() {
 
 export function meta() {
   return [
-    { title: "Top Liked Countries | Country Ranking" },
+    { title: "Top Liked Countries | country-rank.online" },
     {
       name: "description",
       content: "Browse countries ordered by their total likes.",

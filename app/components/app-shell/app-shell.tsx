@@ -74,8 +74,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           <a
             className={styles.brandLink}
             href="/"
-          >
-            Country Ranking
+          >country-rank.online
           </a>
           <nav
             className={styles.nav}

@@ -66,7 +66,7 @@ export function RootErrorPage({ error }: Route.ErrorBoundaryProps) {
         >
           <section>
             <Badge variant="noShadow" className="mb-3">
-              Country Ranking
+              country-rank.online
             </Badge>
             <h1
               id="error-title"

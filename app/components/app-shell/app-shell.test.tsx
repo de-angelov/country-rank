@@ -27,7 +27,9 @@ describe("AppShell", () => {
     expect(bannerIndex).toBeLessThan(navIndex);
     expect(html).toContain('alt="The Internet Judges Earth"');
     expect(html).toContain('aria-label="Banner tagline"');
-    expect(html).toContain("Country Ranking");
+    expect(html).toMatch(
+      /<a class="[^"]*border-2[^"]*bg-main[^"]*font-heading[^"]*shadow-shadow[^"]*" href="\/">country-rank\.online<\/a>/,
+    );
     expect(html).toContain(selectBannerTagline("/"));
     expect(html).toContain('href="/"');
     expect(html).toContain("Countries");

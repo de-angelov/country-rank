@@ -21,7 +21,7 @@ const styles = {
   ribbon:
     "mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-4 py-2 max-md:flex-col max-md:items-stretch max-md:gap-2 sm:px-6 lg:px-8",
   brandLink:
-    "inline-flex min-w-max text-sm font-heading text-inherit no-underline max-md:min-w-0 max-md:justify-center max-md:text-center sm:text-base",
+    "inline-flex shrink-0 items-center justify-center whitespace-nowrap rounded-base border-2 border-border bg-main px-2.5 py-1 text-sm font-heading leading-none text-main-foreground no-underline shadow-shadow max-md:w-full max-md:min-w-0 max-md:text-center sm:text-base",
   nav: "flex flex-1 flex-wrap items-center justify-end gap-2 max-md:justify-stretch",
   navButton: "h-9 min-w-28 px-3 max-md:min-w-0 max-md:flex-1 max-md:basis-28",
   content: "mx-auto w-full max-w-6xl",
@@ -74,7 +74,8 @@ export function AppShell({ children }: { children: ReactNode }) {
           <a
             className={styles.brandLink}
             href="/"
-          >country-rank.online
+          >
+            country-rank.online
           </a>
           <nav
             className={styles.nav}

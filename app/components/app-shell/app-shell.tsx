@@ -1,4 +1,5 @@
-import { type ReactNode } from "react";
+import { useContext, type ReactNode } from "react";
+import { UNSAFE_LocationContext } from "react-router";
 
 import { Button } from "~/components/ui/button";
 
@@ -36,9 +37,22 @@ export const bannerTaglines = [
   "Petty by Popular Vote.",
 ] as const;
 
-export const bannerTagline = bannerTaglines[0];
+export function selectBannerTagline(pathname: string) {
+  let hash = 0;
+
+  for (const character of pathname || "/") {
+    hash = (hash * 31 + character.charCodeAt(0)) >>> 0;
+  }
+
+  return bannerTaglines[hash % bannerTaglines.length];
+}
 
 export function AppShell({ children }: { children: ReactNode }) {
+  const locationContext = useContext(UNSAFE_LocationContext);
+  const bannerTagline = selectBannerTagline(
+    locationContext?.location.pathname ?? "/",
+  );
+
   return (
     <div className={styles.root}>
       <header

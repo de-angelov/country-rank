@@ -1,15 +1,21 @@
 import { renderToString } from "react-dom/server";
+import { MemoryRouter } from "react-router";
 import { describe, expect, it } from "vitest";
 
-import { AppShell, bannerTagline, bannerTaglines } from "./app-shell";
+import { AppShell, bannerTaglines, selectBannerTagline } from "./app-shell";
+
+const renderAppShell = (pathname = "/") =>
+  renderToString(
+    <MemoryRouter initialEntries={[pathname]}>
+      <AppShell>
+        <main>Page content</main>
+      </AppShell>
+    </MemoryRouter>,
+  );
 
 describe("AppShell", () => {
   it("renders a full-width banner above compact ribbon navigation", () => {
-    const html = renderToString(
-      <AppShell>
-        <main>Page content</main>
-      </AppShell>,
-    );
+    const html = renderAppShell("/");
 
     const bannerIndex = html.indexOf(
       'src="/images/country-ranking-banner-v7.png"',
@@ -22,7 +28,7 @@ describe("AppShell", () => {
     expect(html).toContain('alt="The Internet Judges Earth"');
     expect(html).toContain('aria-label="Banner tagline"');
     expect(html).toContain("Country Ranking");
-    expect(html).toContain("Rankings Without Borders");
+    expect(html).toContain(selectBannerTagline("/"));
     expect(html).toContain('href="/"');
     expect(html).toContain("Countries");
     expect(html).toContain('href="/top-liked"');
@@ -46,29 +52,34 @@ describe("AppShell", () => {
     ]);
   });
 
-  it("uses a deterministic banner tagline for server and client renders", () => {
-    const firstRender = renderToString(
-      <AppShell>
-        <main>First page</main>
-      </AppShell>,
-    );
-    const nextRender = renderToString(
-      <AppShell>
-        <main>Next page</main>
-      </AppShell>,
-    );
+  it("selects multiple stable banner taglines from route pathnames", () => {
+    const homeTagline = selectBannerTagline("/");
+    const likedTagline = selectBannerTagline("/top-liked");
+    const dislikedTagline = selectBannerTagline("/top-disliked");
 
-    expect(bannerTagline).toBe("Rankings Without Borders");
+    expect(new Set([homeTagline, likedTagline, dislikedTagline]).size).toBe(3);
+    expect(renderAppShell("/")).toMatch(
+      new RegExp(`aria-label="Banner tagline">${homeTagline}</p>`),
+    );
+    expect(renderAppShell("/top-liked")).toMatch(
+      new RegExp(`aria-label="Banner tagline">${likedTagline}</p>`),
+    );
+    expect(renderAppShell("/top-disliked")).toMatch(
+      new RegExp(`aria-label="Banner tagline">${dislikedTagline}</p>`),
+    );
+  });
+
+  it("keeps the same banner tagline for repeated renders of one pathname", () => {
+    const firstRender = renderAppShell("/top-liked");
+    const nextRender = renderAppShell("/top-liked");
+    const tagline = selectBannerTagline("/top-liked");
+
     expect(firstRender).toMatch(
-      /aria-label="Banner tagline">Rankings Without Borders<\/p>/,
+      new RegExp(`aria-label="Banner tagline">${tagline}</p>`),
     );
     expect(nextRender).toMatch(
-      /aria-label="Banner tagline">Rankings Without Borders<\/p>/,
+      new RegExp(`aria-label="Banner tagline">${tagline}</p>`),
     );
-
-    for (const alternateTagline of bannerTaglines.slice(1)) {
-      expect(firstRender).not.toContain(alternateTagline);
-      expect(nextRender).not.toContain(alternateTagline);
-    }
+    expect(firstRender).toBe(nextRender);
   });
 });

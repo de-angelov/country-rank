@@ -22,7 +22,7 @@ export type VoteIntent = Readonly<{
 }>;
 
 export type PaidVoteDialogProps = Readonly<{
-  intent: VoteIntent | null;
+  intent: VoteIntent;
   onOpenChange: (open: boolean) => void;
 }>;
 
@@ -77,7 +77,7 @@ export function PaidVoteDialog({
   return (
     <Dialog open={intent !== null} onOpenChange={onOpenChange}>
       <DialogContent className={styles.dialogContent}>
-        {intent ? <PaidVoteDialogBody intent={intent} /> : null}
+        <PaidVoteDialogBody intent={intent} /> 
       </DialogContent>
     </Dialog>
   );

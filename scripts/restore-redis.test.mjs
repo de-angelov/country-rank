@@ -6,7 +6,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
   requireRedisUrl,
-  restoreVoteTotals,
+  restoreCountryData,
   runRestore,
   validateBackupArtifact,
 } from "./restore-redis.mjs";
@@ -14,31 +14,48 @@ import {
 const tempDirectories = [];
 
 const validArtifact = {
-  schemaVersion: 1,
+  schemaVersion: 2,
   createdAt: "2026-07-16T13:00:00.000Z",
-  keyPattern: "country:votes:*",
-  records: [
-    {
-      key: "country:votes:US",
-      countryCode: "US",
-      likes: 12,
-      dislikes: 4,
+  keys: {
+    catalog: "country:catalog",
+    likes: "country:votes:likes",
+    dislikes: "country:votes:dislikes",
+  },
+  countryCatalog: {
+    key: "country:catalog",
+    value: JSON.stringify([
+      {
+        code: "US",
+        name: "United States",
+        capital: "Washington, D.C.",
+        factSnippet: "Large parks, loud snacks, and federal districts.",
+        flagImageUrl: "https://example.com/us.svg",
+      },
+      {
+        code: "GB",
+        name: "United Kingdom",
+        capital: "London",
+        factSnippet: "Queue science, old stones, and kettle diplomacy.",
+        flagImageUrl: "https://example.com/gb.svg",
+      },
+    ]),
+  },
+  voteHashes: {
+    likes: {
+      key: "country:votes:likes",
       fields: {
-        likes: "12",
-        dislikes: "4",
+        US: "12",
+        GB: "7",
       },
     },
-    {
-      key: "country:votes:GB",
-      countryCode: "GB",
-      likes: 7,
-      dislikes: 2,
+    dislikes: {
+      key: "country:votes:dislikes",
       fields: {
-        likes: "7",
-        dislikes: "2",
+        US: "4",
+        GB: "2",
       },
     },
-  ],
+  },
 };
 
 const createTempArtifact = async (artifact) => {
@@ -58,6 +75,7 @@ const createClient = (
   connect: vi.fn(options.connect ?? (() => Promise.resolve())),
   del: vi.fn(options.del ?? (() => Promise.resolve(1))),
   hSet: vi.fn(options.hSet ?? (() => Promise.resolve(2))),
+  set: vi.fn(options.set ?? (() => Promise.resolve("OK"))),
 });
 
 afterEach(async () => {
@@ -81,63 +99,89 @@ describe("requireRedisUrl", () => {
 describe("validateBackupArtifact", () => {
   it("accepts the backup artifact shape produced by the backup runner", () => {
     expect(validateBackupArtifact(validArtifact)).toEqual({
-      schemaVersion: 1,
+      schemaVersion: 2,
       createdAt: "2026-07-16T13:00:00.000Z",
-      keyPattern: "country:votes:*",
-      records: [
-        {
-          key: "country:votes:US",
-          countryCode: "US",
-          likes: 12,
-          dislikes: 4,
+      keys: {
+        catalog: "country:catalog",
+        likes: "country:votes:likes",
+        dislikes: "country:votes:dislikes",
+      },
+      countryCatalog: {
+        key: "country:catalog",
+        value: validArtifact.countryCatalog.value,
+      },
+      voteHashes: {
+        likes: {
+          key: "country:votes:likes",
+          fields: {
+            GB: "7",
+            US: "12",
+          },
         },
-        {
-          key: "country:votes:GB",
-          countryCode: "GB",
-          likes: 7,
-          dislikes: 2,
+        dislikes: {
+          key: "country:votes:dislikes",
+          fields: {
+            GB: "2",
+            US: "4",
+          },
         },
-      ],
+      },
     });
   });
 
-  it("rejects malformed backup records", () => {
+  it("rejects malformed optimized vote hashes", () => {
     expect(() =>
       validateBackupArtifact({
         ...validArtifact,
-        records: [
-          {
-            ...validArtifact.records[0],
-            key: "country:votes:GB",
+        voteHashes: {
+          ...validArtifact.voteHashes,
+          likes: {
+            ...validArtifact.voteHashes.likes,
+            fields: {
+              ...validArtifact.voteHashes.likes.fields,
+              USA: "12",
+            },
           },
-        ],
+        },
       }),
-    ).toThrow("records[0].key must be country:votes:US.");
+    ).toThrow(
+      "voteHashes.likes.fields.USA must use a two-letter country code field.",
+    );
   });
 });
 
-describe("restoreVoteTotals", () => {
-  it("replaces Redis vote totals for countries present in the artifact", async () => {
+describe("restoreCountryData", () => {
+  it("replaces the Redis catalog before aggregate vote hashes", async () => {
     const client = createClient();
 
     await expect(
-      restoreVoteTotals({
+      restoreCountryData({
         backup: validateBackupArtifact(validArtifact),
         redisUrl: "redis://localhost:6379",
         clientFactory: () => client,
       }),
-    ).resolves.toBe(2);
+    ).resolves.toEqual({
+      catalogKey: "country:catalog",
+      voteHashCount: 2,
+    });
 
     expect(client.connect).toHaveBeenCalledOnce();
-    expect(client.del).toHaveBeenNthCalledWith(1, "country:votes:US");
-    expect(client.hSet).toHaveBeenNthCalledWith(1, "country:votes:US", {
-      likes: "12",
-      dislikes: "4",
+    expect(client.set).toHaveBeenCalledWith(
+      "country:catalog",
+      validArtifact.countryCatalog.value,
+    );
+    expect(client.set.mock.invocationCallOrder[0]).toBeLessThan(
+      client.del.mock.invocationCallOrder[0],
+    );
+    expect(client.del).toHaveBeenNthCalledWith(1, "country:votes:likes");
+    expect(client.hSet).toHaveBeenNthCalledWith(1, "country:votes:likes", {
+      GB: "7",
+      US: "12",
     });
-    expect(client.del).toHaveBeenNthCalledWith(2, "country:votes:GB");
-    expect(client.hSet).toHaveBeenNthCalledWith(2, "country:votes:GB", {
-      likes: "7",
-      dislikes: "2",
+    expect(client.del).toHaveBeenNthCalledWith(2, "country:votes:dislikes");
+    expect(client.hSet).toHaveBeenNthCalledWith(2, "country:votes:dislikes", {
+      GB: "2",
+      US: "4",
     });
     expect(client.close).toHaveBeenCalledOnce();
   });
@@ -149,12 +193,12 @@ describe("restoreVoteTotals", () => {
     });
 
     await expect(
-      restoreVoteTotals({
+      restoreCountryData({
         backup: validateBackupArtifact(validArtifact),
         redisUrl: "redis://localhost:6379",
         clientFactory: () => client,
       }),
-    ).rejects.toThrow("Failed to restore Redis vote totals for US.");
+    ).rejects.toThrow("Failed to restore Redis country data.");
 
     expect(client.close).toHaveBeenCalledOnce();
   });
@@ -164,12 +208,16 @@ describe("runRestore", () => {
   it("validates the artifact before connecting to Redis", async () => {
     const artifactPath = await createTempArtifact({
       ...validArtifact,
-      records: [
-        {
-          ...validArtifact.records[0],
-          likes: "12",
+      voteHashes: {
+        ...validArtifact.voteHashes,
+        likes: {
+          ...validArtifact.voteHashes.likes,
+          fields: {
+            ...validArtifact.voteHashes.likes.fields,
+            US: 12,
+          },
         },
-      ],
+      },
     });
     const clientFactory = vi.fn(() => createClient());
 
@@ -179,7 +227,9 @@ describe("runRestore", () => {
         env: { REDIS_URL: "redis://localhost:6379" },
         clientFactory,
       }),
-    ).rejects.toThrow("records[0].likes must be a non-negative integer.");
+    ).rejects.toThrow(
+      "voteHashes.likes.fields.US must be a non-negative integer string.",
+    );
 
     expect(clientFactory).not.toHaveBeenCalled();
   });

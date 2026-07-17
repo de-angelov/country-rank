@@ -29,8 +29,8 @@ Country Ranking is a TypeScript React Router framework-mode app for browsing cou
 - Country shape and fixture data are kept under `app/countries/`.
 - Vote request validation is kept under `app/votes/request.server.ts`.
 - Redis vote persistence is kept under `app/votes/storage.server.ts`.
-- Redis vote reads and writes currently use the `country:votes:{COUNTRY_CODE}`
-  pattern with `likes` and `dislikes` hash fields.
+- Redis vote reads and writes use aggregate `country:votes:likes` and
+  `country:votes:dislikes` hashes keyed by country code.
 - Redis seeding writes a metadata-only `country:catalog` JSON document plus
   aggregate `country:votes:likes` and `country:votes:dislikes` hashes keyed by
   country code.
@@ -160,15 +160,14 @@ implemented, so there is no supported `STRIPE_SECRET_KEY` configuration yet.
 ### Redis Backup Runner
 
 The Redis backup runner is available through `npm run backup:redis`. It exports
-the `country:votes:*` hashes to a timestamped JSON artifact. Real backup
-credentials must be supplied through environment variables and must never be
-committed to the repository.
+`country:catalog`, `country:votes:likes`, and `country:votes:dislikes` to a
+timestamped JSON artifact. Real backup credentials must be supplied through
+environment variables and must never be committed to the repository.
 
 Backup artifacts are JSON files named with the backup timestamp, for example
-`2026-07-16T12-00-00-000Z-country-votes.json`. Each artifact records
-`schemaVersion`, `createdAt`, the exported Redis key pattern, and a sorted
-`records` list. Each record includes the Redis hash key, country code, normalized
-`likes` and `dislikes` numbers, and the original Redis hash fields.
+`2026-07-16T12-00-00-000Z-country-votes.json`. Each schema v2 artifact records
+`schemaVersion`, `createdAt`, the exported Redis key names, the catalog JSON
+document, and sorted field maps for the aggregate like and dislike vote hashes.
 
 Environment variables read by the runner:
 
@@ -187,7 +186,7 @@ This does not require GitHub backup credentials:
 1. Start local Redis with `docker compose up -d redis`.
 2. Seed demo vote totals if needed with `REDIS_URL=redis://localhost:6379 npm run seed:redis:votes`.
 3. Run `REDIS_URL=redis://localhost:6379 npm run backup:redis -- --dry-run`.
-4. Confirm the command prints `Created Redis backup artifact:` and `Exported ... country vote record(s).`.
+4. Confirm the command prints `Created Redis backup artifact:` and `Exported Redis country catalog and ... country vote total(s).`.
 5. Inspect the generated JSON file under `tmp/redis-backups/`.
 
 Push a backup artifact to GitHub-backed storage by running the same script with
@@ -274,7 +273,7 @@ docker compose --profile backup up --abort-on-container-exit --exit-code-from re
 ```
 
 The sidecar should print `Created Redis backup artifact:` and
-`Exported ... country vote record(s).`, then exit successfully. Inspect the
+`Exported Redis country catalog and ... country vote total(s).`, then exit successfully. Inspect the
 generated JSON file under `tmp/redis-backups/`.
 
 For regular local app work, leave the `backup` profile off and keep
@@ -299,7 +298,9 @@ Run the local restore flow with:
 ```sh
 docker compose up -d redis
 npm run restore:redis:local -- ./path/to/2026-07-16T12-00-00-000Z-country-votes.json
-docker compose exec redis redis-cli KEYS 'country:votes:*'
+docker compose exec redis redis-cli GET country:catalog
+docker compose exec redis redis-cli HGETALL country:votes:likes
+docker compose exec redis redis-cli HGETALL country:votes:dislikes
 ```
 
 When Redis is exposed on a non-default host port, use the same port for Compose
@@ -311,16 +312,17 @@ REDIS_HOST_PORT=6380 npm run restore:redis:local -- ./path/to/2026-07-16T12-00-0
 ```
 
 The local wrapper is a restore command, not a seed reset. It reads a selected
-backup artifact and replaces the vote totals for countries present in that
-artifact. `npm run seed:redis:votes` reloads fixture/demo data and should only
-be used as an explicit local reset fallback when that is the intended behavior.
+backup artifact and replaces the country catalog plus the aggregate like and
+dislike vote hashes represented by that artifact. `npm run seed:redis:votes`
+reloads fixture/demo data and should only be used as an explicit local reset
+fallback when that is the intended behavior.
 
 ### Redis Restore Runner
 
 The Redis restore runner is available through `npm run restore:redis`. It reads
 one backup artifact created by the [Redis backup runner](#redis-backup-runner),
-validates the artifact shape, and replaces the `likes` and `dislikes` fields for
-each `country:votes:{COUNTRY_CODE}` hash present in the artifact.
+validates the artifact shape, writes the `country:catalog` JSON document, and
+replaces the `country:votes:likes` and `country:votes:dislikes` hashes.
 
 The restore runner expects the backup artifact to already be present on the
 machine where the command runs. When the artifact is stored in a GitHub-backed
@@ -341,10 +343,10 @@ REDIS_URL=redis://target-redis-host:6379 \
 npm run restore:redis -- ./path/to/2026-07-16T12-00-00-000Z-country-votes.json
 ```
 
-The command prints `Restored ... Redis country vote total(s).` after a
-successful restore. The restore replaces vote totals for countries included in
-the artifact; it does not delete unrelated Redis keys or unrelated country vote
-hashes that are absent from the artifact.
+The command prints `Restored country:catalog and 2 Redis country vote hash(es).`
+after a successful restore. The restore replaces only `country:catalog`,
+`country:votes:likes`, and `country:votes:dislikes`; it does not delete
+unrelated Redis keys.
 
 For a new deployment, use this restore flow before treating fixture seeding as
 an option:
@@ -368,7 +370,9 @@ docker compose up -d redis
 REDIS_URL=redis://localhost:6379 npm run seed:redis:votes
 REDIS_URL=redis://localhost:6379 npm run backup:redis -- --dry-run
 npm run restore:redis:local -- tmp/redis-backups/<generated-backup-file>.json
-docker compose exec redis redis-cli KEYS 'country:votes:*'
+docker compose exec redis redis-cli GET country:catalog
+docker compose exec redis redis-cli HGETALL country:votes:likes
+docker compose exec redis redis-cli HGETALL country:votes:dislikes
 ```
 
 The dummy seed command in this local example is only there to create demo data
@@ -379,7 +383,7 @@ environment is intentionally non-production.
 
 ### Request And Data Flow
 
-- Browsing: React Router renders the index route from `app/routes/home.tsx`. Country browsing UI should source country records from `app/countries/fixtures.ts` until a later task introduces a different data source.
+- Browsing: React Router renders the index route from `app/routes/home.tsx`. Country browsing UI loads metadata from `country:catalog` and joins it with aggregate Redis vote totals.
 - Voting: a client submits `countryCode` and `voteType` to `/votes`; the route validates the payload, increments the matching Redis hash field, reads the updated totals, and returns a JSON success or typed error response.
 
 ### Styling Foundation

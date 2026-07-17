@@ -1,13 +1,16 @@
-import { createClient } from "redis";
 import {
-  err,
   errAsync,
-  ok,
   ResultAsync,
-  type Result,
 } from "neverthrow";
+import {
+  createDefaultRedisClient,
+  createRedisClientProvider,
+  getRedisConfig,
+  redisUrlEnvVar,
+  type RedisClientFactory,
+  type RedisConfig,
+} from "~/lib/redis.server";
 
-const redisUrlEnvVar = "REDIS_URL";
 const countryCodePattern = /^[A-Z]{2}$/;
 
 export type VoteKind = "like" | "dislike";
@@ -18,9 +21,7 @@ export type VoteTotals = Readonly<{
   dislikes: number;
 }>;
 
-export type RedisVoteStorageConfig = Readonly<{
-  url: string;
-}>;
+export type RedisVoteStorageConfig = RedisConfig;
 
 export type RedisVoteStorageError =
   | Readonly<{
@@ -45,9 +46,7 @@ type RedisVoteClient = {
   hIncrBy: (key: string, field: string, increment: number) => Promise<number>;
 };
 
-type RedisVoteClientFactory = (
-  config: RedisVoteStorageConfig,
-) => RedisVoteClient;
+type RedisVoteClientFactory = RedisClientFactory<RedisVoteClient>;
 
 export type RedisVoteStorageOptions = Readonly<{
   env?: NodeJS.ProcessEnv;
@@ -55,23 +54,15 @@ export type RedisVoteStorageOptions = Readonly<{
 }>;
 
 const createDefaultRedisVoteClient: RedisVoteClientFactory = (config) =>
-  createClient({ url: config.url }) as RedisVoteClient;
+  createDefaultRedisClient(config) as RedisVoteClient;
 
 export const getRedisVoteStorageConfig = (
   env: NodeJS.ProcessEnv = process.env,
-): Result<RedisVoteStorageConfig, RedisVoteStorageError> => {
-  const url = env[redisUrlEnvVar]?.trim();
-
-  if (!url) {
-    return err({
-      code: "missing_redis_config",
-      message: `${redisUrlEnvVar} must be set to read or write vote totals.`,
-      envVar: redisUrlEnvVar,
-    });
-  }
-
-  return ok({ url });
-};
+) =>
+  getRedisConfig(
+    env,
+    `${redisUrlEnvVar} must be set to read or write vote totals.`,
+  );
 
 export const voteTotalsKey = (countryCode: string) =>
   `country:votes:${countryCode}`;
@@ -81,33 +72,12 @@ export const createRedisVoteStorage = (
 ) => {
   const env = options.env ?? process.env;
   const clientFactory = options.clientFactory ?? createDefaultRedisVoteClient;
-  let clientPromise: Promise<RedisVoteClient> | undefined;
-
-  const getClient = (): ResultAsync<RedisVoteClient, RedisVoteStorageError> => {
-    const configResult = getRedisVoteStorageConfig(env);
-
-    if (configResult.isErr()) {
-      return errAsync(configResult.error);
-    }
-
-    if (!clientPromise) {
-      const client = clientFactory(configResult.value);
-
-      clientPromise = client.connect().then(
-        () => client,
-        (cause: unknown) => {
-          clientPromise = undefined;
-          throw cause;
-        },
-      );
-    }
-
-    return ResultAsync.fromPromise(clientPromise, (cause) => ({
-      code: "redis_connection_failed",
-      message: "Failed to connect to Redis vote storage.",
-      cause,
-    }));
-  };
+  const getClient = createRedisClientProvider({
+    env,
+    clientFactory,
+    missingConfigMessage: `${redisUrlEnvVar} must be set to read or write vote totals.`,
+    connectionFailureMessage: "Failed to connect to Redis vote storage.",
+  });
 
   const withValidCountryCode = <Value>(
     countryCode: string,

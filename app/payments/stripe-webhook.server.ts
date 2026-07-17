@@ -21,15 +21,24 @@ export type StripeWebhookVerificationError =
       code: "invalid_stripe_signature";
       message: string;
       cause: unknown;
+    }>
+  | Readonly<{
+      code: "invalid_stripe_checkout_session_id";
+      message: string;
+      fieldErrors: Readonly<{
+        checkoutSessionId: string;
+      }>;
     }>;
 
 export type VerifiedStripeWebhookEvent = Readonly<{
   id: string;
   type: string;
+  checkoutSessionId: string | null;
   metadata: Readonly<Record<string, string>> | null;
 }>;
 
 export const stripePaidVoteSuccessEventType = "checkout.session.completed";
+const stripeCheckoutSessionIdPattern = /^cs_(test|live)_[A-Za-z0-9_]+$/;
 
 export const getStripeWebhookConfig = (
   env: NodeJS.ProcessEnv = process.env,
@@ -65,18 +74,14 @@ export const verifyStripeWebhookSignature = (
     });
   }
 
+  let event: Stripe.Event;
+
   try {
-    const event = Stripe.webhooks.constructEvent(
+    event = Stripe.webhooks.constructEvent(
       payload,
       signature,
       configResult.value.webhookSecret,
     );
-
-    return ok({
-      id: event.id,
-      type: event.type,
-      metadata: getVerifiedEventMetadata(event),
-    });
   } catch (cause) {
     return err({
       code: "invalid_stripe_signature",
@@ -84,16 +89,52 @@ export const verifyStripeWebhookSignature = (
       cause,
     });
   }
-};
 
-const getVerifiedEventMetadata = (
-  event: Stripe.Event,
-): Readonly<Record<string, string>> | null => {
-  if (event.type !== stripePaidVoteSuccessEventType) {
-    return null;
+  const eventDetailsResult = getVerifiedEventDetails(event);
+
+  if (eventDetailsResult.isErr()) {
+    return err(eventDetailsResult.error);
   }
 
-  const eventObject = event.data.object as Stripe.Checkout.Session;
+  return ok({
+    id: event.id,
+    type: event.type,
+    ...eventDetailsResult.value,
+  });
+};
 
-  return eventObject.metadata ?? null;
+const getVerifiedEventDetails = (
+  event: Stripe.Event,
+): Result<
+  Pick<VerifiedStripeWebhookEvent, "checkoutSessionId" | "metadata">,
+  StripeWebhookVerificationError
+> => {
+  if (event.type !== stripePaidVoteSuccessEventType) {
+    return ok({
+      checkoutSessionId: null,
+      metadata: null,
+    });
+  }
+
+  const eventObject = event.data.object as Partial<Stripe.Checkout.Session>;
+  const checkoutSessionId = eventObject.id;
+
+  if (
+    !checkoutSessionId ||
+    !stripeCheckoutSessionIdPattern.test(checkoutSessionId)
+  ) {
+    return err({
+      code: "invalid_stripe_checkout_session_id",
+      message: "Stripe checkout session ID is invalid.",
+      fieldErrors: {
+        checkoutSessionId:
+          "checkout.session.completed events must include a valid Checkout Session ID.",
+      },
+    });
+  }
+
+  return ok({
+    checkoutSessionId,
+    metadata: eventObject.metadata ?? null,
+  });
 };

@@ -37,7 +37,7 @@ const bannerImage = {
 } as const;
 
 const styles = {
-  root: "min-h-screen",
+  root: "relative z-10 min-h-screen",
   header: "border-b-2 border-border bg-secondary-background",
   bannerFrame: "relative overflow-hidden border-b-2 border-border bg-background",
   bannerImage: "mx-auto block h-full max-h-full w-auto max-w-full object-contain",

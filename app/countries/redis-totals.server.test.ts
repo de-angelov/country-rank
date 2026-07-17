@@ -34,15 +34,23 @@ const countries = [
 ] as const satisfies readonly Country[];
 
 const createClient = (
-  fieldsByKey: Record<string, Record<string, string>>,
+  fieldsByKey: Partial<Record<"likes" | "dislikes", Record<string, string>>>,
   options: Partial<{
     connect: () => Promise<unknown>;
-    hGetAll: (key: string) => Promise<Record<string, string>>;
+    hGet: (key: string, field: string) => Promise<string | null>;
   }> = {},
 ) => ({
   connect: vi.fn(options.connect ?? (() => Promise.resolve())),
-  hGetAll: vi.fn(
-    options.hGetAll ?? ((key: string) => Promise.resolve(fieldsByKey[key] ?? {})),
+  hGet: vi.fn(
+    options.hGet ??
+      ((key: string, field: string) => {
+        const totals =
+          key === voteTotalsKey("like")
+            ? fieldsByKey.likes
+            : fieldsByKey.dislikes;
+
+        return Promise.resolve(totals?.[field] ?? null);
+      }),
   ),
   hIncrBy: vi.fn(() => Promise.resolve(0)),
 });
@@ -50,8 +58,8 @@ const createClient = (
 describe("readCountriesWithRedisVoteTotals", () => {
   it("returns fixture metadata in fixture order with Redis-backed totals", async () => {
     const client = createClient({
-      [voteTotalsKey("JP")]: { likes: "12", dislikes: "4" },
-      [voteTotalsKey("DE")]: { likes: "3", dislikes: "2" },
+      likes: { JP: "12", DE: "3" },
+      dislikes: { JP: "4", DE: "2" },
     });
     const storage = createRedisVoteStorage({
       env: envWithRedisUrl,
@@ -80,13 +88,31 @@ describe("readCountriesWithRedisVoteTotals", () => {
         dislikes: 2,
       },
     ]);
-    expect(client.hGetAll).toHaveBeenNthCalledWith(1, voteTotalsKey("JP"));
-    expect(client.hGetAll).toHaveBeenNthCalledWith(2, voteTotalsKey("DE"));
+    expect(client.hGet).toHaveBeenNthCalledWith(
+      1,
+      voteTotalsKey("like"),
+      "JP",
+    );
+    expect(client.hGet).toHaveBeenNthCalledWith(
+      2,
+      voteTotalsKey("dislike"),
+      "JP",
+    );
+    expect(client.hGet).toHaveBeenNthCalledWith(
+      3,
+      voteTotalsKey("like"),
+      "DE",
+    );
+    expect(client.hGet).toHaveBeenNthCalledWith(
+      4,
+      voteTotalsKey("dislike"),
+      "DE",
+    );
   });
 
   it("uses existing Redis storage defaults for missing vote totals", async () => {
     const client = createClient({
-      [voteTotalsKey("JP")]: { likes: "5" },
+      likes: { JP: "5" },
     });
     const storage = createRedisVoteStorage({
       env: envWithRedisUrl,
@@ -138,7 +164,7 @@ describe("readCountriesWithRedisVoteTotals", () => {
     const client = createClient(
       {},
       {
-        hGetAll: () => Promise.reject(commandError),
+        hGet: () => Promise.reject(commandError),
       },
     );
     const storage = createRedisVoteStorage({

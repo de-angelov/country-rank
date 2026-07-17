@@ -42,7 +42,7 @@ export type RedisVoteStorageError =
 
 type RedisVoteClient = {
   connect: () => Promise<unknown>;
-  hGetAll: (key: string) => Promise<Record<string, string>>;
+  hGet: (key: string, field: string) => Promise<string | null>;
   hIncrBy: (key: string, field: string, increment: number) => Promise<number>;
 };
 
@@ -64,8 +64,8 @@ export const getRedisVoteStorageConfig = (
     `${redisUrlEnvVar} must be set to read or write vote totals.`,
   );
 
-export const voteTotalsKey = (countryCode: string) =>
-  `country:votes:${countryCode}`;
+export const voteTotalsKey = (voteKind: VoteKind) =>
+  `country:votes:${voteKind === "like" ? "likes" : "dislikes"}`;
 
 export const createRedisVoteStorage = (
   options: RedisVoteStorageOptions = {},
@@ -102,16 +102,19 @@ export const createRedisVoteStorage = (
     withValidCountryCode(countryCode, (normalizedCountryCode) =>
       getClient().andThen((client) =>
         ResultAsync.fromPromise(
-          client.hGetAll(voteTotalsKey(normalizedCountryCode)),
+          Promise.all([
+            client.hGet(voteTotalsKey("like"), normalizedCountryCode),
+            client.hGet(voteTotalsKey("dislike"), normalizedCountryCode),
+          ]),
           (cause) => ({
             code: "redis_command_failed",
             message: "Failed to read country vote totals from Redis.",
             cause,
           }),
-        ).map((fields) => ({
+        ).map(([likes, dislikes]) => ({
           countryCode: normalizedCountryCode,
-          likes: Number(fields.likes ?? 0),
-          dislikes: Number(fields.dislikes ?? 0),
+          likes: Number(likes ?? 0),
+          dislikes: Number(dislikes ?? 0),
         })),
       ),
     );
@@ -125,8 +128,8 @@ export const createRedisVoteStorage = (
         .andThen((client) =>
           ResultAsync.fromPromise(
             client.hIncrBy(
-              voteTotalsKey(normalizedCountryCode),
-              voteKind === "like" ? "likes" : "dislikes",
+              voteTotalsKey(voteKind),
+              normalizedCountryCode,
               1,
             ),
             (cause) => ({

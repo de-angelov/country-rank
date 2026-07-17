@@ -22,7 +22,7 @@ const numberFormatter = new Intl.NumberFormat("en-US");
 
 const styles = {
   article: "grid gap-4 bg-secondary-background p-4",
-  header: "grid gap-4 sm:grid-cols-[minmax(5rem,7rem)_1fr] sm:items-center",
+  header: "grid gap-4 sm:grid-cols-[minmax(7rem,10rem)_1fr] sm:items-center",
   flagFrame:
     "aspect-[4/3] overflow-hidden rounded-base border-2 border-border bg-background",
   flagImage: "h-full w-full object-cover",

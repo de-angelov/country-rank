@@ -253,7 +253,7 @@ const expectedIsoAlpha2Codes = [
   "ZM",
   "ZW",
 ] as const;
-const snippetMaxLength = 80;
+const snippetMaxLength = 190;
 const bannedSnippetPatterns = [
   /\b(static catalog profile|test snippet|placeholder|todo)\b/i,
   /\b(stupid|dumb|lazy|backward|primitive|terrorist|war-torn|poverty)\b/i,
@@ -298,6 +298,10 @@ describe("countryFixtures", () => {
       }
 
       expect(country.factSnippet).toMatch(/[.!?]$/);
+      expect(country.factSnippet).not.toMatch(
+        new RegExp(`^${country.name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`),
+      );
+      expect(country.factSnippet.match(/[.!?]/g)).toHaveLength(1);
     }
   });
 

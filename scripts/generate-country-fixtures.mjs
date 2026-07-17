@@ -11,10 +11,13 @@ export const isoCountryListEndpoint =
 // short names and alpha-2 codes. Wikidata Query Service enriches those records
 // with capital (P36) and Commons flag image (P41), joined by alpha-2 code (P297).
 export const countryMetadataQuery = `
-SELECT ?country ?iso ?countryLabel ?capitalLabel ?flag WHERE {
+SELECT ?country ?iso ?countryLabel ?capitalLabel ?flag ?continentLabel ?officialLanguageLabel ?currencyLabel WHERE {
   ?country wdt:P297 ?iso.
   OPTIONAL { ?country wdt:P36 ?capital. }
   OPTIONAL { ?country wdt:P41 ?flag. }
+  OPTIONAL { ?country wdt:P30 ?continent. }
+  OPTIONAL { ?country wdt:P37 ?officialLanguage. }
+  OPTIONAL { ?country wdt:P38 ?currency. }
   SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
 }
 `;
@@ -30,7 +33,7 @@ Behavior:
 `;
 
 const countryCodePattern = /^[A-Z]{2}$/;
-export const countrySnippetMaxLength = 80;
+export const countrySnippetMaxLength = 190;
 
 const displayNameOverrides = new Map([
   ["AE", "United Arab Emirates"],
@@ -82,21 +85,6 @@ const displayNameOverrides = new Map([
   ["ZA", "South Africa"],
 ]);
 
-const snippetThemes = [
-  "postcard mischief",
-  "market-day color",
-  "harbor breeze",
-  "mountain-map energy",
-  "sunny cafe plans",
-  "flag-quiz flair",
-  "passport-stamp drama",
-  "rain-or-shine charm",
-  "airport-layover dreams",
-  "capital-city cameos",
-  "island-hop plans",
-  "snack-stop curiosity",
-];
-
 const compareText = (left, right) => left.localeCompare(right, "en");
 
 const uniqueSorted = (values) =>
@@ -146,46 +134,115 @@ const toDisplayCountryName = ({ code, name }) =>
 
 const toPrimaryCapital = (capital) => capital.split(",")[0]?.trim() ?? "";
 
-const countrySnippetTheme = (countryCode) =>
-  snippetThemes[
-    (countryCode.charCodeAt(0) * 7 + countryCode.charCodeAt(1) * 11) %
-      snippetThemes.length
-  ];
+const toSnippetText = (value) => value.replaceAll(".", "");
+
+const normalizedSnippetText = (value) =>
+  value.toLocaleLowerCase("en").replace(/[^a-z]/g, "");
+
+const escapeRegExp = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+const isCountryNameEcho = ({ country, value }) => {
+  const countryName = normalizedSnippetText(toDisplayCountryName(country));
+  const candidate = normalizedSnippetText(value);
+
+  return countryName.length > 0 && candidate.includes(countryName);
+};
+
+const stripCountryNamePrefix = ({ country, value }) => {
+  const displayName = toDisplayCountryName(country);
+  const prefixPattern = new RegExp(`^${escapeRegExp(displayName)}\\s+`, "i");
+
+  return value.replace(prefixPattern, "").trim();
+};
 
 export const createCountryFactSnippet = (country) => {
-  const displayName = toDisplayCountryName(country);
-  const capital = toPrimaryCapital(country.capital);
-  const theme = countrySnippetTheme(country.code);
-  const candidates =
-    capital && capital !== "Unknown" && !capital.startsWith("Q")
-      ? [
-          `${displayName}: ${capital} brings ${theme}.`,
-          `${displayName}: ${capital} has ${theme}.`,
-          `${displayName}: ${theme} from the atlas.`,
-          `${country.code}: ${theme} from the atlas.`,
-        ]
-      : [
-          `${displayName}: world-map tiny print with ${theme}.`,
-          `${displayName}: ${theme} from the atlas.`,
-          `${country.code}: ${theme} from the atlas.`,
-        ];
+  const primaryCapital = toSnippetText(toPrimaryCapital(country.capital));
+  const rawRegion =
+    country.subregion || country.region || country.continents?.[0] || "its region";
+  const region = isCountryNameEcho({ country, value: rawRegion })
+    ? rawRegion === "Antarctica"
+      ? "the polar region"
+      : "its region"
+    : toSnippetText(rawRegion);
+  const geography =
+    country.landlocked === true
+      ? `landlocked ${region}`
+      : country.landlocked === false
+        ? `coastal ${region}`
+        : `the ${region} region`;
+  const language =
+    country.languages?.[0] &&
+    !isCountryNameEcho({ country, value: country.languages[0] })
+      ? toSnippetText(country.languages[0])
+      : undefined;
+  const strippedCurrency = country.currencies?.[0]
+    ? stripCountryNamePrefix({ country, value: country.currencies[0] })
+    : undefined;
+  const currency =
+    strippedCurrency && !isCountryNameEcho({ country, value: strippedCurrency })
+      ? toSnippetText(strippedCurrency)
+      : undefined;
+  const borderDetail =
+    Number.isInteger(country.borderCount) && country.borderCount > 0
+      ? `${country.borderCount} neighbor${country.borderCount === 1 ? "" : "s"}`
+      : "regional and global links";
+  const capitalDetail =
+    primaryCapital &&
+    primaryCapital !== "Unknown" &&
+    !primaryCapital.startsWith("Q")
+      ? isCountryNameEcho({ country, value: primaryCapital })
+        ? `its ${country.code}-listed capital city`
+        : `${primaryCapital} as its capital`
+      : "a compact administrative center";
+  const identityDetail = language
+    ? `${language}-language public life`
+    : "local-language public life";
+  const economyDetail = currency
+    ? `${currency}-based commerce`
+    : language
+      ? "service and trade networks"
+      : `${country.code} reference identity`;
+  const candidates = [
+    `Set in ${geography} with ${capitalDetail}, it connects ${identityDetail}, ${economyDetail}, and ${borderDetail}.`,
+    `Set in ${region} with ${capitalDetail}, it connects ${identityDetail}, ${economyDetail}, and ${borderDetail}.`,
+  ];
 
   const snippet = candidates.find(
     (candidate) => candidate.length <= countrySnippetMaxLength,
   );
 
   if (!snippet) {
-    throw new Error(`${country.code} is missing a short fact snippet.`);
+    throw new Error(`${country.code} is missing a compact profile summary.`);
   }
 
   return snippet;
 };
 
 export const addCountryFactSnippets = (countries) =>
-  countries.map((country) => ({
-    ...country,
-    factSnippet: createCountryFactSnippet(country),
-  }));
+  countries.map(
+    ({
+      region,
+      subregion,
+      continents,
+      landlocked,
+      borderCount,
+      languages,
+      currencies,
+      ...country
+    }) => ({
+      ...country,
+      factSnippet: createCountryFactSnippet({
+        ...country,
+        region,
+        subregion,
+        continents,
+        landlocked,
+        borderCount,
+        languages,
+        currencies,
+      }),
+    }),
+  );
 
 export const parseArgs = (argv) => {
   if (argv.includes("--help") || argv.includes("-h")) {
@@ -325,13 +382,25 @@ export const normalizeWikidataMetadataBindings = (bindings) => {
     });
     const capital = optionalBindingValue(binding, "capitalLabel");
     const flagImageUrl = toHttpsUrl(optionalBindingValue(binding, "flag"));
+    const continent = optionalBindingValue(binding, "continentLabel");
+    const officialLanguage = optionalBindingValue(
+      binding,
+      "officialLanguageLabel",
+    );
+    const currency = optionalBindingValue(binding, "currencyLabel");
     const existing = metadataByCode.get(code) ?? {
       capitals: [],
       flagImageUrls: [],
+      continents: [],
+      languages: [],
+      currencies: [],
     };
 
     existing.capitals.push(capital);
     existing.flagImageUrls.push(flagImageUrl);
+    existing.continents.push(continent);
+    existing.languages.push(officialLanguage);
+    existing.currencies.push(currency);
     metadataByCode.set(code, existing);
   });
 
@@ -342,6 +411,9 @@ export const normalizeWikidataMetadataBindings = (bindings) => {
         {
           capital: uniqueSorted(metadata.capitals).join(", "),
           flagImageUrl: uniqueSorted(metadata.flagImageUrls)[0] ?? "",
+          continents: uniqueSorted(metadata.continents),
+          languages: uniqueSorted(metadata.languages),
+          currencies: uniqueSorted(metadata.currencies),
         },
       ])
       .sort(([leftCode], [rightCode]) => leftCode.localeCompare(rightCode)),
@@ -362,6 +434,9 @@ export const mergeCountryFixtureSources = ({ countries, metadataByCode }) =>
       ...country,
       capital: metadata?.capital ?? "",
       flagImageUrl,
+      continents: metadata?.continents ?? [],
+      languages: metadata?.languages ?? [],
+      currencies: metadata?.currencies ?? [],
     };
   });
 

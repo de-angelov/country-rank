@@ -8,12 +8,11 @@ import { Card } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
 import type { Country } from "~/countries";
 
-import { loadHomeCountries } from "./home.server";
+import type { Route } from "./+types/home";
+import { loadHomeRouteData } from "./home.server";
 
-export async function loader() {
-  return {
-    countries: await loadHomeCountries(),
-  };
+export async function loader({ request }: Route.LoaderArgs) {
+  return loadHomeRouteData(request);
 }
 
 export function meta() {

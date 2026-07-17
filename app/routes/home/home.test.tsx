@@ -1,11 +1,11 @@
 import { renderToString } from "react-dom/server";
 import { errAsync, okAsync } from "neverthrow";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import type { Country } from "~/countries";
 
 import { filterCountriesByName, HomeCountriesContent } from "./home";
-import { loadHomeCountries } from "./home.server";
+import { loadHomeCountries, loadHomeRouteData } from "./home.server";
 import {
   clearPaidVoteRedirectQueryState,
   getPaidVoteRedirectQueryState,
@@ -13,6 +13,8 @@ import {
 import { mapPaidVoteStatusResponseToHomeState } from "./paid-vote-confirmation-state";
 
 const visibleText = (html: string) => html.replaceAll("<!-- -->", "");
+const createHomeRequest = (url = "https://country-ranking.test/") =>
+  new Request(url);
 
 const countries = [
   {
@@ -74,6 +76,176 @@ describe("Home", () => {
       "Failed to load country rankings.",
     );
     await expect(serverErrorResponse.text()).resolves.toBe(error.message);
+  });
+
+  it("loads paid vote confirmation state for a detected checkout return session", async () => {
+    const handleCheckoutStatus = vi.fn(() =>
+      Response.json({
+        ok: true,
+        data: {
+          status: "applied",
+          countryCode: "JP",
+          voteType: "like",
+          totals: {
+            countryCode: "JP",
+            likes: 13,
+            dislikes: 4,
+          },
+        },
+      }),
+    );
+
+    await expect(
+      loadHomeRouteData(
+        createHomeRequest(
+          "https://country-ranking.test/?session_id=cs_test_paid_vote_123",
+        ),
+        {
+          readCountries: () => okAsync(countries),
+          handleCheckoutStatus,
+        },
+      ),
+    ).resolves.toEqual({
+      countries,
+      paidVoteConfirmation: {
+        status: "applied",
+        countryCode: "JP",
+        voteType: "like",
+        totals: {
+          countryCode: "JP",
+          likes: 13,
+          dislikes: 4,
+        },
+      },
+    });
+
+    expect(handleCheckoutStatus).toHaveBeenCalledOnce();
+    expect(handleCheckoutStatus.mock.calls[0]?.[0].url).toBe(
+      "https://country-ranking.test/checkout-status?session_id=cs_test_paid_vote_123",
+    );
+  });
+
+  it("loads countries without paid vote confirmation state when no return session is present", async () => {
+    const handleCheckoutStatus = vi.fn();
+
+    await expect(
+      loadHomeRouteData(createHomeRequest("https://country-ranking.test/"), {
+        readCountries: () => okAsync(countries),
+        handleCheckoutStatus,
+      }),
+    ).resolves.toEqual({
+      countries,
+    });
+    expect(handleCheckoutStatus).not.toHaveBeenCalled();
+  });
+
+  it("maps pending, invalid, and failed status endpoint responses into explicit route state", async () => {
+    await expect(
+      loadHomeRouteData(
+        createHomeRequest(
+          "https://country-ranking.test/?session_id=cs_test_paid_vote_pending",
+        ),
+        {
+          readCountries: () => okAsync(countries),
+          handleCheckoutStatus: () =>
+            Response.json({
+              ok: true,
+              data: {
+                status: "pending",
+              },
+            }),
+        },
+      ),
+    ).resolves.toEqual({
+      countries,
+      paidVoteConfirmation: {
+        status: "pending",
+      },
+    });
+
+    await expect(
+      loadHomeRouteData(
+        createHomeRequest(
+          "https://country-ranking.test/?session_id=cs_test_paid_vote_missing",
+        ),
+        {
+          readCountries: () => okAsync(countries),
+          handleCheckoutStatus: () =>
+            Response.json({
+              ok: true,
+              data: {
+                status: "not_found",
+              },
+            }),
+        },
+      ),
+    ).resolves.toEqual({
+      countries,
+      paidVoteConfirmation: {
+        status: "invalid",
+        message: "We could not confirm that paid vote session.",
+      },
+    });
+
+    await expect(
+      loadHomeRouteData(
+        createHomeRequest(
+          "https://country-ranking.test/?session_id=cs_test_paid_vote_failure",
+        ),
+        {
+          readCountries: () => okAsync(countries),
+          handleCheckoutStatus: () =>
+            Response.json(
+              {
+                ok: false,
+                error: {
+                  code: "redis_command_failed",
+                  message:
+                    "Failed to read paid vote fulfillment record from Redis.",
+                },
+              },
+              { status: 503 },
+            ),
+        },
+      ),
+    ).resolves.toEqual({
+      countries,
+      paidVoteConfirmation: {
+        status: "lookup_failed",
+        message: "Failed to read paid vote fulfillment record from Redis.",
+      },
+    });
+  });
+
+  it("uses route error handling when the status endpoint response cannot be read", async () => {
+    let thrownResponse: unknown;
+
+    try {
+      await loadHomeRouteData(
+        createHomeRequest(
+          "https://country-ranking.test/?session_id=cs_test_paid_vote_bad_endpoint",
+        ),
+        {
+          readCountries: () => okAsync(countries),
+          handleCheckoutStatus: () =>
+            new Response("Service unavailable", { status: 503 }),
+        },
+      );
+    } catch (response) {
+      thrownResponse = response;
+    }
+
+    expect(thrownResponse).toBeInstanceOf(Response);
+
+    const routeErrorResponse = thrownResponse as Response;
+
+    expect(routeErrorResponse.status).toBe(502);
+    expect(routeErrorResponse.statusText).toBe(
+      "Failed to load paid vote status.",
+    );
+    await expect(routeErrorResponse.text()).resolves.toBe(
+      "Failed to load paid vote status.",
+    );
   });
 
   it("renders a searchable list of loaded countries with Redis-backed totals", () => {

@@ -51,6 +51,11 @@ The checkout request must carry the same user vote intent accepted by
 - `voteType` is the existing `VoteKind` value from
   `app/votes/storage.server.ts`: `like` or `dislike`.
 
+Server-side checkout helpers require `STRIPE_SECRET_KEY` before accepting a
+checkout request. For local checkout work, set this to a Stripe test-mode
+`sk_test_...` secret key only. Do not use or commit live-mode Stripe secret
+keys.
+
 The checkout request may include only additional fields that are part of the
 approved paid terms. Price, currency, checkout mode, and Stripe metadata names
 must match the approved paid terms above.

@@ -131,6 +131,7 @@ Runtime and integration variables currently supported by the app and scripts:
 | `APP_HOST_PORT` | Optional when starting the app service through Docker Compose and the host port must differ from `5173`. | `docker-compose.yml` app port mapping | `5173` |
 | `REDIS_HOST_PORT` | Optional when starting Redis through Docker Compose and the host port must differ from `6379`. | `docker-compose.yml` Redis port mapping and local Redis restore wrapper | `6379` |
 | `STRIPE_WEBHOOK_SECRET` | Handling Stripe webhook requests. | `/webhooks/stripe` signature verification | `whsec_replace_with_local_or_deployment_secret` |
+| `STRIPE_SECRET_KEY` | Local test-mode Stripe Checkout creation work. | Server-side checkout helpers | `sk_test_replace_with_local_test_secret` |
 | `REDIS_BACKUP_SIDECAR_ENABLED` | Optional when running the Compose `backup` profile. Must be truthy to run backups from the sidecar. | Redis backup sidecar | `false` |
 | `REDIS_BACKUP_CADENCE_SECONDS` | Optional when the backup sidecar loops instead of running once. | Redis backup sidecar | `86400` |
 | `REDIS_BACKUP_DRY_RUN` | Optional when running the backup sidecar. Set to `false` only for GitHub-backed push mode. | Redis backup sidecar | `true` |
@@ -147,15 +148,17 @@ Configuration by workflow:
 | --- | --- |
 | Local browsing and vote reads/writes | `REDIS_URL`; start Redis first with `docker compose up -d redis`. |
 | Redis seeding | `REDIS_URL`. |
+| Stripe checkout request validation | `STRIPE_SECRET_KEY`; use only a Stripe test-mode `sk_test_...` secret for local checkout work. |
 | Stripe webhook verification | `STRIPE_WEBHOOK_SECRET`; webhook vote application also needs `REDIS_URL`. |
 | Redis backup dry-run | No GitHub variables; set `REDIS_URL` when targeting anything other than local Redis. |
 | GitHub-backed Redis backup push | `REDIS_BACKUP_GITHUB_REPOSITORY` and `REDIS_BACKUP_GITHUB_TOKEN`; set `REDIS_URL` for the source Redis instance and override branch/path/retention only when needed. |
 
-Stripe integration status: the app currently verifies Stripe webhook signatures
-with `STRIPE_WEBHOOK_SECRET` and applies paid votes from verified
-`checkout.session.completed` events that include the approved metadata. Stripe
-checkout/session creation and live Stripe API secret-key usage are not currently
-implemented, so there is no supported `STRIPE_SECRET_KEY` configuration yet.
+Stripe integration status: the app currently validates paid vote checkout
+requests with `STRIPE_SECRET_KEY` present, verifies Stripe webhook signatures
+with `STRIPE_WEBHOOK_SECRET`, and applies paid votes from verified
+`checkout.session.completed` events that include the approved metadata. Checkout
+session creation is not implemented yet. Use only Stripe test-mode
+`STRIPE_SECRET_KEY` values for local checkout development.
 
 ### Redis Backup Runner
 

@@ -36,6 +36,7 @@
   --border: oklch(0% 0 0);
   --ring: oklch(0% 0 0);
   --overlay: oklch(0% 0 0 / 80%);
+  --page-checkmark-texture: oklch(0% 0 0 / 5%);
 
   --border-neobrutal: var(--border-width-neobrutal) solid var(--border);
   --radius-neobrutal: var(--border-radius);
@@ -59,6 +60,7 @@
   --ring: oklch(100% 0 0);
   --shadow: var(--box-shadow-x) var(--box-shadow-y) 0 0 var(--border);
   --chart-active-dot: #fff;
+  --page-checkmark-texture: oklch(100% 0 0 / 6%);
 }
 
 @theme inline {
@@ -109,6 +111,22 @@
 
   body {
     @apply bg-background text-foreground font-base;
+    min-height: 100vh;
+  }
+
+  body::before {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    background: var(--page-checkmark-texture);
+    content: "";
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56' viewBox='0 0 56 56'%3E%3Cpath d='M17 29.5 24 36 39 19' fill='none' stroke='black' stroke-width='4' stroke-linecap='square' stroke-linejoin='miter'/%3E%3C/svg%3E");
+    -webkit-mask-repeat: repeat;
+    -webkit-mask-size: 3.5rem 3.5rem;
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56' viewBox='0 0 56 56'%3E%3Cpath d='M17 29.5 24 36 39 19' fill='none' stroke='black' stroke-width='4' stroke-linecap='square' stroke-linejoin='miter'/%3E%3C/svg%3E");
+    mask-repeat: repeat;
+    mask-size: 3.5rem 3.5rem;
+    pointer-events: none;
   }
 
   h1,

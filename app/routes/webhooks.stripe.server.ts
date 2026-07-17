@@ -10,8 +10,8 @@ import {
 } from "~/payments/stripe-webhook.server";
 import {
   applyPaidVote,
-  type AppliedPaidVote,
   type PaidVoteApplicationError,
+  type PaidVoteApplicationResult,
   type ValidatedPaidVote,
 } from "~/votes/paid-application.server";
 
@@ -73,7 +73,10 @@ export const createStripeWebhookHandler = (
       );
     }
 
-    const applicationResult = await applyVerifiedPaidVote(metadataResult.value);
+    const applicationResult = await applyVerifiedPaidVote({
+      checkoutSessionId: event.checkoutSessionId,
+      ...metadataResult.value,
+    });
 
     if (applicationResult.isErr()) {
       return Response.json(
@@ -91,9 +94,9 @@ export const createStripeWebhookHandler = (
       {
         ok: true,
         data: {
-          status: "applied",
+          status: applicationResult.value.status,
           event: toStripeWebhookResponseEvent(event),
-          vote: toStripeWebhookAppliedVoteResponse(applicationResult.value),
+          vote: toStripeWebhookPaidVoteResponse(applicationResult.value),
         },
       },
       { status: 200 },
@@ -134,14 +137,25 @@ const toStripeWebhookMetadataResponseError = (
 
 const toStripeWebhookApplicationResponseError = (
   error: PaidVoteApplicationError,
-) => ({
-  code: error.code,
-  message: error.message,
-  cause: {
-    code: error.cause.code,
-    message: error.cause.message,
-  },
-});
+) => {
+  const baseError = {
+    code: error.code,
+    message: error.message,
+    cause: {
+      code: error.cause.code,
+      message: error.cause.message,
+    },
+  };
+
+  if (error.code === "paid_vote_fulfillment_read_failed") {
+    return {
+      ...baseError,
+      checkoutSessionId: error.checkoutSessionId,
+    };
+  }
+
+  return baseError;
+};
 
 const toStripeWebhookResponseEvent = (event: VerifiedStripeWebhookEvent) => ({
   id: event.id,
@@ -151,8 +165,8 @@ const toStripeWebhookResponseEvent = (event: VerifiedStripeWebhookEvent) => ({
     : {}),
 });
 
-const toStripeWebhookAppliedVoteResponse = (vote: AppliedPaidVote) => ({
+const toStripeWebhookPaidVoteResponse = (vote: PaidVoteApplicationResult) => ({
   countryCode: vote.countryCode,
   voteType: vote.voteType,
-  totals: vote.totals,
+  ...(vote.totals === undefined ? {} : { totals: vote.totals }),
 });

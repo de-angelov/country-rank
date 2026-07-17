@@ -29,7 +29,11 @@ Country Ranking is a TypeScript React Router framework-mode app for browsing cou
 - Country shape and fixture data are kept under `app/countries/`.
 - Vote request validation is kept under `app/votes/request.server.ts`.
 - Redis vote persistence is kept under `app/votes/storage.server.ts`.
-- Redis keys use the `country:votes:{COUNTRY_CODE}` pattern with `likes` and `dislikes` hash fields.
+- Redis vote reads and writes currently use the `country:votes:{COUNTRY_CODE}`
+  pattern with `likes` and `dislikes` hash fields.
+- Redis seeding writes a metadata-only `country:catalog` JSON document plus
+  aggregate `country:votes:likes` and `country:votes:dislikes` hashes keyed by
+  country code.
 - Redis configuration is read from `REDIS_URL`.
 
 ### Development Redis
@@ -71,8 +75,9 @@ npm run compose:dev:seed
 The `compose:dev:seed` preset starts the Compose `app` and `redis` services in
 the background, then runs the existing `seed:redis:votes` command against the
 host-mapped Compose Redis instance. The seed writes the `country:catalog` JSON
-document and refreshes each `country:votes:{CODE}` hash from the same country
-records. It honors the same port overrides as Compose. For example:
+document with metadata-only country records, refreshes `country:votes:likes`,
+and refreshes `country:votes:dislikes`. It honors the same port overrides as
+Compose. For example:
 
 ```sh
 APP_HOST_PORT=5174 REDIS_HOST_PORT=6380 npm run compose:dev:seed
@@ -224,9 +229,9 @@ seed script remains the fallback for demo and local reset scenarios only:
 REDIS_URL=redis://localhost:6379 npm run seed:redis:votes
 ```
 
-The seed script reloads fixture vote totals into Redis. It is not a production
-restore path and should not be used as evidence that a GitHub backup artifact can
-be recovered into a live deployment.
+The seed script reloads fixture country metadata and vote totals into Redis. It
+is not a production restore path and should not be used as evidence that a
+GitHub backup artifact can be recovered into a live deployment.
 
 ### Redis Backup Sidecar
 

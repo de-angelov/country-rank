@@ -1,7 +1,7 @@
 import { renderToString } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
-import { AppShell, bannerTaglines, pickBannerTagline } from "./app-shell";
+import { AppShell, bannerTagline, bannerTaglines } from "./app-shell";
 
 describe("AppShell", () => {
   it("renders a full-width banner above compact ribbon navigation", () => {
@@ -46,8 +46,29 @@ describe("AppShell", () => {
     ]);
   });
 
-  it("selects a tagline from the editable list", () => {
-    expect(pickBannerTagline(() => 0)).toBe("Rankings Without Borders");
-    expect(pickBannerTagline(() => 0.999)).toBe("Petty by Popular Vote.");
+  it("uses a deterministic banner tagline for server and client renders", () => {
+    const firstRender = renderToString(
+      <AppShell>
+        <main>First page</main>
+      </AppShell>,
+    );
+    const nextRender = renderToString(
+      <AppShell>
+        <main>Next page</main>
+      </AppShell>,
+    );
+
+    expect(bannerTagline).toBe("Rankings Without Borders");
+    expect(firstRender).toMatch(
+      /aria-label="Banner tagline">Rankings Without Borders<\/p>/,
+    );
+    expect(nextRender).toMatch(
+      /aria-label="Banner tagline">Rankings Without Borders<\/p>/,
+    );
+
+    for (const alternateTagline of bannerTaglines.slice(1)) {
+      expect(firstRender).not.toContain(alternateTagline);
+      expect(nextRender).not.toContain(alternateTagline);
+    }
   });
 });

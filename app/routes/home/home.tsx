@@ -84,7 +84,7 @@ export function HomeCountriesContent({
   initialSearch?: string;
 }) {
   const [searchQuery, setSearchQuery] = useState(initialSearch);
-  const resultsRef = useRef<HTMLDivElement>(null);
+  const searchRef = useRef<HTMLDivElement>(null);
   const filteredCountries = useMemo(
     () => filterCountriesByName(countries, searchQuery),
     [countries, searchQuery],
@@ -92,7 +92,7 @@ export function HomeCountriesContent({
   const resultCount = filteredCountries.length;
   const scrollToResults = () => {
     window.requestAnimationFrame(() => {
-      resultsRef.current?.scrollIntoView({
+      searchRef.current?.scrollIntoView({
         block: "start",
         behavior: prefersReducedMotion() ? "auto" : "smooth",
       });
@@ -110,7 +110,11 @@ export function HomeCountriesContent({
           </p>
         </div>
 
-        <div className="grid gap-2">
+        <div 
+          className="grid gap-2"
+          id="country-search"
+          ref={searchRef}
+        >
           <label className="font-heading text-sm" htmlFor="country-search">
             Search countries
           </label>
@@ -140,8 +144,7 @@ export function HomeCountriesContent({
 
       <div
         className="country-filter-transition grid gap-4"
-        id="country-results"
-        ref={resultsRef}
+  
       >
         {resultCount > 0 ? (
           <section aria-label="Countries" className="grid gap-4 lg:grid-cols-2">

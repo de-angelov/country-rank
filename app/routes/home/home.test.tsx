@@ -6,6 +6,10 @@ import type { Country } from "~/countries";
 
 import { filterCountriesByName, HomeCountriesContent } from "./home";
 import { loadHomeCountries } from "./home.server";
+import {
+  clearPaidVoteRedirectQueryState,
+  getPaidVoteRedirectQueryState,
+} from "./paid-vote-redirect-query";
 
 const visibleText = (html: string) => html.replaceAll("<!-- -->", "");
 
@@ -137,5 +141,55 @@ describe("Home", () => {
 
     expect(filterCountriesByName(countries, "tokyo")).toEqual([]);
     expect(filterCountriesByName(countries, "   ")).toBe(countries);
+  });
+
+  it("recognizes successful paid vote redirect query state", () => {
+    expect(
+      getPaidVoteRedirectQueryState(
+        "https://country-ranking.test/?session_id=cs_test_paid_vote_123",
+      ),
+    ).toEqual({
+      status: "present",
+      sessionId: "cs_test_paid_vote_123",
+    });
+  });
+
+  it("returns absent paid vote redirect query state without a session id", () => {
+    expect(
+      getPaidVoteRedirectQueryState("https://country-ranking.test/?q=japan"),
+    ).toEqual({
+      status: "absent",
+    });
+  });
+
+  it("returns absent paid vote redirect query state for malformed session ids", () => {
+    expect(
+      getPaidVoteRedirectQueryState(
+        "https://country-ranking.test/?session_id=pi_test_bad",
+      ),
+    ).toEqual({
+      status: "absent",
+    });
+    expect(
+      getPaidVoteRedirectQueryState(
+        "https://country-ranking.test/?session_id=%20%20%20",
+      ),
+    ).toEqual({
+      status: "absent",
+    });
+  });
+
+  it("clears checkout query state without dropping unrelated URL state", () => {
+    expect(
+      clearPaidVoteRedirectQueryState(
+        "/?sort=liked&session_id=cs_test_paid_vote_123&filter=asia#countries",
+      ),
+    ).toBe("/?sort=liked&filter=asia#countries");
+
+    expect(
+      clearPaidVoteRedirectQueryState(
+        "https://country-ranking.test/?session_id=bad&q=Japan",
+      ),
+    ).toBe("https://country-ranking.test/?q=Japan");
   });
 });

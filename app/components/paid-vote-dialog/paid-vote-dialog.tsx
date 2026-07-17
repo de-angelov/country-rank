@@ -136,6 +136,7 @@ const styles = {
   paymentDescription: "mt-2 text-sm text-muted-foreground",
   checkoutError:
     "rounded-base border-2 border-border bg-vote-dislike px-3 py-2 text-sm font-bold text-main-foreground",
+  checkoutFooter: "mt-3",
   payButton: "min-w-32",
   payButtonIcon: "size-4",
 } as const;
@@ -414,7 +415,7 @@ export function PaidVoteDialogBody({
           )}
         </div>
 
-        <DialogFooter>
+        <DialogFooter className={styles.checkoutFooter}>
           <DialogClose asChild>
             <Button type="button" variant="neutral" disabled={isCheckoutPending}>
               Cancel

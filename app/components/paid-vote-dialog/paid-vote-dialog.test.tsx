@@ -3,6 +3,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import {
   handlePaidVoteDialogOpenChange,
+  PaidVoteDialogBody,
   PaidVoteDialogContent,
   requestPaidVoteCheckout,
 } from "./paid-vote-dialog";
@@ -127,6 +128,21 @@ describe("PaidVoteDialog", () => {
     handlePaidVoteDialogOpenChange(true, onClose);
 
     expect(onClose).not.toHaveBeenCalled();
+  });
+
+  it("renders checkout actions with footer spacing matching the payment sections", () => {
+    const html = renderToString(
+      <Dialog open>
+        <PaidVoteDialogBody intent={checkoutIntent} />
+      </Dialog>,
+    );
+    const text = visibleText(html);
+
+    expect(text).toContain("Confirm vote");
+    expect(text).toContain("Cancel");
+    expect(text).toContain("Pay $1");
+    expect(html).toContain('data-slot="dialog-footer"');
+    expect(html).toContain("mt-3");
   });
 
   it("requests checkout and returns the checkout URL", async () => {

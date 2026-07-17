@@ -6,8 +6,9 @@ import {
   countryVoteLikesKey,
   runSeedRedisVotes,
 } from "./seed-redis-votes.mjs";
+import { countryFixtures as fullCountryFixtures } from "../app/countries/fixtures";
 
-const countryFixtures = [
+const sampleCountryFixtures = [
   {
     code: "BR",
     name: "Brazil",
@@ -44,13 +45,21 @@ const createClientFactory = () => {
   };
 };
 
+const getRedisPayload = (mock, expectedKey) => {
+  const call = mock.mock.calls.find(([key]) => key === expectedKey);
+
+  expect(call).toBeDefined();
+
+  return call[1];
+};
+
 describe("runSeedRedisVotes", () => {
   it("writes a metadata-only country catalog document and aggregate vote hashes", async () => {
     const { client, clientFactory } = createClientFactory();
     const logger = {
       log: vi.fn(),
     };
-    const expectedCatalog = countryFixtures.map(
+    const expectedCatalog = sampleCountryFixtures.map(
       ({ code, name, capital, factSnippet, flagImageUrl }) => ({
         code,
         name,
@@ -63,7 +72,7 @@ describe("runSeedRedisVotes", () => {
     await runSeedRedisVotes({
       env: { REDIS_URL: "redis://localhost:6379" },
       logger,
-      countryFixtureLoader: () => Promise.resolve(countryFixtures),
+      countryFixtureLoader: () => Promise.resolve(sampleCountryFixtures),
       clientFactory,
     });
 
@@ -78,6 +87,13 @@ describe("runSeedRedisVotes", () => {
       expect.arrayContaining([
         expect.objectContaining({
           likes: expect.any(Number),
+        }),
+      ]),
+    );
+    expect(JSON.parse(client.set.mock.calls[0][1])).not.toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          dislikes: expect.any(Number),
         }),
       ]),
     );
@@ -102,6 +118,49 @@ describe("runSeedRedisVotes", () => {
     expect(logger.log).toHaveBeenCalledWith(
       "Seeded Redis country catalog and aggregate vote totals for 2 country record(s).",
     );
+  });
+
+  it("seeds metadata-only catalog records and vote hashes for every fixture country", async () => {
+    const { client, clientFactory } = createClientFactory();
+    const expectedCountryCodes = fullCountryFixtures
+      .map((country) => country.code)
+      .sort();
+
+    await runSeedRedisVotes({
+      env: { REDIS_URL: "redis://localhost:6379" },
+      logger: {
+        log: vi.fn(),
+      },
+      countryFixtureLoader: () => Promise.resolve(fullCountryFixtures),
+      clientFactory,
+    });
+
+    const seededCatalog = JSON.parse(
+      getRedisPayload(client.set, countryCatalogKey),
+    );
+    const seededLikes = getRedisPayload(client.hSet, countryVoteLikesKey);
+    const seededDislikes = getRedisPayload(client.hSet, countryVoteDislikesKey);
+
+    expect(seededCatalog).toHaveLength(fullCountryFixtures.length);
+    expect(seededCatalog).not.toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          likes: expect.any(Number),
+        }),
+      ]),
+    );
+    expect(seededCatalog).not.toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          dislikes: expect.any(Number),
+        }),
+      ]),
+    );
+    expect(seededCatalog.map((country) => country.code).sort()).toEqual(
+      expectedCountryCodes,
+    );
+    expect(Object.keys(seededLikes).sort()).toEqual(expectedCountryCodes);
+    expect(Object.keys(seededDislikes).sort()).toEqual(expectedCountryCodes);
   });
 
   it("rejects country records that cannot seed vote totals", async () => {

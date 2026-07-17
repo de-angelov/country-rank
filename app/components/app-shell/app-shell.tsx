@@ -11,7 +11,30 @@ const navigationLinks = [
   { href: "/top-disliked", label: "Top Disliked" },
 ] as const;
 
-const bannerImageSrc = "/images/country-ranking-banner-v7.png";
+const bannerImage = {
+  alt: "The Internet Judges Earth",
+  height: 809,
+  sizes: "(max-width: 640px) 100vw, (max-width: 1200px) 1600px, 1994px",
+  sources: {
+    avif: [
+      "/images/banner/country-ranking-banner-v7-960.avif 960w",
+      "/images/banner/country-ranking-banner-v7-1600.avif 1600w",
+      "/images/banner/country-ranking-banner-v7-2400.avif 2400w",
+    ].join(", "),
+    webp: [
+      "/images/banner/country-ranking-banner-v7-960.webp 960w",
+      "/images/banner/country-ranking-banner-v7-1600.webp 1600w",
+      "/images/banner/country-ranking-banner-v7-2400.webp 2400w",
+    ].join(", "),
+    png: [
+      "/images/banner/country-ranking-banner-v7-960.png 960w",
+      "/images/banner/country-ranking-banner-v7-1600.png 1600w",
+      "/images/banner/country-ranking-banner-v7-2400.png 2400w",
+    ].join(", "),
+  },
+  src: "/images/banner/country-ranking-banner-v7-1600.png",
+  width: 4800,
+} as const;
 
 const styles = {
   root: "min-h-screen",
@@ -60,11 +83,27 @@ export function AppShell({ children }: { children: ReactNode }) {
         aria-label="Site header"
       >
         <div className={`${styles.bannerFrame} ${moduleStyles.bannerFrame}`}>
-          <img
-            className={moduleStyles.bannerImage}
-            src={bannerImageSrc}
-            alt="The Internet Judges Earth"
-          />
+          <picture>
+            <source
+              type="image/avif"
+              srcSet={bannerImage.sources.avif}
+              sizes={bannerImage.sizes}
+            />
+            <source
+              type="image/webp"
+              srcSet={bannerImage.sources.webp}
+              sizes={bannerImage.sizes}
+            />
+            <img
+              className={moduleStyles.bannerImage}
+              src={bannerImage.src}
+              srcSet={bannerImage.sources.png}
+              sizes={bannerImage.sizes}
+              width={bannerImage.width}
+              height={bannerImage.height}
+              alt={bannerImage.alt}
+            />
+          </picture>
 
           <p className={moduleStyles.bannerTagline} aria-label="Banner tagline">
             {bannerTagline}

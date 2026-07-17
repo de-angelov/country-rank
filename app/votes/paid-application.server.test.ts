@@ -2,7 +2,10 @@ import { errAsync, okAsync } from "neverthrow";
 import { describe, expect, it, vi } from "vitest";
 
 import { createPaidVoteApplication } from "./paid-application.server";
-import type { RedisPaidVoteFulfillmentError } from "./fulfillment.server";
+import type {
+  PaidVoteFulfillmentRecord,
+  RedisPaidVoteFulfillmentError,
+} from "./fulfillment.server";
 import {
   createRedisVoteStorage,
   voteTotalsKey,
@@ -57,6 +60,9 @@ const createClient = (
 
 const createApplicationWithClient = (
   client: ReturnType<typeof createClient>,
+  writeFulfillmentRecord = vi.fn((record: PaidVoteFulfillmentRecord) =>
+    okAsync(record),
+  ),
 ) => {
   const storage = createRedisVoteStorage({
     env: envWithRedisUrl,
@@ -74,6 +80,7 @@ const createApplicationWithClient = (
         status: "not_found",
         checkoutSessionId: "cs_test_missing",
       }),
+    writeFulfillmentRecord,
   });
 };
 
@@ -83,7 +90,13 @@ describe("createPaidVoteApplication", () => {
       likes: { JP: "4" },
       dislikes: { JP: "9" },
     });
-    const application = createApplicationWithClient(client);
+    const writeFulfillmentRecord = vi.fn(
+      (record: PaidVoteFulfillmentRecord) => okAsync(record),
+    );
+    const application = createApplicationWithClient(
+      client,
+      writeFulfillmentRecord,
+    );
 
     const result = await application.applyPaidVote({
       checkoutSessionId: "cs_test_like",
@@ -108,6 +121,17 @@ describe("createPaidVoteApplication", () => {
       "JP",
       1,
     );
+    expect(writeFulfillmentRecord).toHaveBeenCalledWith({
+      status: "applied",
+      checkoutSessionId: "cs_test_like",
+      countryCode: "JP",
+      voteType: "like",
+      totals: {
+        countryCode: "JP",
+        likes: 5,
+        dislikes: 9,
+      },
+    });
   });
 
   it("applies a valid paid dislike vote to only the dislike total", async () => {
@@ -115,7 +139,13 @@ describe("createPaidVoteApplication", () => {
       likes: { DE: "3" },
       dislikes: { DE: "6" },
     });
-    const application = createApplicationWithClient(client);
+    const writeFulfillmentRecord = vi.fn(
+      (record: PaidVoteFulfillmentRecord) => okAsync(record),
+    );
+    const application = createApplicationWithClient(
+      client,
+      writeFulfillmentRecord,
+    );
 
     const result = await application.applyPaidVote({
       checkoutSessionId: "cs_test_dislike",
@@ -140,6 +170,17 @@ describe("createPaidVoteApplication", () => {
       "DE",
       1,
     );
+    expect(writeFulfillmentRecord).toHaveBeenCalledWith({
+      status: "applied",
+      checkoutSessionId: "cs_test_dislike",
+      countryCode: "DE",
+      voteType: "dislike",
+      totals: {
+        countryCode: "DE",
+        likes: 3,
+        dislikes: 7,
+      },
+    });
   });
 
   it("returns a typed error when Redis fails to write the paid vote", async () => {
@@ -150,7 +191,13 @@ describe("createPaidVoteApplication", () => {
         hIncrBy: () => Promise.reject(commandError),
       },
     );
-    const application = createApplicationWithClient(client);
+    const writeFulfillmentRecord = vi.fn(
+      (record: PaidVoteFulfillmentRecord) => okAsync(record),
+    );
+    const application = createApplicationWithClient(
+      client,
+      writeFulfillmentRecord,
+    );
 
     const result = await application.applyPaidVote({
       checkoutSessionId: "cs_test_write_failure",
@@ -166,6 +213,56 @@ describe("createPaidVoteApplication", () => {
         code: "redis_command_failed",
         message: "Failed to increment country vote total in Redis.",
         cause: commandError,
+      },
+    });
+    expect(writeFulfillmentRecord).not.toHaveBeenCalled();
+  });
+
+  it("returns a typed error when fulfillment cannot be recorded after applying the vote", async () => {
+    const client = createClient({
+      likes: { BR: "8" },
+      dislikes: { BR: "2" },
+    });
+    const fulfillmentError: RedisPaidVoteFulfillmentError = {
+      code: "redis_command_failed",
+      message: "Failed to write paid vote fulfillment record to Redis.",
+      cause: new Error("redis set failed"),
+    };
+    const writeFulfillmentRecord = vi.fn(() =>
+      errAsync(fulfillmentError),
+    );
+    const application = createApplicationWithClient(
+      client,
+      writeFulfillmentRecord,
+    );
+
+    const result = await application.applyPaidVote({
+      checkoutSessionId: "cs_test_fulfillment_write_failure",
+      countryCode: "BR",
+      voteType: "like",
+    });
+
+    expect(result.isErr()).toBe(true);
+    expect(result._unsafeUnwrapErr()).toEqual({
+      code: "paid_vote_fulfillment_write_failed",
+      message: "Failed to write paid vote fulfillment after applying vote.",
+      checkoutSessionId: "cs_test_fulfillment_write_failure",
+      cause: fulfillmentError,
+    });
+    expect(client.hIncrBy).toHaveBeenCalledWith(
+      voteTotalsKey("like"),
+      "BR",
+      1,
+    );
+    expect(writeFulfillmentRecord).toHaveBeenCalledWith({
+      status: "applied",
+      checkoutSessionId: "cs_test_fulfillment_write_failure",
+      countryCode: "BR",
+      voteType: "like",
+      totals: {
+        countryCode: "BR",
+        likes: 9,
+        dislikes: 2,
       },
     });
   });
@@ -188,6 +285,9 @@ describe("createPaidVoteApplication", () => {
         },
       }),
     );
+    const writeFulfillmentRecord = vi.fn(
+      (record: PaidVoteFulfillmentRecord) => okAsync(record),
+    );
     const storage = createRedisVoteStorage({
       env: envWithRedisUrl,
       clientFactory: () => client,
@@ -195,6 +295,7 @@ describe("createPaidVoteApplication", () => {
     const application = createPaidVoteApplication({
       incrementVoteTotal: storage.incrementCountryVoteTotal,
       readFulfillmentRecord,
+      writeFulfillmentRecord,
     });
 
     const result = await application.applyPaidVote({
@@ -217,6 +318,7 @@ describe("createPaidVoteApplication", () => {
     });
     expect(readFulfillmentRecord).toHaveBeenCalledWith("cs_test_duplicate");
     expect(client.hIncrBy).not.toHaveBeenCalled();
+    expect(writeFulfillmentRecord).not.toHaveBeenCalled();
   });
 
   it("returns a typed error before applying when fulfillment lookup fails", async () => {
@@ -235,6 +337,9 @@ describe("createPaidVoteApplication", () => {
         clientFactory: () => client,
       }).incrementCountryVoteTotal,
       readFulfillmentRecord: () => errAsync(fulfillmentError),
+      writeFulfillmentRecord: vi.fn((record: PaidVoteFulfillmentRecord) =>
+        okAsync(record),
+      ),
     });
 
     const result = await application.applyPaidVote({

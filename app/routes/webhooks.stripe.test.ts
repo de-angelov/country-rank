@@ -91,6 +91,7 @@ describe("Stripe webhook route", () => {
     const applyPaidVote = vi.fn(() =>
       okAsync({
         status: "applied" as const,
+        checkoutSessionId: "cs_test_route_signature_shell",
         countryCode: "JP",
         voteType: "like" as const,
         totals: {
@@ -216,6 +217,50 @@ describe("Stripe webhook route", () => {
           code: "redis_command_failed",
           message:
             "Failed to read paid vote fulfillment record from Redis.",
+        },
+      },
+    });
+    expect(applyPaidVote).toHaveBeenCalledWith({
+      checkoutSessionId: "cs_test_route_signature_shell",
+      countryCode: "JP",
+      voteType: "like",
+    });
+  });
+
+  it("returns a typed fulfillment write error after the vote is applied but not recorded", async () => {
+    vi.stubEnv("STRIPE_WEBHOOK_SECRET", webhookSecret);
+    const applyPaidVote = vi.fn(() =>
+      errAsync({
+        code: "paid_vote_fulfillment_write_failed" as const,
+        message:
+          "Failed to write paid vote fulfillment after applying vote.",
+        checkoutSessionId: "cs_test_route_signature_shell",
+        cause: {
+          code: "redis_command_failed" as const,
+          message:
+            "Failed to write paid vote fulfillment record to Redis.",
+          cause: new Error("redis set failed"),
+        },
+      }),
+    );
+    const handleStripeWebhook = createStripeWebhookHandler({ applyPaidVote });
+
+    const response = await handleStripeWebhook(
+      createRequest(verifiedCheckoutPayload, signPayload(verifiedCheckoutPayload)),
+    );
+
+    expect(response.status).toBe(500);
+    expect(await readJson(response)).toEqual({
+      ok: false,
+      error: {
+        code: "paid_vote_fulfillment_write_failed",
+        message:
+          "Failed to write paid vote fulfillment after applying vote.",
+        checkoutSessionId: "cs_test_route_signature_shell",
+        cause: {
+          code: "redis_command_failed",
+          message:
+            "Failed to write paid vote fulfillment record to Redis.",
         },
       },
     });

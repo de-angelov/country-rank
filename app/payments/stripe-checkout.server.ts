@@ -1,4 +1,5 @@
-import { err, ok, type Result } from "neverthrow";
+import { err, ok, ResultAsync, type Result } from "neverthrow";
+import Stripe from "stripe";
 
 import {
   validateVoteRequest,
@@ -36,6 +37,29 @@ export type StripeCheckoutRequestResult = Result<
   StripeCheckoutRequest,
   StripeCheckoutRequestError
 >;
+
+export type StripeCheckoutSessionSuccess = Readonly<{
+  checkoutUrl: string;
+}>;
+
+export type StripeCheckoutSessionError = Readonly<{
+  code: "stripe_checkout_session_creation_failed";
+  message: string;
+  cause: unknown;
+}>;
+
+type StripeCheckoutSessionCreateParams = Stripe.Checkout.SessionCreateParams;
+type StripeCheckoutSessionCreateResult = Pick<Stripe.Checkout.Session, "url">;
+
+export type CreateStripeCheckoutSession = (
+  params: StripeCheckoutSessionCreateParams,
+) => Promise<StripeCheckoutSessionCreateResult>;
+
+export type StripeCheckoutSessionOptions = Readonly<{
+  config: StripeCheckoutConfig;
+  appBaseUrl: string;
+  createSession?: CreateStripeCheckoutSession;
+}>;
 
 export const getStripeCheckoutConfig = (
   env: NodeJS.ProcessEnv = process.env,
@@ -78,3 +102,75 @@ export const validateStripeCheckoutRequest = (
     voteType: validationResult.value.voteType,
   });
 };
+
+export const createStripeCheckoutSession = (
+  checkoutRequest: StripeCheckoutRequest,
+  options: StripeCheckoutSessionOptions,
+): ResultAsync<StripeCheckoutSessionSuccess, StripeCheckoutSessionError> => {
+  const createSession =
+    options.createSession ?? createStripeSessionCreator(options.config);
+
+  return ResultAsync.fromPromise(
+    createSession(
+      buildStripeCheckoutSessionParams(checkoutRequest, options.appBaseUrl),
+    ),
+    (cause) => ({
+      code: "stripe_checkout_session_creation_failed" as const,
+      message: "Failed to create Stripe checkout session.",
+      cause,
+    }),
+  ).andThen((session) => {
+    if (!session.url) {
+      return err({
+        code: "stripe_checkout_session_creation_failed",
+        message: "Failed to create Stripe checkout session.",
+        cause: new Error("Stripe checkout session did not include a URL."),
+      });
+    }
+
+    return ok({
+      checkoutUrl: session.url,
+    });
+  });
+};
+
+const createStripeSessionCreator = (
+  config: StripeCheckoutConfig,
+): CreateStripeCheckoutSession => {
+  const stripe = new Stripe(config.secretKey);
+
+  return (params) => stripe.checkout.sessions.create(params);
+};
+
+const buildStripeCheckoutSessionParams = (
+  checkoutRequest: StripeCheckoutRequest,
+  appBaseUrl: string,
+): StripeCheckoutSessionCreateParams => ({
+  mode: "payment",
+  line_items: [
+    {
+      quantity: 1,
+      price_data: {
+        currency: "usd",
+        unit_amount: stripeCheckoutUnitAmount[checkoutRequest.voteType],
+        product_data: {
+          name: `Paid ${checkoutRequest.voteType} vote for ${checkoutRequest.countryCode}`,
+        },
+      },
+    },
+  ],
+  metadata: {
+    countryCode: checkoutRequest.countryCode,
+    voteType: checkoutRequest.voteType,
+  },
+  success_url: `${normalizeAppBaseUrl(appBaseUrl)}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
+  cancel_url: `${normalizeAppBaseUrl(appBaseUrl)}/`,
+});
+
+const stripeCheckoutUnitAmount = {
+  like: 100,
+  dislike: 200,
+} satisfies Record<VoteKind, number>;
+
+const normalizeAppBaseUrl = (appBaseUrl: string) =>
+  appBaseUrl.replace(/\/+$/, "");

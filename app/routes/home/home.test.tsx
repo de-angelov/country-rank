@@ -10,6 +10,7 @@ import {
   clearPaidVoteRedirectQueryState,
   getPaidVoteRedirectQueryState,
 } from "./paid-vote-redirect-query";
+import { mapPaidVoteStatusResponseToHomeState } from "./paid-vote-confirmation-state";
 
 const visibleText = (html: string) => html.replaceAll("<!-- -->", "");
 
@@ -191,5 +192,90 @@ describe("Home", () => {
         "https://country-ranking.test/?session_id=bad&q=Japan",
       ),
     ).toBe("https://country-ranking.test/?q=Japan");
+  });
+
+  it("maps applied paid vote status to applied home confirmation state", () => {
+    expect(
+      mapPaidVoteStatusResponseToHomeState({
+        ok: true,
+        data: {
+          status: "applied",
+          countryCode: "JP",
+          voteType: "like",
+          totals: {
+            countryCode: "JP",
+            likes: 13,
+            dislikes: 4,
+          },
+        },
+      }),
+    ).toEqual({
+      status: "applied",
+      countryCode: "JP",
+      voteType: "like",
+      totals: {
+        countryCode: "JP",
+        likes: 13,
+        dislikes: 4,
+      },
+    });
+  });
+
+  it("maps pending paid vote status without claiming the vote was applied", () => {
+    expect(
+      mapPaidVoteStatusResponseToHomeState({
+        ok: true,
+        data: {
+          status: "pending",
+        },
+      }),
+    ).toEqual({
+      status: "pending",
+    });
+  });
+
+  it("maps invalid paid vote status responses to invalid home confirmation state", () => {
+    expect(
+      mapPaidVoteStatusResponseToHomeState({
+        ok: false,
+        error: {
+          code: "invalid_checkout_status_request",
+          message: "Checkout status request is invalid.",
+          fieldErrors: {
+            session_id: "session_id must be a valid Stripe Checkout Session ID.",
+          },
+        },
+      }),
+    ).toEqual({
+      status: "invalid",
+      message: "Checkout status request is invalid.",
+    });
+
+    expect(
+      mapPaidVoteStatusResponseToHomeState({
+        ok: true,
+        data: {
+          status: "not_found",
+        },
+      }),
+    ).toEqual({
+      status: "invalid",
+      message: "We could not confirm that paid vote session.",
+    });
+  });
+
+  it("maps failed paid vote status lookup responses to lookup failure state", () => {
+    expect(
+      mapPaidVoteStatusResponseToHomeState({
+        ok: false,
+        error: {
+          code: "redis_command_failed",
+          message: "Failed to read paid vote fulfillment record from Redis.",
+        },
+      }),
+    ).toEqual({
+      status: "lookup_failed",
+      message: "Failed to read paid vote fulfillment record from Redis.",
+    });
   });
 });

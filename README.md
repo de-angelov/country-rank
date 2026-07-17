@@ -172,6 +172,9 @@ The current route-level security exposure inventory for `/votes`, `/checkout`,
 `/checkout-status`, and `/webhooks/stripe` is recorded in
 [`docs/security.md`](docs/security.md).
 
+Dependency update cadence, lockfile handling, and npm audit triage are recorded
+in the [dependency hygiene policy](docs/dependency-hygiene.md).
+
 ### Redis Backup Runner
 
 Operational checklists for deploy verification, rollback, restore drills,

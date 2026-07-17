@@ -1,6 +1,10 @@
 import {
+  err,
   errAsync,
+  ok,
+  okAsync,
   ResultAsync,
+  type Result,
 } from "neverthrow";
 import {
   createDefaultRedisClient,
@@ -37,6 +41,13 @@ export type RedisVoteStorageError =
       countryCode: string;
     }>
   | Readonly<{
+      code: "malformed_vote_total";
+      message: string;
+      key: string;
+      field: string;
+      value: string;
+    }>
+  | Readonly<{
       code: "redis_connection_failed" | "redis_command_failed";
       message: string;
       cause: unknown;
@@ -69,6 +80,42 @@ export const getRedisVoteStorageConfig = (
 
 export const voteTotalsKey = (voteKind: VoteKind) =>
   `country:votes:${voteKind === "like" ? "likes" : "dislikes"}`;
+
+const validateStoredVoteTotal = (
+  key: string,
+  field: string,
+  value: string | null,
+): Result<number, RedisVoteStorageError> => {
+  if (value === null) {
+    return ok(0);
+  }
+
+  if (!/^\d+$/.test(value)) {
+    return err({
+      code: "malformed_vote_total",
+      message:
+        "Redis vote total hash values must be non-negative integer strings.",
+      key,
+      field,
+      value,
+    });
+  }
+
+  const total = Number(value);
+
+  if (!Number.isSafeInteger(total)) {
+    return err({
+      code: "malformed_vote_total",
+      message:
+        "Redis vote total hash values must be non-negative integer strings.",
+      key,
+      field,
+      value,
+    });
+  }
+
+  return ok(total);
+};
 
 export const createRedisVoteStorage = (
   options: RedisVoteStorageOptions = {},
@@ -114,11 +161,32 @@ export const createRedisVoteStorage = (
             message: "Failed to read country vote totals from Redis.",
             cause,
           }),
-        ).map(([likes, dislikes]) => ({
-          countryCode: normalizedCountryCode,
-          likes: Number(likes ?? 0),
-          dislikes: Number(dislikes ?? 0),
-        })),
+        ).andThen(([likes, dislikes]) => {
+          const likesResult = validateStoredVoteTotal(
+            voteTotalsKey("like"),
+            normalizedCountryCode,
+            likes,
+          );
+          const dislikesResult = validateStoredVoteTotal(
+            voteTotalsKey("dislike"),
+            normalizedCountryCode,
+            dislikes,
+          );
+
+          if (likesResult.isErr()) {
+            return errAsync(likesResult.error);
+          }
+
+          if (dislikesResult.isErr()) {
+            return errAsync(dislikesResult.error);
+          }
+
+          return okAsync({
+            countryCode: normalizedCountryCode,
+            likes: likesResult.value,
+            dislikes: dislikesResult.value,
+          });
+        }),
       ),
     );
 
@@ -140,22 +208,45 @@ export const createRedisVoteStorage = (
           }),
         ),
       )
-      .map(([likesByCountry, dislikesByCountry]) => {
+      .andThen(([likesByCountry, dislikesByCountry]) => {
         const countryCodes = new Set([
           ...Object.keys(likesByCountry),
           ...Object.keys(dislikesByCountry),
         ]);
 
-        return new Map(
-          [...countryCodes].map((countryCode) => [
+        const totals: [string, VoteTotals][] = [];
+
+        for (const countryCode of countryCodes) {
+          const likesResult = validateStoredVoteTotal(
+            voteTotalsKey("like"),
+            countryCode,
+            likesByCountry[countryCode] ?? null,
+          );
+          const dislikesResult = validateStoredVoteTotal(
+            voteTotalsKey("dislike"),
+            countryCode,
+            dislikesByCountry[countryCode] ?? null,
+          );
+
+          if (likesResult.isErr()) {
+            return errAsync(likesResult.error);
+          }
+
+          if (dislikesResult.isErr()) {
+            return errAsync(dislikesResult.error);
+          }
+
+          totals.push([
             countryCode,
             {
               countryCode,
-              likes: Number(likesByCountry[countryCode] ?? 0),
-              dislikes: Number(dislikesByCountry[countryCode] ?? 0),
+              likes: likesResult.value,
+              dislikes: dislikesResult.value,
             },
-          ]),
-        );
+          ]);
+        }
+
+        return okAsync(new Map(totals));
       });
 
   const incrementCountryVoteTotal = (

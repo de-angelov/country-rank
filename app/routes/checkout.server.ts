@@ -1,4 +1,5 @@
 import { logger, type ApplicationLogger } from "~/lib/logger.server";
+import { createServerErrorResponse } from "~/lib/server-error-response.server";
 import {
   createStripeCheckoutSession,
   getStripeCheckoutConfig,
@@ -64,6 +65,19 @@ export const createCheckoutHandler =
         );
       }
 
+      if (checkoutRequestResult.error.code === "missing_stripe_checkout_config") {
+        const responseError = toCheckoutRequestResponseError(
+          checkoutRequestResult.error,
+        );
+
+        return createServerErrorResponse({
+          status: toCheckoutRequestResponseStatus(checkoutRequestResult.error),
+          code: responseError.code,
+          publicMessage: responseError.message,
+          requestId: getRequestId(request),
+        });
+      }
+
       return Response.json(
         {
           ok: false,
@@ -76,13 +90,14 @@ export const createCheckoutHandler =
     const configResult = getStripeCheckoutConfig(env);
 
     if (configResult.isErr()) {
-      return Response.json(
-        {
-          ok: false,
-          error: toCheckoutRequestResponseError(configResult.error),
-        },
-        { status: toCheckoutRequestResponseStatus(configResult.error) },
-      );
+      const responseError = toCheckoutRequestResponseError(configResult.error);
+
+      return createServerErrorResponse({
+        status: toCheckoutRequestResponseStatus(configResult.error),
+        code: responseError.code,
+        publicMessage: responseError.message,
+        requestId: getRequestId(request),
+      });
     }
 
     const sessionResult = await createStripeCheckoutSession(
@@ -107,13 +122,16 @@ export const createCheckoutHandler =
         "Stripe checkout session creation failed.",
       );
 
-      return Response.json(
-        {
-          ok: false,
-          error: toStripeCheckoutSessionResponseError(sessionResult.error),
-        },
-        { status: 502 },
+      const responseError = toStripeCheckoutSessionResponseError(
+        sessionResult.error,
       );
+
+      return createServerErrorResponse({
+        status: 502,
+        code: responseError.code,
+        publicMessage: responseError.message,
+        requestId: getRequestId(request),
+      });
     }
 
     if (request.headers.get("content-type")?.includes("application/json")) {
@@ -159,9 +177,10 @@ const toStripeCheckoutSessionResponseError = (
 });
 
 const getRequestLogContext = (request: Request) => {
-  const requestId =
-    request.headers.get("x-request-id") ??
-    request.headers.get("x-correlation-id");
+  const requestId = getRequestId(request);
 
   return requestId ? { requestId } : {};
 };
+
+const getRequestId = (request: Request) =>
+  request.headers.get("x-request-id") ?? request.headers.get("x-correlation-id");

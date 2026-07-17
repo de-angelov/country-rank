@@ -39,6 +39,16 @@ export type PaidVoteFulfillmentReadResult =
       checkoutSessionId: string;
     }>;
 
+export type PaidVoteFulfillmentClaimResult =
+  | Readonly<{
+      status: "claimed";
+      record: Extract<PaidVoteFulfillmentRecord, { status: "pending" }>;
+    }>
+  | Readonly<{
+      status: "duplicate";
+      checkoutSessionId: string;
+    }>;
+
 export type RedisPaidVoteFulfillmentConfig = RedisConfig;
 
 export type RedisPaidVoteFulfillmentError =
@@ -62,7 +72,11 @@ export type RedisPaidVoteFulfillmentError =
 type RedisPaidVoteFulfillmentClient = {
   connect: () => Promise<unknown>;
   get: (key: string) => Promise<string | null>;
-  set: (key: string, value: string) => Promise<unknown>;
+  set: (
+    key: string,
+    value: string,
+    options?: { condition: "NX" },
+  ) => Promise<unknown>;
 };
 
 type RedisPaidVoteFulfillmentClientFactory =
@@ -211,6 +225,66 @@ export const createRedisPaidVoteFulfillmentStorage = (
       })
       .map(() => record);
 
+  const claimPaidVoteFulfillmentRecord = (
+    claim: Readonly<{
+      checkoutSessionId: string;
+      countryCode: string;
+      voteType: VoteKind;
+    }>,
+  ): ResultAsync<
+    PaidVoteFulfillmentClaimResult,
+    RedisPaidVoteFulfillmentError
+  > => {
+    const record = {
+      status: "pending" as const,
+      checkoutSessionId: claim.checkoutSessionId,
+      countryCode: claim.countryCode,
+      voteType: claim.voteType,
+    };
+
+    return getClient()
+      .andThen((client) =>
+        ResultAsync.fromPromise(
+          client.set(
+            paidVoteFulfillmentKey(record.checkoutSessionId),
+            JSON.stringify(record),
+            { condition: "NX" },
+          ),
+          (cause) => ({
+            code: "redis_command_failed",
+            message:
+              "Failed to claim paid vote fulfillment record in Redis.",
+            cause,
+          }),
+        ),
+      )
+      .mapErr((error) => {
+        paymentLogger.error(
+          {
+            action: "claim_paid_vote_fulfillment_record",
+            errorCode: error.code,
+            checkoutSessionId: record.checkoutSessionId,
+            countryCode: record.countryCode,
+            voteType: record.voteType,
+          },
+          "Failed to claim paid vote fulfillment record.",
+        );
+
+        return error;
+      })
+      .map((setResult) =>
+        setResult === null
+          ? {
+              status: "duplicate" as const,
+              checkoutSessionId: record.checkoutSessionId,
+            }
+          : {
+              status: "claimed" as const,
+              record,
+            },
+      );
+  };
+
   const readPaidVoteFulfillmentRecord = (
     checkoutSessionId: string,
   ): ResultAsync<
@@ -249,12 +323,14 @@ export const createRedisPaidVoteFulfillmentStorage = (
       });
 
   return {
+    claimPaidVoteFulfillmentRecord,
     writePaidVoteFulfillmentRecord,
     readPaidVoteFulfillmentRecord,
   };
 };
 
 export const {
+  claimPaidVoteFulfillmentRecord,
   writePaidVoteFulfillmentRecord,
   readPaidVoteFulfillmentRecord,
 } = createRedisPaidVoteFulfillmentStorage();

@@ -169,6 +169,29 @@ describe("readCountriesWithRedisVoteTotals", () => {
     });
   });
 
+  it("returns malformed Redis vote total failures without falling back to fixture totals", async () => {
+    const client = createClient({
+      likes: { JP: "not-a-number" },
+    });
+    const storage = createRedisVoteStorage({
+      env: envWithRedisUrl,
+      clientFactory: () => client,
+    });
+
+    const result = await readCountriesWithRedisVoteTotals({
+      readCatalog: () => okAsync([catalog[0]]),
+      readVoteTotals: storage.readAllCountryVoteTotals,
+    });
+
+    expect(result.isErr()).toBe(true);
+    expect(result._unsafeUnwrapErr()).toMatchObject({
+      code: "malformed_vote_total",
+      key: voteTotalsKey("like"),
+      field: "JP",
+      value: "not-a-number",
+    });
+  });
+
   it("returns catalog failures without falling back to fixture metadata", async () => {
     const catalogError = {
       code: "missing_country_catalog" as const,

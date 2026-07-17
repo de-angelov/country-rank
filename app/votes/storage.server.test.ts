@@ -129,6 +129,33 @@ describe("createRedisVoteStorage", () => {
     });
   });
 
+  it.each([
+    ["non-numeric", "many"],
+    ["negative", "-1"],
+    ["fractional", "1.5"],
+    ["empty", ""],
+    ["unsafe", "9007199254740992"],
+  ])("rejects %s Redis vote total strings", async (_label, value) => {
+    const client = createClient({
+      likes: { US: value },
+      dislikes: { US: "4" },
+    });
+    const storage = createRedisVoteStorage({
+      env: envWithRedisUrl,
+      clientFactory: () => client,
+    });
+
+    const result = await storage.readCountryVoteTotals("US");
+
+    expect(result.isErr()).toBe(true);
+    expect(result._unsafeUnwrapErr()).toMatchObject({
+      code: "malformed_vote_total",
+      key: voteTotalsKey("like"),
+      field: "US",
+      value,
+    });
+  });
+
   it("reads aggregate country vote totals from Redis vote hashes", async () => {
     const client = createClient({
       likes: { JP: "12", DE: "5" },
@@ -167,6 +194,27 @@ describe("createRedisVoteStorage", () => {
       2,
       voteTotalsKey("dislike"),
     );
+  });
+
+  it("rejects malformed aggregate Redis vote hash values", async () => {
+    const client = createClient({
+      likes: { JP: "12", DE: "NaN" },
+      dislikes: { JP: "4", DE: "1" },
+    });
+    const storage = createRedisVoteStorage({
+      env: envWithRedisUrl,
+      clientFactory: () => client,
+    });
+
+    const result = await storage.readAllCountryVoteTotals();
+
+    expect(result.isErr()).toBe(true);
+    expect(result._unsafeUnwrapErr()).toMatchObject({
+      code: "malformed_vote_total",
+      key: voteTotalsKey("like"),
+      field: "DE",
+      value: "NaN",
+    });
   });
 
   it("increments like and dislike totals by country code", async () => {

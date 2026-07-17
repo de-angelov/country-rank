@@ -168,8 +168,9 @@ applies paid votes from verified `checkout.session.completed` events that
 include the approved metadata. Use only Stripe test-mode `STRIPE_SECRET_KEY`
 values for local checkout development.
 
-The current route-level security exposure inventory for `/votes`, `/checkout`,
-`/checkout-status`, and `/webhooks/stripe` is recorded in
+The current route-level security exposure inventory and initial baseline
+decisions for `/votes`, `/checkout`, `/checkout-status`, and `/webhooks/stripe`
+are recorded in
 [`docs/security.md`](docs/security.md).
 
 Dependency update cadence, lockfile handling, and npm audit triage are recorded

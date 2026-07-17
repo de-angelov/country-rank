@@ -1,13 +1,18 @@
-# Security Exposure Inventory
+# Security Baseline
 
-This inventory records the current technical behavior of the app's vote and
-paid-vote routes. It is descriptive only. Baseline posture decisions for rate
-limiting, CSRF, security headers, CSP, remote flag images, and logging privacy
-are tracked separately in CR-156 and CR-158.
+This document records the app's initial technical security baseline. It
+separates the current route behavior inventoried by CR-159 from the baseline
+posture decisions approved in CR-156 and the follow-up controls that still need
+implementation.
 
-## Route exposure
+## Current behavior
 
-### `POST /votes`
+The following inventory records current behavior only. It does not imply that
+the recommended future controls are already implemented.
+
+### Route exposure
+
+#### `POST /votes`
 
 - Accepts JSON or form data with `countryCode` and `voteType`.
 - Validates the country code against the app's country list and accepts only
@@ -19,7 +24,7 @@ are tracked separately in CR-156 and CR-158.
 - Redis configuration, connection, and command failures are returned as typed
   errors instead of falling back to fixture totals.
 
-### `POST /checkout`
+#### `POST /checkout`
 
 - Accepts JSON or form data with the same vote intent fields as `/votes`.
 - Requires `STRIPE_SECRET_KEY` before validating or creating checkout sessions.
@@ -38,7 +43,7 @@ the checkout result through Stripe APIs and webhooks; it does not render card
 fields or store card numbers, CVC values, or payment method payloads in its own
 Redis data.
 
-### `GET /checkout-status`
+#### `GET /checkout-status`
 
 - Accepts a `session_id` query parameter.
 - Requires the value to match the current Stripe Checkout Session ID pattern
@@ -51,7 +56,7 @@ Redis data.
 - Redis configuration, connection, command, and malformed-record failures are
   returned as typed errors.
 
-### `POST /webhooks/stripe`
+#### `POST /webhooks/stripe`
 
 - Reads the raw request body and verifies the `stripe-signature` header with
   `STRIPE_WEBHOOK_SECRET`.
@@ -66,7 +71,7 @@ Redis data.
 - Returns typed errors when metadata parsing, Redis fulfillment, or vote
   application fails.
 
-## Payment identifiers and logs
+### Payment identifiers and logs
 
 Structured app logs may include payment identifiers and vote context from the
 existing checkout and webhook code:
@@ -85,3 +90,69 @@ headers, cookies, Stripe signatures, Stripe secret keys, webhook secrets, raw
 request or webhook payloads, card fields, and payment method fields. That
 redaction is path based, so secrets must not be interpolated into free-form log
 message strings.
+
+## Baseline decisions
+
+These decisions describe the selected posture for the initial security baseline.
+They are not a statement that every future control listed here is already
+implemented.
+
+### Rate limiting
+
+The approved baseline is to ship without rate limiting for now and document rate
+limiting as a follow-up control. This means the current unauthenticated
+`POST /votes` and `POST /checkout` endpoints still rely on validation and typed
+error handling, not request throttling, to constrain misuse.
+
+Recommended follow-up task: add endpoint rate limiting for `POST /votes` and
+`POST /checkout`, with separate limits for free vote increments and Stripe
+Checkout Session creation. The implementation should define the keying strategy
+for anonymous traffic, Redis storage keys and TTLs, response status/body shape
+for limited requests, and focused tests for allowed and blocked submissions.
+
+### CSRF posture
+
+The approved CSRF posture is to rely on same-origin form/action behavior for now
+for both form and JSON submissions to `POST /votes` and `POST /checkout`. The
+app does not currently use user accounts, privileged browser sessions, or
+same-site authenticated state for these endpoints, so CR-156 selected
+documentation over introducing CSRF tokens in the initial baseline.
+
+This decision should be revisited before adding authenticated sessions, admin
+actions, saved payment state, or any cookie-backed privilege that would make a
+cross-site submission act on behalf of a specific user.
+
+### Security headers and CSP
+
+The approved posture is to add standard security headers and a Content Security
+Policy as follow-up implementation work. The CSP must preserve the current flag
+image model by allowing remote flag images from Wikimedia-backed sources.
+
+Recommended follow-up task: add shared security headers at the React Router
+document/server boundary. At minimum, define and test a CSP,
+`X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`, frame
+embedding policy, and production HTTPS/HSTS behavior appropriate for the
+deployment target.
+
+### Remote Wikimedia flag images
+
+Country flag URLs are public, remote Wikimedia-backed image URLs stored in the
+country catalog and rendered by the app. The baseline allows those remote flag
+images rather than copying flag assets into the repository or proxying them
+through the app.
+
+Future CSP work must explicitly permit the selected Wikimedia image origins.
+Changing this policy would require a separate implementation decision, such as
+vendoring flag assets, introducing an image proxy, or moving to a controlled CDN.
+
+### Logging privacy boundaries
+
+Payment and session identifiers may be logged only when needed for diagnostics,
+idempotency tracing, or failure investigation. Logs must not include card data,
+CVC values, payment method payloads, raw Stripe webhook payloads, Stripe secret
+keys, webhook secrets, authorization headers, cookies, or customer personal data.
+
+Structured logging remains the expected path because the shared logger can
+redact configured structured fields. Do not place secrets or personal data in
+free-form log message strings, where path-based redaction cannot reliably remove
+them.

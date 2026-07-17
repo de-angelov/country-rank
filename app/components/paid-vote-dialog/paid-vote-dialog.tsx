@@ -7,6 +7,7 @@ import { cn } from "~/lib/utils";
 import { Button } from "~/components/ui/button";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogFooter,
@@ -147,9 +148,11 @@ export function PaidVoteDialogBody({
       </div>
 
       <DialogFooter>
-        <Button type="button" variant="neutral">
-          Cancel
-        </Button>
+        <DialogClose asChild>
+          <Button type="button" variant="neutral">
+            Cancel
+          </Button>
+        </DialogClose>
 
         <Button type="button" disabled className={styles.payButton}>
           <CreditCard aria-hidden="true" className={styles.payButtonIcon} />

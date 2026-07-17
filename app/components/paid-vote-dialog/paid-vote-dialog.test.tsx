@@ -17,6 +17,20 @@ const visibleText = (html: string) =>
   html.replaceAll("<!-- -->", "").replace(/<[^>]*>/g, "");
 
 describe("PaidVoteDialog", () => {
+  it("renders Cancel as the dialog close action while Pay remains disabled", () => {
+    const html = renderToString(
+      <Dialog open>
+        <PaidVoteDialogBody intent={{ country, voteType: "like" }} />
+      </Dialog>,
+    );
+    const text = visibleText(html);
+
+    expect(text).toContain("Cancel");
+    expect(html).toContain('data-slot="dialog-close"');
+    expect(text).toContain("Pay $1");
+    expect(html).toContain("disabled");
+  });
+
   it("identifies the selected country and like vote", () => {
     const html = renderToString(
       <Dialog open>

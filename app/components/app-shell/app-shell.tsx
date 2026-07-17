@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { type ReactNode } from "react";
 
 import { Button } from "~/components/ui/button";
 
@@ -36,22 +36,9 @@ export const bannerTaglines = [
   "Petty by Popular Vote.",
 ] as const;
 
-export function pickBannerTagline(random = Math.random): string {
-  const taglineIndex = Math.min(
-    Math.floor(random() * bannerTaglines.length),
-    bannerTaglines.length - 1,
-  );
-
-  return bannerTaglines[taglineIndex];
-}
+export const bannerTagline = bannerTaglines[0];
 
 export function AppShell({ children }: { children: ReactNode }) {
-  const [bannerTagline, setBannerTagline] = useState<string>(bannerTaglines[0]);
-
-  useEffect(() => {
-    setBannerTagline(pickBannerTagline());
-  }, []);
-
   return (
     <div className={styles.root}>
       <header

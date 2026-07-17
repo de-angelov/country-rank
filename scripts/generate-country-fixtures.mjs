@@ -30,6 +30,72 @@ Behavior:
 `;
 
 const countryCodePattern = /^[A-Z]{2}$/;
+export const countrySnippetMaxLength = 80;
+
+const displayNameOverrides = new Map([
+  ["AE", "United Arab Emirates"],
+  ["AX", "Aland Islands"],
+  ["BL", "Saint Barthelemy"],
+  ["BO", "Bolivia"],
+  ["BQ", "Bonaire and friends"],
+  ["CC", "Cocos Islands"],
+  ["CD", "D.R. Congo"],
+  ["CI", "Cote d'Ivoire"],
+  ["CW", "Curacao"],
+  ["DO", "Dominican Republic"],
+  ["FK", "Falklands"],
+  ["FM", "Micronesia"],
+  ["GB", "United Kingdom"],
+  ["GS", "South Georgia"],
+  ["HM", "Heard and McDonald Islands"],
+  ["IO", "British Indian Ocean Territory"],
+  ["IR", "Iran"],
+  ["KP", "North Korea"],
+  ["KR", "South Korea"],
+  ["LA", "Laos"],
+  ["MD", "Moldova"],
+  ["MP", "Northern Marianas"],
+  ["NL", "Netherlands"],
+  ["PH", "Philippines"],
+  ["PS", "Palestine"],
+  ["RE", "Reunion"],
+  ["RU", "Russia"],
+  ["SH", "Saint Helena"],
+  ["SJ", "Svalbard"],
+  ["ST", "Sao Tome and Principe"],
+  ["SX", "Sint Maarten"],
+  ["SY", "Syria"],
+  ["TC", "Turks and Caicos"],
+  ["TF", "French Southern Lands"],
+  ["TR", "Turkiye"],
+  ["TW", "Taiwan"],
+  ["TZ", "Tanzania"],
+  ["UM", "U.S. Outlying Islands"],
+  ["US", "United States"],
+  ["VA", "Vatican City"],
+  ["VE", "Venezuela"],
+  ["VG", "British Virgin Islands"],
+  ["VI", "U.S. Virgin Islands"],
+  ["VN", "Vietnam"],
+  ["WF", "Wallis and Futuna"],
+  ["YT", "Mayotte"],
+  ["ZA", "South Africa"],
+]);
+
+const snippetThemes = [
+  "postcard mischief",
+  "market-day color",
+  "harbor breeze",
+  "mountain-map energy",
+  "sunny cafe plans",
+  "flag-quiz flair",
+  "passport-stamp drama",
+  "rain-or-shine charm",
+  "airport-layover dreams",
+  "capital-city cameos",
+  "island-hop plans",
+  "snack-stop curiosity",
+];
 
 const compareText = (left, right) => left.localeCompare(right, "en");
 
@@ -65,6 +131,61 @@ const toDerivedCommonsFlagUrl = (countryName) =>
   `https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(
     `Flag of ${countryName}.svg`,
   )}`;
+
+const toDisplayCountryName = ({ code, name }) =>
+  displayNameOverrides.get(code) ??
+  name
+    .replace(/\s*\([^)]*\)/g, "")
+    .replace(/\s*\[[^\]]*]/g, "")
+    .replace(/\*$/g, "")
+    .replace(/^(.+), State of$/, "$1")
+    .replace(/^(.+), the United Republic of$/, "$1")
+    .replace(/^(.+), Sint Eustatius and Saba$/, "$1")
+    .replace(/\s+/g, " ")
+    .trim();
+
+const toPrimaryCapital = (capital) => capital.split(",")[0]?.trim() ?? "";
+
+const countrySnippetTheme = (countryCode) =>
+  snippetThemes[
+    (countryCode.charCodeAt(0) * 7 + countryCode.charCodeAt(1) * 11) %
+      snippetThemes.length
+  ];
+
+export const createCountryFactSnippet = (country) => {
+  const displayName = toDisplayCountryName(country);
+  const capital = toPrimaryCapital(country.capital);
+  const theme = countrySnippetTheme(country.code);
+  const candidates =
+    capital && capital !== "Unknown" && !capital.startsWith("Q")
+      ? [
+          `${displayName}: ${capital} brings ${theme}.`,
+          `${displayName}: ${capital} has ${theme}.`,
+          `${displayName}: ${theme} from the atlas.`,
+          `${country.code}: ${theme} from the atlas.`,
+        ]
+      : [
+          `${displayName}: world-map tiny print with ${theme}.`,
+          `${displayName}: ${theme} from the atlas.`,
+          `${country.code}: ${theme} from the atlas.`,
+        ];
+
+  const snippet = candidates.find(
+    (candidate) => candidate.length <= countrySnippetMaxLength,
+  );
+
+  if (!snippet) {
+    throw new Error(`${country.code} is missing a short fact snippet.`);
+  }
+
+  return snippet;
+};
+
+export const addCountryFactSnippets = (countries) =>
+  countries.map((country) => ({
+    ...country,
+    factSnippet: createCountryFactSnippet(country),
+  }));
 
 export const parseArgs = (argv) => {
   if (argv.includes("--help") || argv.includes("-h")) {
@@ -361,7 +482,9 @@ export const readWikidataCountryFixtures = async ({
     readWikidataCountryMetadata({ fetchImplementation }),
   ]);
 
-  return mergeCountryFixtureSources({ countries, metadataByCode });
+  return addCountryFactSnippets(
+    mergeCountryFixtureSources({ countries, metadataByCode }),
+  );
 };
 
 export const serializeCountryFixtures = (countries) =>

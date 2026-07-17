@@ -6,6 +6,9 @@ import { URLSearchParams } from "node:url";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
+  addCountryFactSnippets,
+  countrySnippetMaxLength,
+  createCountryFactSnippet,
   mergeCountryFixtureSources,
   normalizeIsoCountryListCsv,
   normalizeWikidataBindings,
@@ -214,6 +217,55 @@ describe("mergeCountryFixtureSources", () => {
   });
 });
 
+describe("createCountryFactSnippet", () => {
+  it("creates a short playful snippet from country metadata", () => {
+    const snippet = createCountryFactSnippet({
+      code: "JP",
+      name: "Japan",
+      capital: "Tokyo",
+    });
+
+    expect(snippet).toContain("Japan");
+    expect(snippet).toContain("Tokyo");
+    expect(snippet).not.toContain("Static catalog profile");
+    expect(snippet.length).toBeLessThanOrEqual(countrySnippetMaxLength);
+  });
+
+  it("keeps long and capital-less countries within the card budget", () => {
+    expect(
+      createCountryFactSnippet({
+        code: "HM",
+        name: "Heard Island and McDonald Islands",
+        capital: "Unknown",
+      }).length,
+    ).toBeLessThanOrEqual(countrySnippetMaxLength);
+  });
+});
+
+describe("addCountryFactSnippets", () => {
+  it("adds distinct snippets to fixture records", () => {
+    const countries = addCountryFactSnippets([
+      {
+        code: "BR",
+        name: "Brazil",
+        capital: "Brasilia",
+        flagImageUrl: "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Brazil.svg",
+      },
+      {
+        code: "JP",
+        name: "Japan",
+        capital: "Tokyo",
+        flagImageUrl: "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Japan.svg",
+      },
+    ]);
+
+    expect(countries.map((country) => country.factSnippet)).toEqual([
+      "Brazil: Brasilia brings airport-layover dreams.",
+      "Japan: Tokyo brings passport-stamp drama.",
+    ]);
+  });
+});
+
 describe("readWikidataCountryFixtures", () => {
   it("fetches country metadata and Wikidata flags before merging", async () => {
     const fetchImplementation = vi.fn((url) => {
@@ -248,6 +300,7 @@ describe("readWikidataCountryFixtures", () => {
         code: "JP",
         name: "Japan",
         capital: "Tokyo",
+        factSnippet: "Japan: Tokyo brings passport-stamp drama.",
         flagImageUrl: "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Japan.svg",
       },
     ]);
@@ -319,6 +372,7 @@ describe("runGenerateCountryFixtures", () => {
             name: "Brazil",
             capital: "Brasilia",
             flagImageUrl: "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Brazil.svg",
+            factSnippet: "Brazil: Brasilia brings airport-layover dreams.",
           },
         ],
         null,

@@ -75,9 +75,6 @@ type CheckoutResponse = Readonly<{
   data?: Readonly<{
     checkoutUrl?: unknown;
   }>;
-  error?: Readonly<{
-    message?: unknown;
-  }>;
 }>;
 
 const checkoutAction = "/checkout";
@@ -144,7 +141,7 @@ const styles = {
 } as const;
 
 const fallbackCheckoutError =
-  "We couldn't start checkout. Try again, or reload the page.";
+  "We couldn't start checkout. Please try again in a moment.";
 
 const numberFormatter = new Intl.NumberFormat("en-US");
 
@@ -317,12 +314,6 @@ export async function requestPaidVoteCheckout(
 
   if (response.ok && body?.ok === true && typeof checkoutUrl === "string") {
     return checkoutUrl;
-  }
-
-  const serverMessage = body?.error?.message;
-
-  if (typeof serverMessage === "string" && serverMessage.trim().length > 0) {
-    throw new Error(serverMessage);
   }
 
   throw new Error(fallbackCheckoutError);

@@ -112,14 +112,13 @@ const toCheckoutRequestResponseError = (error: StripeCheckoutRequestError) => {
   if (error.code === "missing_stripe_checkout_config") {
     return {
       code: error.code,
-      message: error.message,
-      envVar: error.envVar,
+      message: "We couldn't start checkout. Please try again in a moment.",
     };
   }
 
   return {
     code: error.code,
-    message: error.message,
+    message: "We couldn't start checkout because the vote request is invalid.",
     fieldErrors: error.fieldErrors,
   };
 };
@@ -128,5 +127,5 @@ const toStripeCheckoutSessionResponseError = (
   error: StripeCheckoutSessionError,
 ) => ({
   code: error.code,
-  message: error.message,
+  message: "We couldn't start checkout. Please try again in a moment.",
 });

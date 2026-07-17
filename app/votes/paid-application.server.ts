@@ -2,6 +2,7 @@ import { okAsync, type ResultAsync } from "neverthrow";
 
 import {
   readPaidVoteFulfillmentRecord,
+  writePaidVoteFulfillmentRecord,
   type PaidVoteFulfillmentReadResult,
   type RedisPaidVoteFulfillmentError,
 } from "./fulfillment.server";
@@ -44,6 +45,12 @@ export type PaidVoteApplicationError =
       cause: RedisPaidVoteFulfillmentError;
     }>
   | Readonly<{
+      code: "paid_vote_fulfillment_write_failed";
+      message: string;
+      checkoutSessionId: string;
+      cause: RedisPaidVoteFulfillmentError;
+    }>
+  | Readonly<{
       code: "paid_vote_application_failed";
       message: string;
       cause: RedisVoteStorageError;
@@ -51,10 +58,12 @@ export type PaidVoteApplicationError =
 
 type IncrementCountryVoteTotal = typeof incrementCountryVoteTotal;
 type ReadPaidVoteFulfillmentRecord = typeof readPaidVoteFulfillmentRecord;
+type WritePaidVoteFulfillmentRecord = typeof writePaidVoteFulfillmentRecord;
 
 export type PaidVoteApplicationOptions = Readonly<{
   incrementVoteTotal?: IncrementCountryVoteTotal;
   readFulfillmentRecord?: ReadPaidVoteFulfillmentRecord;
+  writeFulfillmentRecord?: WritePaidVoteFulfillmentRecord;
 }>;
 
 export const createPaidVoteApplication = (
@@ -64,6 +73,8 @@ export const createPaidVoteApplication = (
     options.incrementVoteTotal ?? incrementCountryVoteTotal;
   const readFulfillmentRecord =
     options.readFulfillmentRecord ?? readPaidVoteFulfillmentRecord;
+  const writeFulfillmentRecord =
+    options.writeFulfillmentRecord ?? writePaidVoteFulfillmentRecord;
 
   const applyPaidVote = (
     vote: ValidatedPaidVote,
@@ -81,6 +92,11 @@ export const createPaidVoteApplication = (
         }
 
         return incrementVoteTotal(vote.countryCode, vote.voteType)
+          .mapErr((cause) => ({
+            code: "paid_vote_application_failed" as const,
+            message: "Failed to apply paid vote to Redis totals.",
+            cause,
+          }))
           .map((totals) => ({
             status: "applied" as const,
             checkoutSessionId: vote.checkoutSessionId,
@@ -88,11 +104,17 @@ export const createPaidVoteApplication = (
             voteType: vote.voteType,
             totals,
           }))
-          .mapErr((cause) => ({
-            code: "paid_vote_application_failed" as const,
-            message: "Failed to apply paid vote to Redis totals.",
-            cause,
-          }));
+          .andThen((appliedVote) =>
+            writeFulfillmentRecord(appliedVote)
+              .map(() => appliedVote)
+              .mapErr((cause) => ({
+                code: "paid_vote_fulfillment_write_failed" as const,
+                message:
+                  "Failed to write paid vote fulfillment after applying vote.",
+                checkoutSessionId: vote.checkoutSessionId,
+                cause,
+              })),
+          );
       });
 
   return {

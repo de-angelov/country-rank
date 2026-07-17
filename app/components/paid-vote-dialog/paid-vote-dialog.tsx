@@ -1,5 +1,13 @@
 import { type FormEvent, useState } from "react";
-import { CreditCard, Loader2, ThumbsDown, ThumbsUp } from "lucide-react";
+import {
+  CircleAlert,
+  CircleCheck,
+  Clock3,
+  CreditCard,
+  Loader2,
+  ThumbsDown,
+  ThumbsUp,
+} from "lucide-react";
 import { match } from "ts-pattern";
 
 import type { Country } from "~/countries";
@@ -23,7 +31,36 @@ export type VoteIntent = Readonly<{
   voteType: VoteType;
 }>;
 
+export type PaidVoteAppliedStatus = Readonly<{
+  status: "applied";
+  country: Pick<Country, "name">;
+  voteType: VoteType;
+  totals: Readonly<{
+    likes: number;
+    dislikes: number;
+  }>;
+}>;
+
+export type PaidVotePendingStatus = Readonly<{
+  status: "pending";
+}>;
+
+export type PaidVoteInvalidStatus = Readonly<{
+  status: "invalid";
+}>;
+
+export type PaidVoteStatus =
+  | PaidVoteAppliedStatus
+  | PaidVotePendingStatus
+  | PaidVoteInvalidStatus;
+
 export type PaidVoteDialogProps = Readonly<{
+  status: PaidVoteStatus;
+  onClose: () => void;
+  open?: boolean;
+}>;
+
+export type PaidVoteCheckoutDialogProps = Readonly<{
   intent: VoteIntent | null;
   onOpenChange: (open: boolean) => void;
 }>;
@@ -69,6 +106,21 @@ const voteTypeThemes = {
 
 const styles = {
   dialogContent: "sm:max-w-md",
+  statusPanel: "grid gap-4",
+  statusHeader: "flex items-start gap-3",
+  statusIcon:
+    "mt-1 size-8 shrink-0 rounded-base border-2 border-border p-1 text-main-foreground",
+  appliedIcon: "bg-vote-like",
+  pendingIcon: "bg-main",
+  invalidIcon: "bg-vote-dislike",
+  stateText: "text-sm text-muted-foreground",
+  appliedSummary:
+    "rounded-base border-2 border-border bg-background p-4 shadow-shadow",
+  totalGrid: "mt-3 grid grid-cols-2 gap-2",
+  totalBox: "rounded-base border-2 border-border bg-secondary-background p-3",
+  totalLabel: "text-xs font-heading uppercase",
+  totalValue: "mt-1 text-xl font-heading",
+  closeButton: "min-w-24",
   voteSummary: "space-y-3",
   voteSummaryRow: "flex items-center gap-3",
   flagImage:
@@ -93,6 +145,155 @@ const styles = {
 
 const fallbackCheckoutError =
   "We couldn't start checkout. Try again, or reload the page.";
+
+const numberFormatter = new Intl.NumberFormat("en-US");
+
+export function handlePaidVoteDialogOpenChange(
+  open: boolean,
+  onClose: () => void,
+) {
+  if (!open) {
+    onClose();
+  }
+}
+
+export function PaidVoteDialog({
+  status,
+  onClose,
+  open = true,
+}: PaidVoteDialogProps) {
+  return (
+    <Dialog
+      open={open}
+      onOpenChange={(nextOpen) =>
+        handlePaidVoteDialogOpenChange(nextOpen, onClose)
+      }
+    >
+      <DialogContent className={styles.dialogContent}>
+        <PaidVoteDialogContent status={status} />
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+export function PaidVoteDialogContent({
+  status,
+}: {
+  status: PaidVoteStatus;
+}) {
+  return (
+    <>
+      <PaidVoteStatusBody status={status} />
+      <DialogFooter>
+        <DialogClose asChild>
+          <Button type="button" className={styles.closeButton}>
+            Close
+          </Button>
+        </DialogClose>
+      </DialogFooter>
+    </>
+  );
+}
+
+function PaidVoteStatusBody({
+  status,
+}: {
+  status: PaidVoteStatus;
+}) {
+  return match(status)
+    .with({ status: "applied" }, (appliedStatus) => {
+      const voteLabel = voteTypeLabels[appliedStatus.voteType].toLowerCase();
+
+      return (
+        <div className={styles.statusPanel}>
+          <DialogHeader>
+            <div className={styles.statusHeader}>
+              <CircleCheck
+                aria-hidden="true"
+                className={cn(styles.statusIcon, styles.appliedIcon)}
+              />
+              <div>
+                <DialogTitle>Paid vote applied</DialogTitle>
+                <DialogDescription>
+                  Your {voteLabel} vote for {appliedStatus.country.name} was
+                  applied.
+                </DialogDescription>
+              </div>
+            </div>
+          </DialogHeader>
+
+          <section
+            className={styles.appliedSummary}
+            aria-label={`${appliedStatus.country.name} updated vote totals`}
+          >
+            <p className={styles.stateText}>
+              Updated totals for {appliedStatus.country.name}
+            </p>
+            <div className={styles.totalGrid}>
+              <div className={styles.totalBox}>
+                <p className={styles.totalLabel}>Likes</p>
+                <p className={styles.totalValue}>
+                  {numberFormatter.format(appliedStatus.totals.likes)}
+                </p>
+              </div>
+              <div className={styles.totalBox}>
+                <p className={styles.totalLabel}>Dislikes</p>
+                <p className={styles.totalValue}>
+                  {numberFormatter.format(appliedStatus.totals.dislikes)}
+                </p>
+              </div>
+            </div>
+          </section>
+        </div>
+      );
+    })
+    .with({ status: "pending" }, () => (
+      <div className={styles.statusPanel}>
+        <DialogHeader>
+          <div className={styles.statusHeader}>
+            <Clock3
+              aria-hidden="true"
+              className={cn(styles.statusIcon, styles.pendingIcon)}
+            />
+            <div>
+              <DialogTitle>Paid vote pending</DialogTitle>
+              <DialogDescription>
+                We are still confirming your payment. Your vote has not been
+                applied yet.
+              </DialogDescription>
+            </div>
+          </div>
+        </DialogHeader>
+        <p className={styles.stateText}>
+          Check again shortly after Stripe finishes processing the checkout
+          session.
+        </p>
+      </div>
+    ))
+    .with({ status: "invalid" }, () => (
+      <div className={styles.statusPanel}>
+        <DialogHeader>
+          <div className={styles.statusHeader}>
+            <CircleAlert
+              aria-hidden="true"
+              className={cn(styles.statusIcon, styles.invalidIcon)}
+            />
+            <div>
+              <DialogTitle>Paid vote not found</DialogTitle>
+              <DialogDescription>
+                We could not match this checkout session to a paid vote.
+              </DialogDescription>
+            </div>
+          </div>
+        </DialogHeader>
+        <p className={styles.stateText}>
+          The session may be unrecognized, expired, or failed before the vote
+          could be recorded.
+        </p>
+      </div>
+    ))
+    .exhaustive();
+}
 
 export async function requestPaidVoteCheckout(
   intent: VoteIntent,
@@ -127,10 +328,10 @@ export async function requestPaidVoteCheckout(
   throw new Error(fallbackCheckoutError);
 }
 
-export function PaidVoteDialog({
+export function PaidVoteCheckoutDialog({
   intent,
   onOpenChange,
-}: PaidVoteDialogProps) {
+}: PaidVoteCheckoutDialogProps) {
   return (
     <Dialog open={intent !== null} onOpenChange={onOpenChange}>
       <DialogContent className={styles.dialogContent}>

@@ -5,7 +5,7 @@ import type { Country } from "~/countries";
 import { cn } from "~/lib/utils";
 
 import {
-  PaidVoteDialog,
+  PaidVoteCheckoutDialog,
   type VoteIntent,
   type VoteType,
 } from "~/components/paid-vote-dialog/paid-vote-dialog";
@@ -127,7 +127,7 @@ export function CountryCard({
           </div>
         </article>
       </Card>
-      <PaidVoteDialog
+      <PaidVoteCheckoutDialog
         intent={voteIntent}
         onOpenChange={(open) => {
           if (!open) {

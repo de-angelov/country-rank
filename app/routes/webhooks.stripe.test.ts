@@ -209,19 +209,19 @@ describe("Stripe webhook route", () => {
     });
   });
 
-  it("returns a typed fulfillment read error without applying a vote", async () => {
+  it("returns a typed fulfillment claim error without applying a vote", async () => {
     vi.stubEnv("STRIPE_WEBHOOK_SECRET", webhookSecret);
     const paymentLogger = createMockLogger();
     const applyPaidVote = vi.fn(() =>
       errAsync({
-        code: "paid_vote_fulfillment_read_failed" as const,
-        message: "Failed to read paid vote fulfillment before applying vote.",
+        code: "paid_vote_fulfillment_claim_failed" as const,
+        message: "Failed to claim paid vote fulfillment before applying vote.",
         checkoutSessionId: "cs_test_route_signature_shell",
         cause: {
           code: "redis_command_failed" as const,
           message:
-            "Failed to read paid vote fulfillment record from Redis.",
-          cause: new Error("redis get failed"),
+            "Failed to claim paid vote fulfillment record in Redis.",
+          cause: new Error("redis set nx failed"),
         },
       }),
     );
@@ -238,13 +238,13 @@ describe("Stripe webhook route", () => {
     expect(await readJson(response)).toEqual({
       ok: false,
       error: {
-        code: "paid_vote_fulfillment_read_failed",
-        message: "Failed to read paid vote fulfillment before applying vote.",
+        code: "paid_vote_fulfillment_claim_failed",
+        message: "Failed to claim paid vote fulfillment before applying vote.",
         checkoutSessionId: "cs_test_route_signature_shell",
         cause: {
           code: "redis_command_failed",
           message:
-            "Failed to read paid vote fulfillment record from Redis.",
+            "Failed to claim paid vote fulfillment record in Redis.",
         },
       },
     });
@@ -257,7 +257,7 @@ describe("Stripe webhook route", () => {
       {
         route: "webhooks.stripe",
         action: "apply_paid_vote",
-        errorCode: "paid_vote_fulfillment_read_failed",
+        errorCode: "paid_vote_fulfillment_claim_failed",
         causeCode: "redis_command_failed",
         eventId: "evt_route_signature_shell",
         eventType: "checkout.session.completed",

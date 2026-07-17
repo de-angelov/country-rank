@@ -16,24 +16,36 @@ const createClient = (
   options: Partial<{
     connect: () => Promise<unknown>;
     get: (key: string) => Promise<string | null>;
-    set: (key: string, value: string) => Promise<unknown>;
+    set: (
+      key: string,
+      value: string,
+      options?: { condition: "NX" },
+    ) => Promise<unknown>;
   }> = {},
 ) => {
   const records = { ...initialRecords };
+  const setRecord =
+    options.set ??
+    ((
+      key: string,
+      value: string,
+      setOptions?: { condition: "NX" },
+    ) => {
+      if (setOptions?.condition === "NX" && records[key] !== undefined) {
+        return Promise.resolve(null);
+      }
+
+      records[key] = value;
+
+      return Promise.resolve("OK");
+    });
   const client = {
     connect: vi.fn(options.connect ?? (() => Promise.resolve())),
     get: vi.fn(
       options.get ??
         ((key: string) => Promise.resolve(records[key] ?? null)),
     ),
-    set: vi.fn(
-      options.set ??
-        ((key: string, value: string) => {
-          records[key] = value;
-
-          return Promise.resolve("OK");
-        }),
-    ),
+    set: vi.fn(setRecord),
   };
 
   return client;
@@ -89,6 +101,144 @@ describe("createRedisPaidVoteFulfillmentStorage", () => {
     expect(client.set).toHaveBeenCalledWith(
       paidVoteFulfillmentKey("cs_test_123"),
       JSON.stringify(record),
+    );
+  });
+
+  it("claims a pending paid vote fulfillment record atomically", async () => {
+    const client = createClient();
+    const storage = createStorageWithClient(client);
+    const claim = {
+      checkoutSessionId: "cs_test_claim",
+      countryCode: "FR",
+      voteType: "like" as const,
+    };
+    const expectedRecord = {
+      status: "pending" as const,
+      ...claim,
+    };
+
+    const claimResult =
+      await storage.claimPaidVoteFulfillmentRecord(claim);
+    const readResult = await storage.readPaidVoteFulfillmentRecord(
+      "cs_test_claim",
+    );
+
+    expect(claimResult.isOk()).toBe(true);
+    expect(claimResult._unsafeUnwrap()).toEqual({
+      status: "claimed",
+      record: expectedRecord,
+    });
+    expect(readResult.isOk()).toBe(true);
+    expect(readResult._unsafeUnwrap()).toEqual(expectedRecord);
+    expect(client.set).toHaveBeenCalledWith(
+      paidVoteFulfillmentKey("cs_test_claim"),
+      JSON.stringify(expectedRecord),
+      { condition: "NX" },
+    );
+  });
+
+  it("returns duplicate when a paid vote fulfillment record already exists", async () => {
+    const existingRecord = {
+      status: "applied" as const,
+      checkoutSessionId: "cs_test_duplicate",
+      countryCode: "BR",
+      voteType: "dislike" as const,
+      totals: {
+        countryCode: "BR",
+        likes: 2,
+        dislikes: 9,
+      },
+    };
+    const client = createClient({
+      [paidVoteFulfillmentKey("cs_test_duplicate")]:
+        JSON.stringify(existingRecord),
+    });
+    const storage = createStorageWithClient(client);
+
+    const result = await storage.claimPaidVoteFulfillmentRecord({
+      checkoutSessionId: "cs_test_duplicate",
+      countryCode: "US",
+      voteType: "like",
+    });
+    const readResult = await storage.readPaidVoteFulfillmentRecord(
+      "cs_test_duplicate",
+    );
+
+    expect(result.isOk()).toBe(true);
+    expect(result._unsafeUnwrap()).toEqual({
+      status: "duplicate",
+      checkoutSessionId: "cs_test_duplicate",
+    });
+    expect(readResult.isOk()).toBe(true);
+    expect(readResult._unsafeUnwrap()).toEqual(existingRecord);
+  });
+
+  it("returns a typed error when claiming without Redis config", async () => {
+    const paymentLogger = createMockLogger();
+    const storage = createRedisPaidVoteFulfillmentStorage({
+      env: {},
+      logger: paymentLogger,
+      clientFactory: () => createClient(),
+    });
+
+    const result = await storage.claimPaidVoteFulfillmentRecord({
+      checkoutSessionId: "cs_test_missing_config",
+      countryCode: "NL",
+      voteType: "like",
+    });
+
+    expect(result.isErr()).toBe(true);
+    expect(result._unsafeUnwrapErr()).toEqual({
+      code: "missing_redis_config",
+      message:
+        "REDIS_URL must be set to read or write paid vote fulfillment records.",
+      envVar: "REDIS_URL",
+    });
+    expect(paymentLogger.error).toHaveBeenCalledWith(
+      {
+        action: "claim_paid_vote_fulfillment_record",
+        errorCode: "missing_redis_config",
+        checkoutSessionId: "cs_test_missing_config",
+        countryCode: "NL",
+        voteType: "like",
+      },
+      "Failed to claim paid vote fulfillment record.",
+    );
+  });
+
+  it("returns Redis command failures as typed claim errors", async () => {
+    const paymentLogger = createMockLogger();
+    const commandError = new Error("redis set nx failed");
+    const client = createClient(
+      {},
+      {
+        set: () => Promise.reject(commandError),
+      },
+    );
+    const storage = createStorageWithClient(client, paymentLogger);
+
+    const result = await storage.claimPaidVoteFulfillmentRecord({
+      checkoutSessionId: "cs_test_claim_failure",
+      countryCode: "SE",
+      voteType: "dislike",
+    });
+
+    expect(result.isErr()).toBe(true);
+    expect(result._unsafeUnwrapErr()).toEqual({
+      code: "redis_command_failed",
+      message:
+        "Failed to claim paid vote fulfillment record in Redis.",
+      cause: commandError,
+    });
+    expect(paymentLogger.error).toHaveBeenCalledWith(
+      {
+        action: "claim_paid_vote_fulfillment_record",
+        errorCode: "redis_command_failed",
+        checkoutSessionId: "cs_test_claim_failure",
+        countryCode: "SE",
+        voteType: "dislike",
+      },
+      "Failed to claim paid vote fulfillment record.",
     );
   });
 

@@ -7,5 +7,7 @@ export default [
   route("votes", "routes/votes.ts"),
   route("checkout", "routes/checkout.ts"),
   route("checkout-status", "routes/checkout-status.ts"),
+  route("health", "routes/health.ts"),
+  route("ready", "routes/ready.ts"),
   route("webhooks/stripe", "routes/webhooks.stripe.ts"),
 ] satisfies RouteConfig;

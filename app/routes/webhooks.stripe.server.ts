@@ -201,7 +201,7 @@ const toStripeWebhookApplicationResponseError = (
   };
 
   if (
-    error.code === "paid_vote_fulfillment_read_failed" ||
+    error.code === "paid_vote_fulfillment_claim_failed" ||
     error.code === "paid_vote_fulfillment_write_failed"
   ) {
     return {

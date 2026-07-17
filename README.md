@@ -162,13 +162,24 @@ payment method fields. Do not interpolate secrets into free-form log message
 strings because path-based redaction cannot reliably sanitize message text.
 
 Stripe integration status: the app currently validates paid vote checkout
-requests with `STRIPE_SECRET_KEY` present, verifies Stripe webhook signatures
-with `STRIPE_WEBHOOK_SECRET`, and applies paid votes from verified
-`checkout.session.completed` events that include the approved metadata. Checkout
-session creation is not implemented yet. Use only Stripe test-mode
-`STRIPE_SECRET_KEY` values for local checkout development.
+requests with `STRIPE_SECRET_KEY` present, creates Stripe-hosted Checkout
+Sessions, verifies Stripe webhook signatures with `STRIPE_WEBHOOK_SECRET`, and
+applies paid votes from verified `checkout.session.completed` events that
+include the approved metadata. Use only Stripe test-mode `STRIPE_SECRET_KEY`
+values for local checkout development.
+
+The current route-level security exposure inventory for `/votes`, `/checkout`,
+`/checkout-status`, and `/webhooks/stripe` is recorded in
+[`docs/security.md`](docs/security.md).
+
+Dependency update cadence, lockfile handling, and npm audit triage are recorded
+in the [dependency hygiene policy](docs/dependency-hygiene.md).
 
 ### Redis Backup Runner
+
+Operational checklists for deploy verification, rollback, restore drills,
+backup sidecar incidents, Redis corruption, and Stripe webhook replay live in
+the [operations runbook](docs/operations.md).
 
 The Redis backup runner is available through `npm run backup:redis`. It exports
 `country:catalog`, `country:votes:likes`, and `country:votes:dislikes` to a

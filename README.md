@@ -37,7 +37,7 @@ Country Ranking is a TypeScript React Router framework-mode app for browsing cou
 - Start the local Redis dependency with `docker compose up -d redis`.
 - The development Compose service exposes Redis at `redis://localhost:6379`.
 - Copy `.env.example` to `.env` or otherwise set `REDIS_URL=redis://localhost:6379` before running app flows that read or write vote totals.
-- Seed dummy local vote totals from the current country fixtures with `REDIS_URL=redis://localhost:6379 npm run seed:redis:votes`.
+- Seed the local country catalog and dummy vote totals from the current country fixtures with `REDIS_URL=redis://localhost:6379 npm run seed:redis:votes`.
 - Redis data is persisted in the `redis-data` Docker volume across container restarts.
 
 ### Full App Docker Compose Development
@@ -61,7 +61,7 @@ APP_HOST_PORT=5174 npm run compose:dev
 
 Open `http://localhost:${APP_HOST_PORT}` when `APP_HOST_PORT` is set.
 
-To start the same local dev stack and seed Redis vote totals in one command,
+To start the same local dev stack and seed Redis country catalog data in one command,
 run:
 
 ```sh
@@ -70,15 +70,16 @@ npm run compose:dev:seed
 
 The `compose:dev:seed` preset starts the Compose `app` and `redis` services in
 the background, then runs the existing `seed:redis:votes` command against the
-host-mapped Compose Redis instance. It honors the same port overrides as
-Compose. For example:
+host-mapped Compose Redis instance. The seed writes the `country:catalog` JSON
+document and refreshes each `country:votes:{CODE}` hash from the same country
+records. It honors the same port overrides as Compose. For example:
 
 ```sh
 APP_HOST_PORT=5174 REDIS_HOST_PORT=6380 npm run compose:dev:seed
 ```
 
-Open `http://localhost:5174` after the command reports that Redis country vote
-totals were seeded.
+Open `http://localhost:5174` after the command reports that Redis country
+catalog data was seeded.
 
 For production-style local execution through Compose, run:
 

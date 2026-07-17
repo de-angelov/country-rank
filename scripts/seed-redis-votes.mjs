@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /* global Buffer, URL, console, process */
 import { readFile } from "node:fs/promises";
+import { fileURLToPath } from "node:url";
 
 import { createClient } from "redis";
 import ts from "typescript";
@@ -62,13 +63,23 @@ const assertSeedableCountryFixtures = (countryFixtures) => {
 };
 
 const voteTotalsKey = (countryCode) => `country:votes:${countryCode}`;
+export const countryCatalogKey = "country:catalog";
 
-const seedVoteTotals = async ({ redisUrl, countryFixtures }) => {
-  const client = createClient({ url: redisUrl });
+const serializeCountryCatalog = (countryFixtures) =>
+  JSON.stringify(countryFixtures);
+
+export const seedRedisCountryData = async ({
+  redisUrl,
+  countryFixtures,
+  clientFactory = createClient,
+}) => {
+  const client = clientFactory({ url: redisUrl });
 
   await client.connect();
 
   try {
+    await client.set(countryCatalogKey, serializeCountryCatalog(countryFixtures));
+
     for (const country of countryFixtures) {
       await client.hSet(voteTotalsKey(country.code), {
         likes: country.likes.toString(),
@@ -80,23 +91,33 @@ const seedVoteTotals = async ({ redisUrl, countryFixtures }) => {
   }
 };
 
-const main = async () => {
-  if (process.argv.includes("--help") || process.argv.includes("-h")) {
-    console.log(usage);
+export const runSeedRedisVotes = async ({
+  argv = process.argv.slice(2),
+  env = process.env,
+  logger = console,
+  countryFixtureLoader = loadCountryFixtures,
+  clientFactory = createClient,
+} = {}) => {
+  if (argv.includes("--help") || argv.includes("-h")) {
+    logger.log(usage);
     return;
   }
 
-  const redisUrl = requireRedisUrl(process.env);
-  const countryFixtures = await loadCountryFixtures();
+  const redisUrl = requireRedisUrl(env);
+  const countryFixtures = await countryFixtureLoader();
 
   assertSeedableCountryFixtures(countryFixtures);
 
-  await seedVoteTotals({ redisUrl, countryFixtures });
+  await seedRedisCountryData({ redisUrl, countryFixtures, clientFactory });
 
-  console.log(`Seeded ${countryFixtures.length} Redis country vote total(s).`);
+  logger.log(
+    `Seeded Redis country catalog and ${countryFixtures.length} country vote total(s).`,
+  );
 };
 
-main().catch((error) => {
-  console.error(error instanceof Error ? error.message : error);
-  process.exitCode = 1;
-});
+if (process.argv[1] === fileURLToPath(import.meta.url)) {
+  runSeedRedisVotes().catch((error) => {
+    console.error(error instanceof Error ? error.message : error);
+    process.exitCode = 1;
+  });
+}

@@ -114,7 +114,8 @@ describe("paid vote checkout route", () => {
       ok: false,
       error: {
         code: "invalid_stripe_checkout_request",
-        message: "Stripe checkout request payload is invalid.",
+        message:
+          "We couldn't start checkout because the vote request is invalid.",
         fieldErrors: {
           countryCode: "Country code must match a supported country.",
           voteType: "Vote type must be like or dislike.",
@@ -124,7 +125,7 @@ describe("paid vote checkout route", () => {
     expect(createSession).not.toHaveBeenCalled();
   });
 
-  it("returns a clear server error when Stripe configuration is missing", async () => {
+  it("returns a safe server error when Stripe configuration is missing", async () => {
     const createSession = vi.fn<CreateStripeCheckoutSession>();
     const handleCheckout = createCheckoutHandler({
       env: {},
@@ -142,19 +143,20 @@ describe("paid vote checkout route", () => {
     );
 
     expect(response.status).toBe(500);
-    expect(await readJson(response)).toEqual({
+    const body = await readJson(response);
+
+    expect(body).toEqual({
       ok: false,
       error: {
         code: "missing_stripe_checkout_config",
-        message:
-          "STRIPE_SECRET_KEY must be set to create Stripe checkout sessions.",
-        envVar: "STRIPE_SECRET_KEY",
+        message: "We couldn't start checkout. Please try again in a moment.",
       },
     });
+    expect(JSON.stringify(body)).not.toContain("STRIPE_SECRET_KEY");
     expect(createSession).not.toHaveBeenCalled();
   });
 
-  it("returns a clear server error when Stripe session creation fails", async () => {
+  it("returns a safe server error when Stripe session creation fails", async () => {
     const createSession = vi.fn<CreateStripeCheckoutSession>(() =>
       Promise.reject(new Error("Stripe API unavailable")),
     );
@@ -177,13 +179,16 @@ describe("paid vote checkout route", () => {
     );
 
     expect(response.status).toBe(502);
-    expect(await readJson(response)).toEqual({
+    const body = await readJson(response);
+
+    expect(body).toEqual({
       ok: false,
       error: {
         code: "stripe_checkout_session_creation_failed",
-        message: "Failed to create Stripe checkout session.",
+        message: "We couldn't start checkout. Please try again in a moment.",
       },
     });
+    expect(JSON.stringify(body)).not.toContain("Stripe API unavailable");
   });
 
   it("does not increment Redis vote totals while creating checkout", async () => {

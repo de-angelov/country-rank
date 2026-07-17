@@ -4,11 +4,21 @@ import { describe, expect, it, vi } from "vitest";
 import {
   handlePaidVoteDialogOpenChange,
   PaidVoteDialogContent,
+  requestPaidVoteCheckout,
 } from "./paid-vote-dialog";
 import { Dialog } from "~/components/ui/dialog";
 
 const visibleText = (html: string) =>
   html.replaceAll("<!-- -->", "").replace(/<[^>]*>/g, "");
+
+const checkoutIntent = {
+  country: {
+    code: "JP",
+    name: "Japan",
+    flagImageUrl: "https://flagcdn.test/jp.svg",
+  },
+  voteType: "like" as const,
+};
 
 describe("PaidVoteDialog", () => {
   it("renders an applied paid vote with country, vote type, and updated totals", () => {
@@ -117,5 +127,65 @@ describe("PaidVoteDialog", () => {
     handlePaidVoteDialogOpenChange(true, onClose);
 
     expect(onClose).not.toHaveBeenCalled();
+  });
+
+  it("requests checkout and returns the checkout URL", async () => {
+    const fetchCheckout = vi.fn(() =>
+      Promise.resolve(
+        Response.json({
+          ok: true,
+          data: {
+            checkoutUrl: "https://checkout.stripe.test/session/dialog",
+          },
+        }),
+      ),
+    );
+
+    await expect(
+      requestPaidVoteCheckout(checkoutIntent, fetchCheckout),
+    ).resolves.toBe("https://checkout.stripe.test/session/dialog");
+    expect(fetchCheckout).toHaveBeenCalledWith("/checkout", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        accept: "application/json",
+      },
+      body: JSON.stringify({
+        countryCode: "JP",
+        voteType: "like",
+      }),
+    });
+  });
+
+  it("uses generic checkout copy instead of server implementation details", async () => {
+    const fetchCheckout = vi.fn(() =>
+      Promise.resolve(
+        Response.json(
+          {
+            ok: false,
+            error: {
+              code: "missing_stripe_checkout_config",
+              message:
+                "STRIPE_SECRET_KEY must be set to create Stripe checkout sessions.",
+            },
+          },
+          { status: 500 },
+        ),
+      ),
+    );
+
+    let thrownError: unknown;
+
+    try {
+      await requestPaidVoteCheckout(checkoutIntent, fetchCheckout);
+    } catch (error) {
+      thrownError = error;
+    }
+
+    expect(thrownError).toBeInstanceOf(Error);
+    expect((thrownError as Error).message).toBe(
+      "We couldn't start checkout. Please try again in a moment.",
+    );
+    expect((thrownError as Error).message).not.toContain("STRIPE_SECRET_KEY");
   });
 });

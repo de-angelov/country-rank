@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
+import type { ApplicationLogger } from "~/lib/logger.server";
 import { createCheckoutHandler } from "./checkout.server";
 import type { CreateStripeCheckoutSession } from "~/payments/stripe-checkout.server";
 
@@ -9,6 +10,13 @@ const envWithStripeSecret = {
 
 const readJson = async (response: Response) =>
   (await response.json()) as unknown;
+
+const createMockLogger = (): ApplicationLogger => ({
+  debug: vi.fn(),
+  info: vi.fn(),
+  warn: vi.fn(),
+  error: vi.fn(),
+});
 
 describe("paid vote checkout route", () => {
   it("redirects browser-submitted paid vote requests to Stripe Checkout", async () => {
@@ -126,10 +134,12 @@ describe("paid vote checkout route", () => {
   });
 
   it("returns a safe server error when Stripe configuration is missing", async () => {
+    const paymentLogger = createMockLogger();
     const createSession = vi.fn<CreateStripeCheckoutSession>();
     const handleCheckout = createCheckoutHandler({
       env: {},
       createSession,
+      logger: paymentLogger,
     });
     const formData = new FormData();
     formData.set("countryCode", "CA");
@@ -154,15 +164,29 @@ describe("paid vote checkout route", () => {
     });
     expect(JSON.stringify(body)).not.toContain("STRIPE_SECRET_KEY");
     expect(createSession).not.toHaveBeenCalled();
+    expect(paymentLogger.error).toHaveBeenCalledWith(
+      {
+        route: "checkout",
+        action: "read_stripe_checkout_config",
+        errorCode: "missing_stripe_checkout_config",
+        envVar: "STRIPE_SECRET_KEY",
+      },
+      "Stripe checkout configuration was missing.",
+    );
+    expect(JSON.stringify(vi.mocked(paymentLogger.error).mock.calls)).not.toContain(
+      envWithStripeSecret.STRIPE_SECRET_KEY,
+    );
   });
 
   it("returns a safe server error when Stripe session creation fails", async () => {
+    const paymentLogger = createMockLogger();
     const createSession = vi.fn<CreateStripeCheckoutSession>(() =>
       Promise.reject(new Error("Stripe API unavailable")),
     );
     const handleCheckout = createCheckoutHandler({
       env: envWithStripeSecret,
       createSession,
+      logger: paymentLogger,
     });
 
     const response = await handleCheckout(
@@ -170,6 +194,7 @@ describe("paid vote checkout route", () => {
         method: "POST",
         headers: {
           "content-type": "application/json",
+          "x-request-id": "req_checkout_failure",
         },
         body: JSON.stringify({
           countryCode: "BR",
@@ -189,6 +214,20 @@ describe("paid vote checkout route", () => {
       },
     });
     expect(JSON.stringify(body)).not.toContain("Stripe API unavailable");
+    expect(paymentLogger.error).toHaveBeenCalledWith(
+      {
+        route: "checkout",
+        action: "create_stripe_checkout_session",
+        errorCode: "stripe_checkout_session_creation_failed",
+        countryCode: "BR",
+        voteType: "like",
+        requestId: "req_checkout_failure",
+      },
+      "Stripe checkout session creation failed.",
+    );
+    expect(JSON.stringify(vi.mocked(paymentLogger.error).mock.calls)).not.toContain(
+      envWithStripeSecret.STRIPE_SECRET_KEY,
+    );
   });
 
   it("does not increment Redis vote totals while creating checkout", async () => {

@@ -1,6 +1,7 @@
 import { errAsync, okAsync } from "neverthrow";
 import { describe, expect, it, vi } from "vitest";
 
+import type { ApplicationLogger } from "~/lib/logger.server";
 import { createPaidVoteApplication } from "./paid-application.server";
 import type {
   PaidVoteFulfillmentRecord,
@@ -83,6 +84,13 @@ const createApplicationWithClient = (
     writeFulfillmentRecord,
   });
 };
+
+const createMockLogger = (): ApplicationLogger => ({
+  debug: vi.fn(),
+  info: vi.fn(),
+  warn: vi.fn(),
+  error: vi.fn(),
+});
 
 describe("createPaidVoteApplication", () => {
   it("applies a valid paid like vote to only the like total", async () => {
@@ -184,6 +192,7 @@ describe("createPaidVoteApplication", () => {
   });
 
   it("returns a typed error when Redis fails to write the paid vote", async () => {
+    const paymentLogger = createMockLogger();
     const commandError = new Error("redis write failed");
     const client = createClient(
       {},
@@ -194,12 +203,21 @@ describe("createPaidVoteApplication", () => {
     const writeFulfillmentRecord = vi.fn(
       (record: PaidVoteFulfillmentRecord) => okAsync(record),
     );
-    const application = createApplicationWithClient(
-      client,
+    const applicationWithLogger = createPaidVoteApplication({
+      incrementVoteTotal: createRedisVoteStorage({
+        env: envWithRedisUrl,
+        clientFactory: () => client,
+      }).incrementCountryVoteTotal,
+      readFulfillmentRecord: () =>
+        okAsync({
+          status: "not_found",
+          checkoutSessionId: "cs_test_missing",
+        }),
       writeFulfillmentRecord,
-    );
+      logger: paymentLogger,
+    });
 
-    const result = await application.applyPaidVote({
+    const result = await applicationWithLogger.applyPaidVote({
       checkoutSessionId: "cs_test_write_failure",
       countryCode: "CA",
       voteType: "like",
@@ -216,6 +234,17 @@ describe("createPaidVoteApplication", () => {
       },
     });
     expect(writeFulfillmentRecord).not.toHaveBeenCalled();
+    expect(paymentLogger.error).toHaveBeenCalledWith(
+      {
+        action: "apply_paid_vote_total",
+        errorCode: "paid_vote_application_failed",
+        causeCode: "redis_command_failed",
+        checkoutSessionId: "cs_test_write_failure",
+        countryCode: "CA",
+        voteType: "like",
+      },
+      "Failed to apply paid vote to Redis totals.",
+    );
   });
 
   it("returns a typed error when fulfillment cannot be recorded after applying the vote", async () => {
@@ -268,6 +297,7 @@ describe("createPaidVoteApplication", () => {
   });
 
   it("skips applying a paid vote when the fulfillment record is already applied", async () => {
+    const paymentLogger = createMockLogger();
     const client = createClient({
       likes: { JP: "4" },
       dislikes: { JP: "9" },
@@ -296,6 +326,7 @@ describe("createPaidVoteApplication", () => {
       incrementVoteTotal: storage.incrementCountryVoteTotal,
       readFulfillmentRecord,
       writeFulfillmentRecord,
+      logger: paymentLogger,
     });
 
     const result = await application.applyPaidVote({
@@ -319,6 +350,15 @@ describe("createPaidVoteApplication", () => {
     expect(readFulfillmentRecord).toHaveBeenCalledWith("cs_test_duplicate");
     expect(client.hIncrBy).not.toHaveBeenCalled();
     expect(writeFulfillmentRecord).not.toHaveBeenCalled();
+    expect(paymentLogger.info).toHaveBeenCalledWith(
+      {
+        action: "skip_duplicate_paid_vote",
+        checkoutSessionId: "cs_test_duplicate",
+        countryCode: "JP",
+        voteType: "like",
+      },
+      "Skipped duplicate paid vote fulfillment.",
+    );
   });
 
   it("returns a typed error before applying when fulfillment lookup fails", async () => {

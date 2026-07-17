@@ -1,5 +1,6 @@
 import { okAsync, type ResultAsync } from "neverthrow";
 
+import { logger, type ApplicationLogger } from "~/lib/logger.server";
 import {
   readPaidVoteFulfillmentRecord,
   writePaidVoteFulfillmentRecord,
@@ -64,6 +65,7 @@ export type PaidVoteApplicationOptions = Readonly<{
   incrementVoteTotal?: IncrementCountryVoteTotal;
   readFulfillmentRecord?: ReadPaidVoteFulfillmentRecord;
   writeFulfillmentRecord?: WritePaidVoteFulfillmentRecord;
+  logger?: ApplicationLogger;
 }>;
 
 export const createPaidVoteApplication = (
@@ -75,28 +77,67 @@ export const createPaidVoteApplication = (
     options.readFulfillmentRecord ?? readPaidVoteFulfillmentRecord;
   const writeFulfillmentRecord =
     options.writeFulfillmentRecord ?? writePaidVoteFulfillmentRecord;
+  const paymentLogger = options.logger ?? logger;
 
   const applyPaidVote = (
     vote: ValidatedPaidVote,
   ): ResultAsync<PaidVoteApplicationResult, PaidVoteApplicationError> =>
     readFulfillmentRecord(vote.checkoutSessionId)
-      .mapErr((cause) => ({
-        code: "paid_vote_fulfillment_read_failed" as const,
-        message: "Failed to read paid vote fulfillment before applying vote.",
-        checkoutSessionId: vote.checkoutSessionId,
-        cause,
-      }))
+      .mapErr((cause) => {
+        paymentLogger.error(
+          {
+            action: "read_paid_vote_fulfillment",
+            errorCode: "paid_vote_fulfillment_read_failed",
+            causeCode: cause.code,
+            checkoutSessionId: vote.checkoutSessionId,
+            countryCode: vote.countryCode,
+            voteType: vote.voteType,
+          },
+          "Failed to read paid vote fulfillment before applying vote.",
+        );
+
+        return {
+          code: "paid_vote_fulfillment_read_failed" as const,
+          message: "Failed to read paid vote fulfillment before applying vote.",
+          checkoutSessionId: vote.checkoutSessionId,
+          cause,
+        };
+      })
       .andThen((fulfillment) => {
         if (fulfillment.status === "applied") {
+          paymentLogger.info(
+            {
+              action: "skip_duplicate_paid_vote",
+              checkoutSessionId: fulfillment.checkoutSessionId,
+              countryCode: fulfillment.countryCode,
+              voteType: fulfillment.voteType,
+            },
+            "Skipped duplicate paid vote fulfillment.",
+          );
+
           return okAsync(toDuplicatePaidVote(fulfillment));
         }
 
         return incrementVoteTotal(vote.countryCode, vote.voteType)
-          .mapErr((cause) => ({
-            code: "paid_vote_application_failed" as const,
-            message: "Failed to apply paid vote to Redis totals.",
-            cause,
-          }))
+          .mapErr((cause) => {
+            paymentLogger.error(
+              {
+                action: "apply_paid_vote_total",
+                errorCode: "paid_vote_application_failed",
+                causeCode: cause.code,
+                checkoutSessionId: vote.checkoutSessionId,
+                countryCode: vote.countryCode,
+                voteType: vote.voteType,
+              },
+              "Failed to apply paid vote to Redis totals.",
+            );
+
+            return {
+              code: "paid_vote_application_failed" as const,
+              message: "Failed to apply paid vote to Redis totals.",
+              cause,
+            };
+          })
           .map((totals) => ({
             status: "applied" as const,
             checkoutSessionId: vote.checkoutSessionId,
@@ -107,13 +148,27 @@ export const createPaidVoteApplication = (
           .andThen((appliedVote) =>
             writeFulfillmentRecord(appliedVote)
               .map(() => appliedVote)
-              .mapErr((cause) => ({
-                code: "paid_vote_fulfillment_write_failed" as const,
-                message:
+              .mapErr((cause) => {
+                paymentLogger.error(
+                  {
+                    action: "write_paid_vote_fulfillment",
+                    errorCode: "paid_vote_fulfillment_write_failed",
+                    causeCode: cause.code,
+                    checkoutSessionId: vote.checkoutSessionId,
+                    countryCode: vote.countryCode,
+                    voteType: vote.voteType,
+                  },
                   "Failed to write paid vote fulfillment after applying vote.",
-                checkoutSessionId: vote.checkoutSessionId,
-                cause,
-              })),
+                );
+
+                return {
+                  code: "paid_vote_fulfillment_write_failed" as const,
+                  message:
+                    "Failed to write paid vote fulfillment after applying vote.",
+                  checkoutSessionId: vote.checkoutSessionId,
+                  cause,
+                };
+              }),
           );
       });
 

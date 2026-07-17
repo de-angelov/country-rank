@@ -1,5 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
+import type { ApplicationLogger } from "~/lib/logger.server";
 import {
   createRedisPaidVoteFulfillmentStorage,
   paidVoteFulfillmentKey,
@@ -40,15 +41,24 @@ const createClient = (
 
 const createStorageWithClient = (
   client: ReturnType<typeof createClient>,
+  logger?: ApplicationLogger,
 ) =>
   createRedisPaidVoteFulfillmentStorage({
     env: envWithRedisUrl,
+    logger,
     clientFactory: (config: RedisPaidVoteFulfillmentConfig) => {
       expect(config.url).toBe(envWithRedisUrl.REDIS_URL);
 
       return client;
     },
   });
+
+const createMockLogger = (): ApplicationLogger => ({
+  debug: vi.fn(),
+  info: vi.fn(),
+  warn: vi.fn(),
+  error: vi.fn(),
+});
 
 describe("createRedisPaidVoteFulfillmentStorage", () => {
   it("writes and reads an applied paid vote fulfillment record", async () => {
@@ -147,6 +157,7 @@ describe("createRedisPaidVoteFulfillmentStorage", () => {
   });
 
   it("returns Redis command failures as typed result errors", async () => {
+    const paymentLogger = createMockLogger();
     const commandError = new Error("redis get failed");
     const client = createClient(
       {},
@@ -154,7 +165,7 @@ describe("createRedisPaidVoteFulfillmentStorage", () => {
         get: () => Promise.reject(commandError),
       },
     );
-    const storage = createStorageWithClient(client);
+    const storage = createStorageWithClient(client, paymentLogger);
 
     const result = await storage.readPaidVoteFulfillmentRecord(
       "cs_test_redis_failure",
@@ -167,6 +178,14 @@ describe("createRedisPaidVoteFulfillmentStorage", () => {
         "Failed to read paid vote fulfillment record from Redis.",
       cause: commandError,
     });
+    expect(paymentLogger.error).toHaveBeenCalledWith(
+      {
+        action: "read_paid_vote_fulfillment_record",
+        errorCode: "redis_command_failed",
+        checkoutSessionId: "cs_test_redis_failure",
+      },
+      "Failed to read paid vote fulfillment record.",
+    );
   });
 
   it("returns Redis connection failures as typed result errors", async () => {

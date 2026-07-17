@@ -1,3 +1,4 @@
+import { logger, type ApplicationLogger } from "~/lib/logger.server";
 import {
   parseStripePaidVoteMetadata,
   type StripePaidVoteMetadataError,
@@ -23,12 +24,14 @@ type ApplyPaidVote = (
 
 type StripeWebhookHandlerOptions = Readonly<{
   applyPaidVote?: ApplyPaidVote;
+  logger?: ApplicationLogger;
 }>;
 
 export const createStripeWebhookHandler = (
   options: StripeWebhookHandlerOptions = {},
 ) => {
   const applyVerifiedPaidVote = options.applyPaidVote ?? applyPaidVote;
+  const paymentLogger = options.logger ?? logger;
 
   return async (request: Request) => {
     const result = verifyStripeWebhookSignature(
@@ -37,6 +40,16 @@ export const createStripeWebhookHandler = (
     );
 
     if (result.isErr()) {
+      paymentLogger.error(
+        {
+          route: "webhooks.stripe",
+          action: "verify_stripe_webhook_signature",
+          errorCode: result.error.code,
+          ...getRequestLogContext(request),
+        },
+        "Stripe webhook verification failed.",
+      );
+
       return Response.json(
         {
           ok: false,
@@ -49,6 +62,17 @@ export const createStripeWebhookHandler = (
     const event = result.value;
 
     if (event.type !== stripePaidVoteSuccessEventType) {
+      paymentLogger.info(
+        {
+          route: "webhooks.stripe",
+          action: "ignore_stripe_webhook_event",
+          eventId: event.id,
+          eventType: event.type,
+          ...getRequestLogContext(request),
+        },
+        "Ignored non-target Stripe webhook event.",
+      );
+
       return Response.json(
         {
           ok: true,
@@ -64,6 +88,19 @@ export const createStripeWebhookHandler = (
     const metadataResult = parseStripePaidVoteMetadata(event.metadata);
 
     if (metadataResult.isErr()) {
+      paymentLogger.error(
+        {
+          route: "webhooks.stripe",
+          action: "parse_stripe_paid_vote_metadata",
+          errorCode: metadataResult.error.code,
+          eventId: event.id,
+          eventType: event.type,
+          checkoutSessionId: event.checkoutSessionId,
+          ...getRequestLogContext(request),
+        },
+        "Stripe paid vote metadata was invalid.",
+      );
+
       return Response.json(
         {
           ok: false,
@@ -79,6 +116,22 @@ export const createStripeWebhookHandler = (
     });
 
     if (applicationResult.isErr()) {
+      paymentLogger.error(
+        {
+          route: "webhooks.stripe",
+          action: "apply_paid_vote",
+          errorCode: applicationResult.error.code,
+          causeCode: applicationResult.error.cause.code,
+          eventId: event.id,
+          eventType: event.type,
+          checkoutSessionId: event.checkoutSessionId,
+          countryCode: metadataResult.value.countryCode,
+          voteType: metadataResult.value.voteType,
+          ...getRequestLogContext(request),
+        },
+        "Failed to apply paid vote from Stripe webhook.",
+      );
+
       return Response.json(
         {
           ok: false,
@@ -173,3 +226,11 @@ const toStripeWebhookPaidVoteResponse = (vote: PaidVoteApplicationResult) => ({
   voteType: vote.voteType,
   ...(vote.totals === undefined ? {} : { totals: vote.totals }),
 });
+
+const getRequestLogContext = (request: Request) => {
+  const requestId =
+    request.headers.get("x-request-id") ??
+    request.headers.get("x-correlation-id");
+
+  return requestId ? { requestId } : {};
+};

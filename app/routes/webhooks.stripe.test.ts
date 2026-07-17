@@ -2,6 +2,7 @@ import Stripe from "stripe";
 import { errAsync, okAsync } from "neverthrow";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import type { ApplicationLogger } from "~/lib/logger.server";
 import { createStripeWebhookHandler } from "./webhooks.stripe.server";
 import { action } from "./webhooks.stripe";
 
@@ -42,6 +43,13 @@ const signPayload = (payload: string) =>
     secret: webhookSecret,
   });
 
+const createMockLogger = (): ApplicationLogger => ({
+  debug: vi.fn(),
+  info: vi.fn(),
+  warn: vi.fn(),
+  error: vi.fn(),
+});
+
 describe("Stripe webhook route", () => {
   afterEach(() => {
     vi.unstubAllEnvs();
@@ -69,12 +77,14 @@ describe("Stripe webhook route", () => {
 
   it("rejects invalid signatures through a typed error response", async () => {
     vi.stubEnv("STRIPE_WEBHOOK_SECRET", webhookSecret);
-
-    const response = await action({
-      request: createRequest(verifiedCheckoutPayload, "t=1,v1=invalid"),
-      params: {},
-      context: {},
+    const paymentLogger = createMockLogger();
+    const handleStripeWebhook = createStripeWebhookHandler({
+      logger: paymentLogger,
     });
+
+    const response = await handleStripeWebhook(
+      createRequest(verifiedCheckoutPayload, "t=1,v1=invalid"),
+    );
 
     expect(response.status).toBe(400);
     expect(await readJson(response)).toEqual({
@@ -84,6 +94,20 @@ describe("Stripe webhook route", () => {
         message: "Stripe webhook signature verification failed.",
       },
     });
+    expect(paymentLogger.error).toHaveBeenCalledWith(
+      {
+        route: "webhooks.stripe",
+        action: "verify_stripe_webhook_signature",
+        errorCode: "invalid_stripe_signature",
+      },
+      "Stripe webhook verification failed.",
+    );
+    const loggedSignatureFailure = JSON.stringify(
+      vi.mocked(paymentLogger.error).mock.calls,
+    );
+    expect(loggedSignatureFailure).not.toContain("t=1,v1=invalid");
+    expect(loggedSignatureFailure).not.toContain(verifiedCheckoutPayload);
+    expect(loggedSignatureFailure).not.toContain(webhookSecret);
   });
 
   it("applies a paid vote after a verified successful checkout event", async () => {
@@ -187,6 +211,7 @@ describe("Stripe webhook route", () => {
 
   it("returns a typed fulfillment read error without applying a vote", async () => {
     vi.stubEnv("STRIPE_WEBHOOK_SECRET", webhookSecret);
+    const paymentLogger = createMockLogger();
     const applyPaidVote = vi.fn(() =>
       errAsync({
         code: "paid_vote_fulfillment_read_failed" as const,
@@ -200,7 +225,10 @@ describe("Stripe webhook route", () => {
         },
       }),
     );
-    const handleStripeWebhook = createStripeWebhookHandler({ applyPaidVote });
+    const handleStripeWebhook = createStripeWebhookHandler({
+      applyPaidVote,
+      logger: paymentLogger,
+    });
 
     const response = await handleStripeWebhook(
       createRequest(verifiedCheckoutPayload, signPayload(verifiedCheckoutPayload)),
@@ -225,6 +253,20 @@ describe("Stripe webhook route", () => {
       countryCode: "JP",
       voteType: "like",
     });
+    expect(paymentLogger.error).toHaveBeenCalledWith(
+      {
+        route: "webhooks.stripe",
+        action: "apply_paid_vote",
+        errorCode: "paid_vote_fulfillment_read_failed",
+        causeCode: "redis_command_failed",
+        eventId: "evt_route_signature_shell",
+        eventType: "checkout.session.completed",
+        checkoutSessionId: "cs_test_route_signature_shell",
+        countryCode: "JP",
+        voteType: "like",
+      },
+      "Failed to apply paid vote from Stripe webhook.",
+    );
   });
 
   it("returns a typed fulfillment write error after the vote is applied but not recorded", async () => {
@@ -273,6 +315,7 @@ describe("Stripe webhook route", () => {
 
   it("returns a typed metadata error without applying a vote", async () => {
     vi.stubEnv("STRIPE_WEBHOOK_SECRET", webhookSecret);
+    const paymentLogger = createMockLogger();
     const payload = JSON.stringify({
       id: "evt_route_missing_metadata",
       object: "event",
@@ -288,7 +331,10 @@ describe("Stripe webhook route", () => {
       },
     });
     const applyPaidVote = vi.fn();
-    const handleStripeWebhook = createStripeWebhookHandler({ applyPaidVote });
+    const handleStripeWebhook = createStripeWebhookHandler({
+      applyPaidVote,
+      logger: paymentLogger,
+    });
 
     const response = await handleStripeWebhook(
       createRequest(payload, signPayload(payload)),
@@ -306,10 +352,25 @@ describe("Stripe webhook route", () => {
       },
     });
     expect(applyPaidVote).not.toHaveBeenCalled();
+    expect(paymentLogger.error).toHaveBeenCalledWith(
+      {
+        route: "webhooks.stripe",
+        action: "parse_stripe_paid_vote_metadata",
+        errorCode: "invalid_stripe_paid_vote_metadata",
+        eventId: "evt_route_missing_metadata",
+        eventType: "checkout.session.completed",
+        checkoutSessionId: "cs_test_route_missing_metadata",
+      },
+      "Stripe paid vote metadata was invalid.",
+    );
+    expect(JSON.stringify(vi.mocked(paymentLogger.error).mock.calls)).not.toContain(
+      payload,
+    );
   });
 
   it("ignores unsupported verified events without applying a vote", async () => {
     vi.stubEnv("STRIPE_WEBHOOK_SECRET", webhookSecret);
+    const paymentLogger = createMockLogger();
     const payload = JSON.stringify({
       id: "evt_route_payment_intent_succeeded",
       object: "event",
@@ -326,7 +387,10 @@ describe("Stripe webhook route", () => {
       },
     });
     const applyPaidVote = vi.fn();
-    const handleStripeWebhook = createStripeWebhookHandler({ applyPaidVote });
+    const handleStripeWebhook = createStripeWebhookHandler({
+      applyPaidVote,
+      logger: paymentLogger,
+    });
 
     const response = await handleStripeWebhook(
       createRequest(payload, signPayload(payload)),
@@ -344,5 +408,14 @@ describe("Stripe webhook route", () => {
       },
     });
     expect(applyPaidVote).not.toHaveBeenCalled();
+    expect(paymentLogger.info).toHaveBeenCalledWith(
+      {
+        route: "webhooks.stripe",
+        action: "ignore_stripe_webhook_event",
+        eventId: "evt_route_payment_intent_succeeded",
+        eventType: "payment_intent.succeeded",
+      },
+      "Ignored non-target Stripe webhook event.",
+    );
   });
 });

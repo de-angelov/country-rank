@@ -7,6 +7,7 @@ import {
   type Result,
 } from "neverthrow";
 
+import { logger, type ApplicationLogger } from "~/lib/logger.server";
 import {
   createDefaultRedisClient,
   createRedisClientProvider,
@@ -70,6 +71,7 @@ type RedisPaidVoteFulfillmentClientFactory =
 export type RedisPaidVoteFulfillmentOptions = Readonly<{
   env?: NodeJS.ProcessEnv;
   clientFactory?: RedisPaidVoteFulfillmentClientFactory;
+  logger?: ApplicationLogger;
 }>;
 
 const createDefaultRedisPaidVoteFulfillmentClient: RedisPaidVoteFulfillmentClientFactory =
@@ -164,6 +166,7 @@ export const createRedisPaidVoteFulfillmentStorage = (
   options: RedisPaidVoteFulfillmentOptions = {},
 ) => {
   const env = options.env ?? process.env;
+  const paymentLogger = options.logger ?? logger;
   const clientFactory =
     options.clientFactory ?? createDefaultRedisPaidVoteFulfillmentClient;
   const getClient = createRedisClientProvider({
@@ -192,6 +195,20 @@ export const createRedisPaidVoteFulfillmentStorage = (
           }),
         ),
       )
+      .mapErr((error) => {
+        paymentLogger.error(
+          {
+            action: "write_paid_vote_fulfillment_record",
+            errorCode: error.code,
+            checkoutSessionId: record.checkoutSessionId,
+            countryCode: record.countryCode,
+            voteType: record.voteType,
+          },
+          "Failed to write paid vote fulfillment record.",
+        );
+
+        return error;
+      })
       .map(() => record);
 
   const readPaidVoteFulfillmentRecord = (
@@ -217,7 +234,19 @@ export const createRedisPaidVoteFulfillmentStorage = (
           (record) => okAsync(record),
           (error) => errAsync(error),
         ),
-      );
+      )
+      .mapErr((error) => {
+        paymentLogger.error(
+          {
+            action: "read_paid_vote_fulfillment_record",
+            errorCode: error.code,
+            checkoutSessionId,
+          },
+          "Failed to read paid vote fulfillment record.",
+        );
+
+        return error;
+      });
 
   return {
     writePaidVoteFulfillmentRecord,

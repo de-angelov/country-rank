@@ -15,6 +15,7 @@ export const supportedLogLevels = [
 ] as const;
 
 export type SupportedLogLevel = (typeof supportedLogLevels)[number];
+export type ApplicationLogger = Pick<Logger, "debug" | "info" | "warn" | "error">;
 
 const supportedLogLevelSet = new Set<string>(supportedLogLevels);
 

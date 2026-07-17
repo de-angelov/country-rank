@@ -1,5 +1,5 @@
 import { renderToString } from "react-dom/server";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 
 import { CountryCard } from "./country-card";
 
@@ -16,11 +16,7 @@ const country = {
 describe("CountryCard", () => {
   it("renders the country ranking details and vote actions", () => {
     const html = renderToString(
-      <CountryCard
-        country={country}
-        onLikeClick={vi.fn()}
-        onDislikeClick={vi.fn()}
-      />,
+      <CountryCard country={country} />,
     );
 
     expect(html).toContain("Japan");
@@ -48,11 +44,7 @@ describe("CountryCard", () => {
 
   it("renders an even empty chart with accessible zero totals", () => {
     const html = renderToString(
-      <CountryCard
-        country={{ ...country, likes: 0, dislikes: 0 }}
-        onLikeClick={vi.fn()}
-        onDislikeClick={vi.fn()}
-      />,
+      <CountryCard country={{ ...country, likes: 0, dislikes: 0 }} />,
     );
 
     expect(html).toContain("0 likes");

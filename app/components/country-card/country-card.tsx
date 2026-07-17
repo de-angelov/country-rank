@@ -13,12 +13,8 @@ import { Button } from "~/components/ui/button";
 import { Card } from "~/components/ui/card";
 import { Progress } from "~/components/ui/progress";
 
-export type CountryVoteHandler = (country: Country) => void;
-
 export type CountryCardProps = Readonly<{
   country: Country;
-  onLikeClick: CountryVoteHandler;
-  onDislikeClick: CountryVoteHandler;
   className?: string;
 }>;
 
@@ -44,8 +40,6 @@ const styles = {
 
 export function CountryCard({
   country,
-  onLikeClick,
-  onDislikeClick,
   className,
 }: CountryCardProps) {
   const [voteIntent, setVoteIntent] = useState<VoteIntent | null>(null);
@@ -57,13 +51,6 @@ export function CountryCard({
   const roundedDislikeRatio = totalVotes === 0 ? 0 : 100 - roundedLikeRatio;
   const openVoteDialog = (voteType: VoteType) => {
     setVoteIntent({ country, voteType });
-
-    if (voteType === "like") {
-      onLikeClick(country);
-      return;
-    }
-
-    onDislikeClick(country);
   };
 
   return (

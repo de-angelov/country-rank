@@ -224,8 +224,8 @@ backups:
 6. Run `--push` once and confirm a timestamped `*-country-votes.json` artifact
    appears in the configured backup repository path.
 
-Until automated restore support is available for deployment recovery, the dummy
-seed script remains the fallback for demo and local reset scenarios only:
+Backup artifacts are the recovery path for Redis country data. The dummy seed
+script remains a fallback for demo and local reset scenarios only:
 
 ```sh
 REDIS_URL=redis://localhost:6379 npm run seed:redis:votes
@@ -233,7 +233,9 @@ REDIS_URL=redis://localhost:6379 npm run seed:redis:votes
 
 The seed script reloads fixture country metadata and vote totals into Redis. It
 is not a production restore path and should not be used as evidence that a
-GitHub backup artifact can be recovered into a live deployment.
+GitHub backup artifact can be recovered into a live deployment. Use
+`npm run restore:redis` or `npm run restore:redis:local` with a backup artifact
+when validating backup recovery.
 
 ### Redis Backup Sidecar
 
@@ -291,20 +293,29 @@ secrets, or generated backup artifacts.
 ### Local Redis Restore
 
 The local Redis restore wrapper is available through
-`npm run restore:redis:local`. It restores an existing backup artifact into the
-Redis service already running through Docker Compose. The wrapper defaults to
-`redis://localhost:6379`, honors an explicit `REDIS_URL`, and can target a
-non-default Compose host port through `REDIS_HOST_PORT`.
+`npm run restore:redis:local`. It restores an existing optimized backup artifact
+into the Redis service already running through Docker Compose. Optimized schema
+v2 artifacts contain the metadata-only `country:catalog` JSON document and the
+aggregate `country:votes:likes` and `country:votes:dislikes` hashes created by
+the backup runner. The wrapper defaults to `redis://localhost:6379`, honors an
+explicit `REDIS_URL`, and can target a non-default Compose host port through
+`REDIS_HOST_PORT`.
 
 Run the local restore flow with:
 
 ```sh
 docker compose up -d redis
 npm run restore:redis:local -- ./path/to/2026-07-16T12-00-00-000Z-country-votes.json
-docker compose exec redis redis-cli GET country:catalog
-docker compose exec redis redis-cli HGETALL country:votes:likes
-docker compose exec redis redis-cli HGETALL country:votes:dislikes
+docker compose exec redis redis-cli EXISTS country:catalog country:votes:likes country:votes:dislikes
+docker compose exec redis redis-cli STRLEN country:catalog
+docker compose exec redis redis-cli HLEN country:votes:likes
+docker compose exec redis redis-cli HLEN country:votes:dislikes
 ```
+
+The `EXISTS` command should return `3`, confirming that `country:catalog`,
+`country:votes:likes`, and `country:votes:dislikes` were restored. `STRLEN` and
+both `HLEN` commands should return positive values for a populated country
+backup artifact.
 
 When Redis is exposed on a non-default host port, use the same port for Compose
 and restore:
@@ -315,10 +326,10 @@ REDIS_HOST_PORT=6380 npm run restore:redis:local -- ./path/to/2026-07-16T12-00-0
 ```
 
 The local wrapper is a restore command, not a seed reset. It reads a selected
-backup artifact and replaces the country catalog plus the aggregate like and
-dislike vote hashes represented by that artifact. `npm run seed:redis:votes`
-reloads fixture/demo data and should only be used as an explicit local reset
-fallback when that is the intended behavior.
+optimized backup artifact and replaces the country catalog plus the aggregate
+like and dislike vote hashes represented by that artifact. `npm run
+seed:redis:votes` reloads fixture/demo data and should only be used as an
+explicit local reset fallback when that is the intended behavior.
 
 ### Redis Restore Runner
 
@@ -373,9 +384,10 @@ docker compose up -d redis
 REDIS_URL=redis://localhost:6379 npm run seed:redis:votes
 REDIS_URL=redis://localhost:6379 npm run backup:redis -- --dry-run
 npm run restore:redis:local -- tmp/redis-backups/<generated-backup-file>.json
-docker compose exec redis redis-cli GET country:catalog
-docker compose exec redis redis-cli HGETALL country:votes:likes
-docker compose exec redis redis-cli HGETALL country:votes:dislikes
+docker compose exec redis redis-cli EXISTS country:catalog country:votes:likes country:votes:dislikes
+docker compose exec redis redis-cli STRLEN country:catalog
+docker compose exec redis redis-cli HLEN country:votes:likes
+docker compose exec redis redis-cli HLEN country:votes:dislikes
 ```
 
 The dummy seed command in this local example is only there to create demo data

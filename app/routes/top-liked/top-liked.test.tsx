@@ -89,9 +89,18 @@ describe("TopLiked", () => {
     );
 
     expect(html).toContain("Top Liked Countries");
+    expect(html).toContain(
+      "md:grid-cols-[1fr_minmax(18rem,24rem)] md:items-end",
+    );
     expect(html).toContain("Ranking order");
-    expect(html).toContain("Highest likes first");
-    expect(html).toContain("Lowest likes first");
+    expect(html).toContain(
+      'aria-label="Highest likes first" aria-pressed="true"',
+    );
+    expect(html).toContain('title="Highest likes first"');
+    expect(html).toContain(
+      'aria-label="Lowest likes first" aria-pressed="false"',
+    );
+    expect(html).toContain('title="Lowest likes first"');
     expect(html).toContain('aria-pressed="true"');
     expect(html).toContain('aria-label="Countries ranked by likes"');
     expect(html).toContain("United States");

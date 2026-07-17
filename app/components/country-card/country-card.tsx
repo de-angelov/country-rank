@@ -15,9 +15,14 @@ import { Progress } from "~/components/ui/progress";
 export type CountryCardProps = Readonly<{
   country: Country;
   className?: string;
+  includeVoteIconSprite?: boolean;
 }>;
 
 const numberFormatter = new Intl.NumberFormat("en-US");
+const voteIconSymbolIds = {
+  dislike: "country-card-thumbs-down",
+  like: "country-card-thumbs-up",
+} as const satisfies Record<VoteType, string>;
 
 const styles = {
   article: "grid gap-4 bg-secondary-background p-4",
@@ -33,13 +38,63 @@ const styles = {
   voteRatio: "grid gap-2 text-sm",
   voteTotalsRow: "flex items-center justify-between gap-3",
   voteTotalLabel: "inline-flex items-center gap-1 font-heading",
+  voteIcon: "size-4 shrink-0",
   actions: "grid grid-cols-2 gap-2",
   voteButton: "min-h-9 min-w-0 px-3",
 } as const;
 
+export function CountryCardVoteIconSprite() {
+  return (
+    <svg
+      aria-hidden="true"
+      className="absolute size-0 overflow-hidden"
+      focusable="false"
+    >
+      <symbol
+        id={voteIconSymbolIds.like}
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z" />
+        <path d="M7 10v12" />
+      </symbol>
+      <symbol
+        id={voteIconSymbolIds.dislike}
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22a3.13 3.13 0 0 1-3-3.88Z" />
+        <path d="M17 14V2" />
+      </symbol>
+    </svg>
+  );
+}
+
+function CountryCardVoteIcon({ voteType }: { voteType: VoteType }) {
+  return (
+    <svg
+      aria-hidden="true"
+      className={styles.voteIcon}
+      focusable="false"
+      viewBox="0 0 24 24"
+    >
+      <use href={`#${voteIconSymbolIds[voteType]}`} />
+    </svg>
+  );
+}
+
 export function CountryCard({
   country,
   className,
+  includeVoteIconSprite = true,
 }: CountryCardProps) {
   const [voteIntent, setVoteIntent] = useState<VoteIntent | null>(null);
   const likeCount = numberFormatter.format(country.likes);
@@ -54,6 +109,7 @@ export function CountryCard({
 
   return (
     <>
+      {includeVoteIconSprite ? <CountryCardVoteIconSprite /> : null}
       <Card asChild>
         <article className={cn(styles.article, className)}>
           <div className={styles.header}>
@@ -83,9 +139,11 @@ export function CountryCard({
             >
               <div className={styles.voteTotalsRow}>
                 <span className={styles.voteTotalLabel}>
+                  <CountryCardVoteIcon voteType="like" />
                   {likeCount} likes
                 </span>
                 <span className={styles.voteTotalLabel}>
+                  <CountryCardVoteIcon voteType="dislike" />
                   {dislikeCount} dislikes
                 </span>
               </div>
@@ -106,6 +164,7 @@ export function CountryCard({
                 aria-label={`Like ${country.name}`}
                 onClick={() => openVoteDialog("like")}
               >
+                <CountryCardVoteIcon voteType="like" />
                 Like
               </Button>
               <Button
@@ -116,6 +175,7 @@ export function CountryCard({
                 aria-label={`Dislike ${country.name}`}
                 onClick={() => openVoteDialog("dislike")}
               >
+                <CountryCardVoteIcon voteType="dislike" />
                 Dislike
               </Button>
             </div>

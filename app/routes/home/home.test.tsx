@@ -325,7 +325,14 @@ describe("Home", () => {
     expect(html).toContain("Search countries");
     expect(html).toContain("country-filter-transition");
     expect(html).toContain('id="country-search"');
-    expect(html.match(/<svg/g)?.length).toBe(1);
+    expect(html.match(/id="country-card-thumbs-up"/g)).toHaveLength(1);
+    expect(html.match(/id="country-card-thumbs-down"/g)).toHaveLength(1);
+    expect(html.match(/<use href="#country-card-thumbs-up"/g)).toHaveLength(
+      countries.length * 2,
+    );
+    expect(html.match(/<use href="#country-card-thumbs-down"/g)).toHaveLength(
+      countries.length * 2,
+    );
     expect(visibleText(html)).not.toContain("Showing");
 
     for (const country of countries) {

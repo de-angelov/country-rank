@@ -3,6 +3,10 @@ import { errAsync, okAsync } from "neverthrow";
 import { describe, expect, it } from "vitest";
 
 import type { Country } from "~/countries";
+import {
+  getDisplayedRankNumber,
+  RankedCountriesList,
+} from "~/components/ranked-countries-list/ranked-countries-list";
 import { orderRankedCountries } from "~/components/ranking-order-controls/ranking-order-controls";
 
 import {
@@ -117,12 +121,15 @@ describe("TopDisliked", () => {
     expect(html.indexOf('aria-label="Rank 1"')).toBeLessThan(
       html.indexOf("India"),
     );
+    expect(html).toContain('aria-label="Rank 1">1</div>');
     expect(html.indexOf('aria-label="Rank 2"')).toBeLessThan(
       html.indexOf("United States"),
     );
+    expect(html).toContain('aria-label="Rank 2">2</div>');
     expect(html.indexOf('aria-label="Rank 3"')).toBeLessThan(
       html.indexOf("Japan"),
     );
+    expect(html).toContain('aria-label="Rank 3">3</div>');
     expect(html.indexOf("India")).toBeLessThan(html.indexOf("United States"));
     expect(html.indexOf("United States")).toBeLessThan(html.indexOf("Japan"));
     expect(html.indexOf("Countries ordered by the highest dislike counts."))
@@ -145,5 +152,60 @@ describe("TopDisliked", () => {
         ({ name }) => name,
       ),
     ).toEqual(["Japan", "United States", "India"]);
+  });
+
+  it("displays highest-first rank numbers from 1 and lowest-first rank numbers from the total", () => {
+    const rankedCountries = getTopDislikedCountries(countries);
+
+    expect(
+      orderRankedCountries(rankedCountries, "highest-first").map(
+        (_country, index, orderedCountries) =>
+          getDisplayedRankNumber({
+            index,
+            order: "highest-first",
+            total: orderedCountries.length,
+          }),
+      ),
+    ).toEqual([1, 2, 3]);
+    expect(
+      orderRankedCountries(rankedCountries, "lowest-first").map(
+        (_country, index, orderedCountries) =>
+          getDisplayedRankNumber({
+            index,
+            order: "lowest-first",
+            total: orderedCountries.length,
+          }),
+      ),
+    ).toEqual([3, 2, 1]);
+  });
+
+  it("renders lowest-first disliked ranks with visible numbers matching aria labels", () => {
+    const rankedCountries = getTopDislikedCountries(countries);
+    const orderedCountries = orderRankedCountries(
+      rankedCountries,
+      "lowest-first",
+    );
+    const html = renderToString(
+      <RankedCountriesList
+        ariaLabel="Countries ranked by dislikes"
+        countries={orderedCountries}
+        rankNumberOrder="lowest-first"
+        rankTone="dislike"
+      />,
+    );
+
+    expect(html.indexOf('aria-label="Rank 3">3</div>')).toBeLessThan(
+      html.indexOf("Japan"),
+    );
+    expect(html.indexOf('aria-label="Rank 2">2</div>')).toBeLessThan(
+      html.indexOf("United States"),
+    );
+    expect(html.indexOf('aria-label="Rank 1">1</div>')).toBeLessThan(
+      html.indexOf("India"),
+    );
+    expect(html.indexOf("Japan")).toBeLessThan(
+      html.indexOf("United States"),
+    );
+    expect(html.indexOf("United States")).toBeLessThan(html.indexOf("India"));
   });
 });

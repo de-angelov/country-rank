@@ -14,29 +14,52 @@ const styles = {
 } as const;
 
 type RankTone = keyof typeof styles.rankTone;
+type RankNumberOrder = "highest-first" | "lowest-first";
+
+export function getDisplayedRankNumber({
+  index,
+  order,
+  total,
+}: {
+  index: number;
+  order: RankNumberOrder;
+  total: number;
+}) {
+  return order === "highest-first" ? index + 1 : total - index;
+}
 
 export function RankedCountriesList({
   ariaLabel,
   countries,
+  rankNumberOrder = "highest-first",
   rankTone,
 }: {
   ariaLabel: string;
   countries: readonly Country[];
+  rankNumberOrder?: RankNumberOrder;
   rankTone: RankTone;
 }) {
   return (
     <ol className={styles.list} aria-label={ariaLabel}>
-      {countries.map((country, index) => (
-        <li className={styles.row} key={country.code}>
-          <div
-            className={cn(styles.rankMarker, styles.rankTone[rankTone])}
-            aria-label={`Rank ${index + 1}`}
-          >
-            {index + 1}
-          </div>
-          <CountryCard country={country} />
-        </li>
-      ))}
+      {countries.map((country, index) => {
+        const rankNumber = getDisplayedRankNumber({
+          index,
+          order: rankNumberOrder,
+          total: countries.length,
+        });
+
+        return (
+          <li className={styles.row} key={country.code}>
+            <div
+              className={cn(styles.rankMarker, styles.rankTone[rankTone])}
+              aria-label={`Rank ${rankNumber}`}
+            >
+              {rankNumber}
+            </div>
+            <CountryCard country={country} />
+          </li>
+        );
+      })}
     </ol>
   );
 }

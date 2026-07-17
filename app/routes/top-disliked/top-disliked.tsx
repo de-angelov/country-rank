@@ -62,6 +62,7 @@ export function TopDislikedContent({
       <RankedCountriesList
         ariaLabel="Countries ranked by dislikes"
         countries={orderedCountries}
+        rankNumberOrder={rankingOrder}
         rankTone="dislike"
       />
     </main>

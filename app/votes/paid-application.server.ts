@@ -2,6 +2,7 @@ import { okAsync, type ResultAsync } from "neverthrow";
 
 import { logger, type ApplicationLogger } from "~/lib/logger.server";
 import {
+  claimPaidVoteFulfillmentRecord,
   readPaidVoteFulfillmentRecord,
   writePaidVoteFulfillmentRecord,
   type PaidVoteFulfillmentReadResult,
@@ -40,7 +41,7 @@ export type PaidVoteApplicationResult = AppliedPaidVote | DuplicatePaidVote;
 
 export type PaidVoteApplicationError =
   | Readonly<{
-      code: "paid_vote_fulfillment_read_failed";
+      code: "paid_vote_fulfillment_claim_failed";
       message: string;
       checkoutSessionId: string;
       cause: RedisPaidVoteFulfillmentError;
@@ -58,11 +59,14 @@ export type PaidVoteApplicationError =
     }>;
 
 type IncrementCountryVoteTotal = typeof incrementCountryVoteTotal;
+type ClaimPaidVoteFulfillmentRecord =
+  typeof claimPaidVoteFulfillmentRecord;
 type ReadPaidVoteFulfillmentRecord = typeof readPaidVoteFulfillmentRecord;
 type WritePaidVoteFulfillmentRecord = typeof writePaidVoteFulfillmentRecord;
 
 export type PaidVoteApplicationOptions = Readonly<{
   incrementVoteTotal?: IncrementCountryVoteTotal;
+  claimFulfillmentRecord?: ClaimPaidVoteFulfillmentRecord;
   readFulfillmentRecord?: ReadPaidVoteFulfillmentRecord;
   writeFulfillmentRecord?: WritePaidVoteFulfillmentRecord;
   logger?: ApplicationLogger;
@@ -73,6 +77,8 @@ export const createPaidVoteApplication = (
 ) => {
   const incrementVoteTotal =
     options.incrementVoteTotal ?? incrementCountryVoteTotal;
+  const claimFulfillmentRecord =
+    options.claimFulfillmentRecord ?? claimPaidVoteFulfillmentRecord;
   const readFulfillmentRecord =
     options.readFulfillmentRecord ?? readPaidVoteFulfillmentRecord;
   const writeFulfillmentRecord =
@@ -82,40 +88,56 @@ export const createPaidVoteApplication = (
   const applyPaidVote = (
     vote: ValidatedPaidVote,
   ): ResultAsync<PaidVoteApplicationResult, PaidVoteApplicationError> =>
-    readFulfillmentRecord(vote.checkoutSessionId)
+    claimFulfillmentRecord(vote)
       .mapErr((cause) => {
         paymentLogger.error(
           {
-            action: "read_paid_vote_fulfillment",
-            errorCode: "paid_vote_fulfillment_read_failed",
+            action: "claim_paid_vote_fulfillment",
+            errorCode: "paid_vote_fulfillment_claim_failed",
             causeCode: cause.code,
             checkoutSessionId: vote.checkoutSessionId,
             countryCode: vote.countryCode,
             voteType: vote.voteType,
           },
-          "Failed to read paid vote fulfillment before applying vote.",
+          "Failed to claim paid vote fulfillment before applying vote.",
         );
 
         return {
-          code: "paid_vote_fulfillment_read_failed" as const,
-          message: "Failed to read paid vote fulfillment before applying vote.",
+          code: "paid_vote_fulfillment_claim_failed" as const,
+          message:
+            "Failed to claim paid vote fulfillment before applying vote.",
           checkoutSessionId: vote.checkoutSessionId,
           cause,
         };
       })
-      .andThen((fulfillment) => {
-        if (fulfillment.status === "applied") {
+      .andThen((claim) => {
+        if (claim.status === "duplicate") {
           paymentLogger.info(
             {
               action: "skip_duplicate_paid_vote",
-              checkoutSessionId: fulfillment.checkoutSessionId,
-              countryCode: fulfillment.countryCode,
-              voteType: fulfillment.voteType,
+              checkoutSessionId: vote.checkoutSessionId,
+              countryCode: vote.countryCode,
+              voteType: vote.voteType,
             },
             "Skipped duplicate paid vote fulfillment.",
           );
 
-          return okAsync(toDuplicatePaidVote(fulfillment));
+          return readFulfillmentRecord(vote.checkoutSessionId)
+            .map(toDuplicatePaidVoteFromReadResult(vote))
+            .orElse((cause) => {
+              paymentLogger.warn(
+                {
+                  action: "read_duplicate_paid_vote_fulfillment",
+                  errorCode: cause.code,
+                  checkoutSessionId: vote.checkoutSessionId,
+                  countryCode: vote.countryCode,
+                  voteType: vote.voteType,
+                },
+                "Failed to read duplicate paid vote fulfillment after claim.",
+              );
+
+              return okAsync(toDuplicatePaidVote(vote));
+            });
         }
 
         return incrementVoteTotal(vote.countryCode, vote.voteType)
@@ -180,11 +202,29 @@ export const createPaidVoteApplication = (
 export const { applyPaidVote } = createPaidVoteApplication();
 
 const toDuplicatePaidVote = (
-  fulfillment: Extract<PaidVoteFulfillmentReadResult, { status: "applied" }>,
+  fulfillment: ValidatedPaidVote | Extract<
+    PaidVoteFulfillmentReadResult,
+    { status: "applied" | "pending" }
+  >,
 ): DuplicatePaidVote => ({
   status: "duplicate",
   checkoutSessionId: fulfillment.checkoutSessionId,
   countryCode: fulfillment.countryCode,
   voteType: fulfillment.voteType,
-  ...(fulfillment.totals === undefined ? {} : { totals: fulfillment.totals }),
+  ...(!("totals" in fulfillment) || fulfillment.totals === undefined
+    ? {}
+    : { totals: fulfillment.totals }),
 });
+
+const toDuplicatePaidVoteFromReadResult =
+  (vote: ValidatedPaidVote) =>
+  (fulfillment: PaidVoteFulfillmentReadResult): DuplicatePaidVote => {
+    if (
+      fulfillment.status === "applied" ||
+      fulfillment.status === "pending"
+    ) {
+      return toDuplicatePaidVote(fulfillment);
+    }
+
+    return toDuplicatePaidVote(vote);
+  };

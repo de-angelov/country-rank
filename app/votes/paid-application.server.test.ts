@@ -64,6 +64,20 @@ const createApplicationWithClient = (
   writeFulfillmentRecord = vi.fn((record: PaidVoteFulfillmentRecord) =>
     okAsync(record),
   ),
+  claimFulfillmentRecord = vi.fn(
+    (claim: {
+      checkoutSessionId: string;
+      countryCode: string;
+      voteType: "like" | "dislike";
+    }) =>
+      okAsync({
+        status: "claimed" as const,
+        record: {
+          status: "pending" as const,
+          ...claim,
+        },
+      }),
+  ),
 ) => {
   const storage = createRedisVoteStorage({
     env: envWithRedisUrl,
@@ -76,6 +90,7 @@ const createApplicationWithClient = (
 
   return createPaidVoteApplication({
     incrementVoteTotal: storage.incrementCountryVoteTotal,
+    claimFulfillmentRecord,
     readFulfillmentRecord: () =>
       okAsync({
         status: "not_found",
@@ -208,10 +223,13 @@ describe("createPaidVoteApplication", () => {
         env: envWithRedisUrl,
         clientFactory: () => client,
       }).incrementCountryVoteTotal,
-      readFulfillmentRecord: () =>
+      claimFulfillmentRecord: (claim) =>
         okAsync({
-          status: "not_found",
-          checkoutSessionId: "cs_test_missing",
+          status: "claimed" as const,
+          record: {
+            status: "pending" as const,
+            ...claim,
+          },
         }),
       writeFulfillmentRecord,
       logger: paymentLogger,
@@ -296,12 +314,18 @@ describe("createPaidVoteApplication", () => {
     });
   });
 
-  it("skips applying a paid vote when the fulfillment record is already applied", async () => {
+  it("skips applying a paid vote when the fulfillment claim is duplicate", async () => {
     const paymentLogger = createMockLogger();
     const client = createClient({
       likes: { JP: "4" },
       dislikes: { JP: "9" },
     });
+    const claimFulfillmentRecord = vi.fn(() =>
+      okAsync({
+        status: "duplicate" as const,
+        checkoutSessionId: "cs_test_duplicate",
+      }),
+    );
     const readFulfillmentRecord = vi.fn(() =>
       okAsync({
         status: "applied" as const,
@@ -324,6 +348,7 @@ describe("createPaidVoteApplication", () => {
     });
     const application = createPaidVoteApplication({
       incrementVoteTotal: storage.incrementCountryVoteTotal,
+      claimFulfillmentRecord,
       readFulfillmentRecord,
       writeFulfillmentRecord,
       logger: paymentLogger,
@@ -347,6 +372,11 @@ describe("createPaidVoteApplication", () => {
         dislikes: 9,
       },
     });
+    expect(claimFulfillmentRecord).toHaveBeenCalledWith({
+      checkoutSessionId: "cs_test_duplicate",
+      countryCode: "JP",
+      voteType: "like",
+    });
     expect(readFulfillmentRecord).toHaveBeenCalledWith("cs_test_duplicate");
     expect(client.hIncrBy).not.toHaveBeenCalled();
     expect(writeFulfillmentRecord).not.toHaveBeenCalled();
@@ -361,22 +391,90 @@ describe("createPaidVoteApplication", () => {
     );
   });
 
-  it("returns a typed error before applying when fulfillment lookup fails", async () => {
+  it("increments totals at most once for concurrent duplicate applications", async () => {
+    const client = createClient({
+      likes: { JP: "4" },
+      dislikes: { JP: "9" },
+    });
+    const claims = new Set<string>();
+    const claimFulfillmentRecord = vi.fn((claim) => {
+      if (claims.has(claim.checkoutSessionId)) {
+        return okAsync({
+          status: "duplicate" as const,
+          checkoutSessionId: claim.checkoutSessionId,
+        });
+      }
+
+      claims.add(claim.checkoutSessionId);
+
+      return okAsync({
+        status: "claimed" as const,
+        record: {
+          status: "pending" as const,
+          ...claim,
+        },
+      });
+    });
+    const readFulfillmentRecord = vi.fn((checkoutSessionId: string) =>
+      okAsync({
+        status: "pending" as const,
+        checkoutSessionId,
+        countryCode: "JP",
+        voteType: "like" as const,
+      }),
+    );
+    const writeFulfillmentRecord = vi.fn(
+      (record: PaidVoteFulfillmentRecord) => okAsync(record),
+    );
+    const storage = createRedisVoteStorage({
+      env: envWithRedisUrl,
+      clientFactory: () => client,
+    });
+    const application = createPaidVoteApplication({
+      incrementVoteTotal: storage.incrementCountryVoteTotal,
+      claimFulfillmentRecord,
+      readFulfillmentRecord,
+      writeFulfillmentRecord,
+    });
+
+    const results = await Promise.all([
+      application.applyPaidVote({
+        checkoutSessionId: "cs_test_concurrent_duplicate",
+        countryCode: "JP",
+        voteType: "like",
+      }),
+      application.applyPaidVote({
+        checkoutSessionId: "cs_test_concurrent_duplicate",
+        countryCode: "JP",
+        voteType: "like",
+      }),
+    ]);
+
+    expect(results.every((result) => result.isOk())).toBe(true);
+    expect(results.map((result) => result._unsafeUnwrap().status).sort()).toEqual([
+      "applied",
+      "duplicate",
+    ]);
+    expect(client.hIncrBy).toHaveBeenCalledTimes(1);
+    expect(writeFulfillmentRecord).toHaveBeenCalledTimes(1);
+  });
+
+  it("returns a typed error before applying when fulfillment claim fails", async () => {
     const client = createClient({
       likes: { JP: "4" },
       dislikes: { JP: "9" },
     });
     const fulfillmentError: RedisPaidVoteFulfillmentError = {
       code: "redis_command_failed",
-      message: "Failed to read paid vote fulfillment record from Redis.",
-      cause: new Error("redis get failed"),
+      message: "Failed to claim paid vote fulfillment record in Redis.",
+      cause: new Error("redis set nx failed"),
     };
     const application = createPaidVoteApplication({
       incrementVoteTotal: createRedisVoteStorage({
         env: envWithRedisUrl,
         clientFactory: () => client,
       }).incrementCountryVoteTotal,
-      readFulfillmentRecord: () => errAsync(fulfillmentError),
+      claimFulfillmentRecord: () => errAsync(fulfillmentError),
       writeFulfillmentRecord: vi.fn((record: PaidVoteFulfillmentRecord) =>
         okAsync(record),
       ),
@@ -390,8 +488,8 @@ describe("createPaidVoteApplication", () => {
 
     expect(result.isErr()).toBe(true);
     expect(result._unsafeUnwrapErr()).toEqual({
-      code: "paid_vote_fulfillment_read_failed",
-      message: "Failed to read paid vote fulfillment before applying vote.",
+      code: "paid_vote_fulfillment_claim_failed",
+      message: "Failed to claim paid vote fulfillment before applying vote.",
       checkoutSessionId: "cs_test_read_failure",
       cause: fulfillmentError,
     });

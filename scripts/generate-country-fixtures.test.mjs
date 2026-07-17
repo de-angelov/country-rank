@@ -225,7 +225,7 @@ describe("mergeCountryFixtureSources", () => {
       {
         code: "EH",
         name: "Western Sahara",
-        capital: "",
+        capital: "Unknown",
         flagImageUrl: "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Western%20Sahara.svg",
         continents: [],
         languages: [],
@@ -236,7 +236,7 @@ describe("mergeCountryFixtureSources", () => {
 });
 
 describe("createCountryFactSnippet", () => {
-  it("creates a compact profile summary from country metadata", () => {
+  it("uses approved curated profiles for representative countries", () => {
     const snippet = createCountryFactSnippet({
       code: "JP",
       name: "Japan",
@@ -249,9 +249,31 @@ describe("createCountryFactSnippet", () => {
     });
 
     expect(snippet).not.toContain("Japan");
-    expect(snippet).toContain("Tokyo");
-    expect(snippet).toContain("Eastern Asia");
-    expect(snippet).toContain("local-language public life");
+    expect(snippet).toContain("Pacific archipelago");
+    expect(snippet).toContain("imperial traditions");
+    expect(snippet).toContain("high-speed rail");
+    expect(snippet).not.toMatch(/\b(Set in|regional and global links)\b/i);
+    expect(snippet).toMatch(/\.$/);
+    expect(snippet.length).toBeLessThanOrEqual(countrySnippetMaxLength);
+  });
+
+  it("creates varied compact profile summaries from country metadata", () => {
+    const snippet = createCountryFactSnippet({
+      code: "CL",
+      name: "Chile",
+      capital: "Santiago",
+      subregion: "South America",
+      landlocked: false,
+      borderCount: 3,
+      languages: ["Spanish"],
+      currencies: ["Chilean peso"],
+    });
+
+    expect(snippet).not.toContain("Chile");
+    expect(snippet).toContain("Santiago");
+    expect(snippet).toContain("South America");
+    expect(snippet).toContain("Spanish-speaking");
+    expect(snippet).not.toMatch(/\b(Set in|regional and global links)\b/i);
     expect(snippet).toMatch(/\.$/);
     expect(snippet.length).toBeLessThanOrEqual(countrySnippetMaxLength);
   });
@@ -300,8 +322,8 @@ describe("addCountryFactSnippets", () => {
     ]);
 
     expect(countries.map((country) => country.factSnippet)).toEqual([
-      "Set in coastal South America with Brasilia as its capital, it connects Portuguese-language public life, service and trade networks, and 10 neighbors.",
-      "Set in coastal Eastern Asia with Tokyo as its capital, it connects local-language public life, JP reference identity, and regional and global links.",
+      "Atlantic giant spanning Amazon rainforest, cerrado, and megacities, with Portuguese colonial roots, Afro-Indigenous cultures, agribusiness, music, and football.",
+      "Pacific archipelago of mountains, dense cities, and coastal plains, blending imperial traditions, Shinto and Buddhist heritage, precision manufacturing, pop culture, and high-speed rail.",
     ]);
   });
 });
@@ -349,7 +371,7 @@ describe("readWikidataCountryFixtures", () => {
         capital: "Tokyo",
         flagImageUrl: "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Japan.svg",
         factSnippet:
-          "Set in the Asia region with Tokyo as its capital, it connects local-language public life, JP reference identity, and regional and global links.",
+          "Pacific archipelago of mountains, dense cities, and coastal plains, blending imperial traditions, Shinto and Buddhist heritage, precision manufacturing, pop culture, and high-speed rail.",
       },
     ]);
 
@@ -428,7 +450,7 @@ describe("runGenerateCountryFixtures", () => {
             capital: "Brasilia",
             flagImageUrl: "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Brazil.svg",
             factSnippet:
-              "Set in the South America region with Brasilia as its capital, it connects Portuguese-language public life, service and trade networks, and regional and global links.",
+              "Atlantic giant spanning Amazon rainforest, cerrado, and megacities, with Portuguese colonial roots, Afro-Indigenous cultures, agribusiness, music, and football.",
           },
         ],
         null,

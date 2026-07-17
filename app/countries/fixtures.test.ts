@@ -257,6 +257,12 @@ const snippetMaxLength = 190;
 const bannedSnippetPatterns = [
   /\b(static catalog profile|test snippet|placeholder|todo)\b/i,
   /\b(stupid|dumb|lazy|backward|primitive|terrorist|war-torn|poverty)\b/i,
+  /\bSet in (?:the )?.+ region\b/i,
+  /\bregional and global links\b/i,
+  /\blocal-language public life\b/i,
+  /\b[A-Z]{2} reference identity\b/,
+  /\bits [A-Z]{2}-listed capital city\b/i,
+  /^The\s+[A-Z][\w' -]+\s+(?:is|has|offers)\b/,
   /^[A-Z]{2}:/,
 ];
 

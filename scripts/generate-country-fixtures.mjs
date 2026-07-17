@@ -85,6 +85,57 @@ const displayNameOverrides = new Map([
   ["ZA", "South Africa"],
 ]);
 
+const curatedCountryFactSnippets = new Map([
+  [
+    "AE",
+    "Gulf federation of desert cities and ports shaped by Bedouin heritage, oil wealth, global aviation, finance, and ambitious urban design.",
+  ],
+  [
+    "AU",
+    "Island-continent of vast deserts, reefs, and coastal cities shaped by First Nations cultures, migration, mining, science, and Pacific ties.",
+  ],
+  [
+    "BR",
+    "Atlantic giant spanning Amazon rainforest, cerrado, and megacities, with Portuguese colonial roots, Afro-Indigenous cultures, agribusiness, music, and football.",
+  ],
+  [
+    "CA",
+    "Northern federation of forests, prairies, Arctic coast, and multicultural cities shaped by Indigenous nations, French and British legacies, energy, and technology.",
+  ],
+  [
+    "DE",
+    "Central European power of rivers, forests, and industrial cities, marked by reunification, federal states, engineering, philosophy, music, and export manufacturing.",
+  ],
+  [
+    "EG",
+    "Nile crossroads linking Africa and the Middle East, known for ancient kingdoms, Arab culture, Suez trade, desert landscapes, and dense urban life.",
+  ],
+  [
+    "IN",
+    "South Asian subcontinent of monsoon plains, Himalayan frontiers, and crowded megacities, shaped by ancient civilizations, many languages, technology, cinema, and democracy.",
+  ],
+  [
+    "IS",
+    "North Atlantic island of glaciers, volcanoes, sagas, and geothermal towns, with a small Nordic society known for fisheries, energy, and design.",
+  ],
+  [
+    "IT",
+    "Mediterranean peninsula of Alps, islands, and historic city-states, renowned for Roman heritage, Catholic influence, regional cuisine, fashion, design, and manufacturing.",
+  ],
+  [
+    "JP",
+    "Pacific archipelago of mountains, dense cities, and coastal plains, blending imperial traditions, Shinto and Buddhist heritage, precision manufacturing, pop culture, and high-speed rail.",
+  ],
+  [
+    "MX",
+    "North American bridge of deserts, highlands, and Pacific-Caribbean coasts, shaped by Indigenous civilizations, Spanish colonial cities, manufacturing, foodways, and migration.",
+  ],
+  [
+    "ZA",
+    "Southern African crossroads of coasts, plateau, and mining cities, defined by diverse nations, anti-apartheid history, constitutional democracy, wine, finance, and wildlife tourism.",
+  ],
+]);
+
 const compareText = (left, right) => left.localeCompare(right, "en");
 
 const uniqueSorted = (values) =>
@@ -155,59 +206,133 @@ const stripCountryNamePrefix = ({ country, value }) => {
   return value.replace(prefixPattern, "").trim();
 };
 
-export const createCountryFactSnippet = (country) => {
-  const primaryCapital = toSnippetText(toPrimaryCapital(country.capital));
+const toProfilePart = (value) =>
+  toSnippetText(value)
+    .replace(/^the\s+/i, "")
+    .replace(/\s+region$/i, "")
+    .trim();
+
+const toReadableRegion = (country) => {
   const rawRegion =
     country.subregion || country.region || country.continents?.[0] || "its region";
   const region = isCountryNameEcho({ country, value: rawRegion })
     ? rawRegion === "Antarctica"
-      ? "the polar region"
-      : "its region"
-    : toSnippetText(rawRegion);
+      ? "Antarctic"
+      : "regional"
+    : toProfilePart(rawRegion);
+
+  return region || "regional";
+};
+
+const toCapitalDetail = (country) => {
+  const primaryCapital = toSnippetText(toPrimaryCapital(country.capital));
+
+  if (
+    primaryCapital &&
+    primaryCapital !== "Unknown" &&
+    !primaryCapital.startsWith("Q") &&
+    !isCountryNameEcho({ country, value: primaryCapital })
+  ) {
+    return `${primaryCapital}-centered`;
+  }
+
+  return "locally administered";
+};
+
+const toLanguageDetail = (country) => {
+  const language =
+    country.languages?.[0] &&
+    !isCountryNameEcho({ country, value: country.languages[0] })
+      ? toProfilePart(country.languages[0])
+      : "";
+
+  if (language) {
+    return `${language}-speaking institutions`;
+  }
+
+  return "multilingual communities";
+};
+
+const toCurrencyDetail = (country) => {
+  const strippedCurrency = country.currencies?.[0]
+    ? stripCountryNamePrefix({ country, value: country.currencies[0] })
+    : "";
+  const currency =
+    strippedCurrency && !isCountryNameEcho({ country, value: strippedCurrency })
+      ? toProfilePart(strippedCurrency)
+      : "";
+
+  if (currency) {
+    return `${currency}-based markets`;
+  }
+
+  return "service and trade networks";
+};
+
+const toBorderDetail = (country) => {
+  if (Number.isInteger(country.borderCount) && country.borderCount > 0) {
+    return `${country.borderCount} land neighbor${
+      country.borderCount === 1 ? "" : "s"
+    }`;
+  }
+
+  if (country.landlocked === false) {
+    return "maritime routes";
+  }
+
+  return "regional routes";
+};
+
+const profileTextures = [
+  "a compact civic profile",
+  "a trade-focused outlook",
+  "a layered local identity",
+  "a distinctive diplomatic role",
+  "a resilient island-facing culture",
+  "a metropolitan public life",
+  "a crossroads economy",
+];
+
+const toProfileTexture = (country) =>
+  profileTextures[
+    (country.code.charCodeAt(0) * 3 + country.code.charCodeAt(1) * 5) %
+      profileTextures.length
+  ];
+
+const toSentenceCase = (value) => `${value[0].toUpperCase()}${value.slice(1)}`;
+
+export const createCountryFactSnippet = (country) => {
+  const curatedSnippet = curatedCountryFactSnippets.get(country.code);
+
+  if (curatedSnippet) {
+    return curatedSnippet;
+  }
+
+  const region = toReadableRegion(country);
   const geography =
     country.landlocked === true
       ? `landlocked ${region}`
       : country.landlocked === false
         ? `coastal ${region}`
-        : `the ${region} region`;
-  const language =
-    country.languages?.[0] &&
-    !isCountryNameEcho({ country, value: country.languages[0] })
-      ? toSnippetText(country.languages[0])
-      : undefined;
-  const strippedCurrency = country.currencies?.[0]
-    ? stripCountryNamePrefix({ country, value: country.currencies[0] })
-    : undefined;
-  const currency =
-    strippedCurrency && !isCountryNameEcho({ country, value: strippedCurrency })
-      ? toSnippetText(strippedCurrency)
-      : undefined;
-  const borderDetail =
-    Number.isInteger(country.borderCount) && country.borderCount > 0
-      ? `${country.borderCount} neighbor${country.borderCount === 1 ? "" : "s"}`
-      : "regional and global links";
-  const capitalDetail =
-    primaryCapital &&
-    primaryCapital !== "Unknown" &&
-    !primaryCapital.startsWith("Q")
-      ? isCountryNameEcho({ country, value: primaryCapital })
-        ? `its ${country.code}-listed capital city`
-        : `${primaryCapital} as its capital`
-      : "a compact administrative center";
-  const identityDetail = language
-    ? `${language}-language public life`
-    : "local-language public life";
-  const economyDetail = currency
-    ? `${currency}-based commerce`
-    : language
-      ? "service and trade networks"
-      : `${country.code} reference identity`;
+        : `${region}`;
+  const capitalDetail = toCapitalDetail(country);
+  const languageDetail = toLanguageDetail(country);
+  const currencyDetail = toCurrencyDetail(country);
+  const borderDetail = toBorderDetail(country);
+  const profileTexture = toProfileTexture(country);
+  const variant =
+    country.code.charCodeAt(0) + country.code.charCodeAt(1) + country.name.length;
   const candidates = [
-    `Set in ${geography} with ${capitalDetail}, it connects ${identityDetail}, ${economyDetail}, and ${borderDetail}.`,
-    `Set in ${region} with ${capitalDetail}, it connects ${identityDetail}, ${economyDetail}, and ${borderDetail}.`,
+    `${capitalDetail} ${geography} profile shaped by ${languageDetail}, ${currencyDetail}, ${borderDetail}, and ${profileTexture}.`,
+    `${geography[0].toUpperCase()}${geography.slice(1)} setting with ${capitalDetail} civic life, ${languageDetail}, ${currencyDetail}, ${borderDetail}, and ${profileTexture}.`,
+    `${capitalDetail} society in ${region}, balancing ${languageDetail}, ${currencyDetail}, ${borderDetail}, and ${profileTexture}.`,
   ];
 
-  const snippet = candidates.find(
+  const orderedCandidates = [
+    candidates[variant % candidates.length],
+    ...candidates,
+  ];
+  const snippet = orderedCandidates.find(
     (candidate) => candidate.length <= countrySnippetMaxLength,
   );
 
@@ -215,7 +340,7 @@ export const createCountryFactSnippet = (country) => {
     throw new Error(`${country.code} is missing a compact profile summary.`);
   }
 
-  return snippet;
+  return toSentenceCase(snippet);
 };
 
 export const addCountryFactSnippets = (countries) =>
@@ -432,7 +557,7 @@ export const mergeCountryFixtureSources = ({ countries, metadataByCode }) =>
 
     return {
       ...country,
-      capital: metadata?.capital ?? "",
+      capital: metadata?.capital || "Unknown",
       flagImageUrl,
       continents: metadata?.continents ?? [],
       languages: metadata?.languages ?? [],

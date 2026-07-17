@@ -33,6 +33,11 @@ const createClient = (
 
       return Promise.resolve(totals[field] ?? null);
     }),
+    hGetAll: vi.fn((key: string) =>
+      Promise.resolve(
+        key === voteTotalsKey("like") ? fields.likes : fields.dislikes,
+      ),
+    ),
     hIncrBy: vi.fn(
       options.hIncrBy ??
         ((_key: string, field: string, increment: number) => {

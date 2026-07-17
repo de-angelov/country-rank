@@ -16,6 +16,7 @@ const createClient = (
   options: Partial<{
     connect: () => Promise<unknown>;
     hGet: (key: string, field: string) => Promise<string | null>;
+    hGetAll: (key: string) => Promise<Record<string, string>>;
     hIncrBy: (
       key: string,
       field: string,
@@ -37,6 +38,13 @@ const createClient = (
 
           return Promise.resolve(totals[field] ?? null);
         }),
+    ),
+    hGetAll: vi.fn(
+      options.hGetAll ??
+        ((key: string) =>
+          Promise.resolve(
+            key === voteTotalsKey("like") ? fields.likes : fields.dislikes,
+          )),
     ),
     hIncrBy: vi.fn(
       options.hIncrBy ??
@@ -119,6 +127,46 @@ describe("createRedisVoteStorage", () => {
       likes: 0,
       dislikes: 0,
     });
+  });
+
+  it("reads aggregate country vote totals from Redis vote hashes", async () => {
+    const client = createClient({
+      likes: { JP: "12", DE: "5" },
+      dislikes: { JP: "4", GB: "9" },
+    });
+    const storage = createRedisVoteStorage({
+      env: envWithRedisUrl,
+      clientFactory: () => client,
+    });
+
+    const result = await storage.readAllCountryVoteTotals();
+
+    expect(result.isOk()).toBe(true);
+    expect([...result._unsafeUnwrap().values()]).toEqual([
+      {
+        countryCode: "JP",
+        likes: 12,
+        dislikes: 4,
+      },
+      {
+        countryCode: "DE",
+        likes: 5,
+        dislikes: 0,
+      },
+      {
+        countryCode: "GB",
+        likes: 0,
+        dislikes: 9,
+      },
+    ]);
+    expect(client.hGetAll).toHaveBeenNthCalledWith(
+      1,
+      voteTotalsKey("like"),
+    );
+    expect(client.hGetAll).toHaveBeenNthCalledWith(
+      2,
+      voteTotalsKey("dislike"),
+    );
   });
 
   it("increments like and dislike totals by country code", async () => {

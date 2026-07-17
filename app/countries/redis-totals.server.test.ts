@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
+import { errAsync, okAsync } from "neverthrow";
 
-import type { Country } from "./country";
+import type { CountryCatalogProfile } from "./redis-catalog.server";
 import { readCountriesWithRedisVoteTotals } from "./redis-totals.server";
 import {
   createRedisVoteStorage,
@@ -12,15 +13,13 @@ const envWithRedisUrl = {
   REDIS_URL: "redis://localhost:6379",
 };
 
-const countries = [
+const catalog = [
   {
     code: "JP",
     name: "Japan",
     capital: "Tokyo",
     factSnippet: "Test snippet for Japan.",
     flagImageUrl: "https://example.com/jp.svg",
-    likes: 900,
-    dislikes: 80,
   },
   {
     code: "DE",
@@ -28,35 +27,32 @@ const countries = [
     capital: "Berlin",
     factSnippet: "Test snippet for Germany.",
     flagImageUrl: "https://example.com/de.svg",
-    likes: 700,
-    dislikes: 140,
   },
-] as const satisfies readonly Country[];
+] as const satisfies readonly CountryCatalogProfile[];
 
 const createClient = (
   fieldsByKey: Partial<Record<"likes" | "dislikes", Record<string, string>>>,
   options: Partial<{
     connect: () => Promise<unknown>;
-    hGet: (key: string, field: string) => Promise<string | null>;
+    hGetAll: (key: string) => Promise<Record<string, string>>;
   }> = {},
 ) => ({
   connect: vi.fn(options.connect ?? (() => Promise.resolve())),
-  hGet: vi.fn(
-    options.hGet ??
-      ((key: string, field: string) => {
-        const totals =
+  hGet: vi.fn(() => Promise.resolve(null)),
+  hGetAll: vi.fn(
+    options.hGetAll ??
+      ((key: string) =>
+        Promise.resolve(
           key === voteTotalsKey("like")
-            ? fieldsByKey.likes
-            : fieldsByKey.dislikes;
-
-        return Promise.resolve(totals?.[field] ?? null);
-      }),
+            ? (fieldsByKey.likes ?? {})
+            : (fieldsByKey.dislikes ?? {}),
+        )),
   ),
   hIncrBy: vi.fn(() => Promise.resolve(0)),
 });
 
 describe("readCountriesWithRedisVoteTotals", () => {
-  it("returns fixture metadata in fixture order with Redis-backed totals", async () => {
+  it("returns Redis catalog metadata in catalog order with aggregate Redis-backed totals", async () => {
     const client = createClient({
       likes: { JP: "12", DE: "3" },
       dislikes: { JP: "4", DE: "2" },
@@ -71,46 +67,35 @@ describe("readCountriesWithRedisVoteTotals", () => {
     });
 
     const result = await readCountriesWithRedisVoteTotals({
-      countries,
-      readVoteTotals: storage.readCountryVoteTotals,
+      readCatalog: () => okAsync(catalog),
+      readVoteTotals: storage.readAllCountryVoteTotals,
     });
 
     expect(result.isOk()).toBe(true);
     expect(result._unsafeUnwrap()).toEqual([
       {
-        ...countries[0],
+        ...catalog[0],
         likes: 12,
         dislikes: 4,
       },
       {
-        ...countries[1],
+        ...catalog[1],
         likes: 3,
         dislikes: 2,
       },
     ]);
-    expect(client.hGet).toHaveBeenNthCalledWith(
+    expect(client.hGetAll).toHaveBeenNthCalledWith(
       1,
       voteTotalsKey("like"),
-      "JP",
     );
-    expect(client.hGet).toHaveBeenNthCalledWith(
+    expect(client.hGetAll).toHaveBeenNthCalledWith(
       2,
       voteTotalsKey("dislike"),
-      "JP",
     );
-    expect(client.hGet).toHaveBeenNthCalledWith(
-      3,
-      voteTotalsKey("like"),
-      "DE",
-    );
-    expect(client.hGet).toHaveBeenNthCalledWith(
-      4,
-      voteTotalsKey("dislike"),
-      "DE",
-    );
+    expect(client.hGet).not.toHaveBeenCalled();
   });
 
-  it("uses existing Redis storage defaults for missing vote totals", async () => {
+  it("defaults catalog countries missing from aggregate vote hashes to zero", async () => {
     const client = createClient({
       likes: { JP: "5" },
     });
@@ -120,8 +105,8 @@ describe("readCountriesWithRedisVoteTotals", () => {
     });
 
     const result = await readCountriesWithRedisVoteTotals({
-      countries: [countries[0]],
-      readVoteTotals: storage.readCountryVoteTotals,
+      readCatalog: () => okAsync([catalog[0]]),
+      readVoteTotals: storage.readAllCountryVoteTotals,
     });
 
     expect(result.isOk()).toBe(true);
@@ -148,8 +133,8 @@ describe("readCountriesWithRedisVoteTotals", () => {
     });
 
     const result = await readCountriesWithRedisVoteTotals({
-      countries: [countries[0]],
-      readVoteTotals: storage.readCountryVoteTotals,
+      readCatalog: () => okAsync([catalog[0]]),
+      readVoteTotals: storage.readAllCountryVoteTotals,
     });
 
     expect(result.isErr()).toBe(true);
@@ -164,7 +149,7 @@ describe("readCountriesWithRedisVoteTotals", () => {
     const client = createClient(
       {},
       {
-        hGet: () => Promise.reject(commandError),
+        hGetAll: () => Promise.reject(commandError),
       },
     );
     const storage = createRedisVoteStorage({
@@ -173,8 +158,8 @@ describe("readCountriesWithRedisVoteTotals", () => {
     });
 
     const result = await readCountriesWithRedisVoteTotals({
-      countries: [countries[0]],
-      readVoteTotals: storage.readCountryVoteTotals,
+      readCatalog: () => okAsync([catalog[0]]),
+      readVoteTotals: storage.readAllCountryVoteTotals,
     });
 
     expect(result.isErr()).toBe(true);
@@ -182,5 +167,28 @@ describe("readCountriesWithRedisVoteTotals", () => {
       code: "redis_command_failed",
       cause: commandError,
     });
+  });
+
+  it("returns catalog failures without falling back to fixture metadata", async () => {
+    const catalogError = {
+      code: "missing_country_catalog" as const,
+      message: "Redis country catalog is missing.",
+      key: "country:catalog" as const,
+    };
+    const client = createClient({
+      likes: { JP: "5" },
+    });
+    const storage = createRedisVoteStorage({
+      env: envWithRedisUrl,
+      clientFactory: () => client,
+    });
+
+    const result = await readCountriesWithRedisVoteTotals({
+      readCatalog: () => errAsync(catalogError),
+      readVoteTotals: storage.readAllCountryVoteTotals,
+    });
+
+    expect(result.isErr()).toBe(true);
+    expect(result._unsafeUnwrapErr()).toMatchObject(catalogError);
   });
 });

@@ -7,7 +7,7 @@ export const countryFixtures = [
     capital: "Andorra la Vella",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Andorra.svg",
-    factSnippet: "Andorra: Andorra la Vella brings mountain-map energy.",
+    factSnippet: "Set in the Europe region with its AD-listed capital city, it connects Catalan-language public life, euro-based commerce, and regional and global links.",
     likes: 100,
     dislikes: 50,
   },
@@ -17,7 +17,7 @@ export const countryFixtures = [
     capital: "Abu Dhabi",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20United%20Arab%20Emirates.svg",
-    factSnippet: "United Arab Emirates: Abu Dhabi brings harbor breeze.",
+    factSnippet: "Set in the Asia region with Abu Dhabi as its capital, it connects Arabic-language public life, dirham-based commerce, and regional and global links.",
     likes: 137,
     dislikes: 79,
   },
@@ -27,7 +27,7 @@ export const countryFixtures = [
     capital: "Kabul",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20Taliban.svg",
-    factSnippet: "Afghanistan: Kabul brings market-day color.",
+    factSnippet: "Set in the Asia region with Kabul as its capital, it connects Arabic-language public life, afghani-based commerce, and regional and global links.",
     likes: 174,
     dislikes: 108,
   },
@@ -37,7 +37,7 @@ export const countryFixtures = [
     capital: "St. John's",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Antigua%20and%20Barbuda.svg",
-    factSnippet: "Antigua and Barbuda: St. John's brings postcard mischief.",
+    factSnippet: "Set in the North America region with St John's as its capital, it connects English-language public life, Eastern Caribbean dollar-based commerce, and regional and global links.",
     likes: 211,
     dislikes: 137,
   },
@@ -47,7 +47,7 @@ export const countryFixtures = [
     capital: "The Valley",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Anguilla.svg",
-    factSnippet: "Anguilla: The Valley brings island-hop plans.",
+    factSnippet: "Set in the North America region with The Valley as its capital, it connects English-language public life, Eastern Caribbean dollar-based commerce, and regional and global links.",
     likes: 248,
     dislikes: 166,
   },
@@ -57,7 +57,7 @@ export const countryFixtures = [
     capital: "Tirana",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Albania.svg",
-    factSnippet: "Albania: Tirana brings rain-or-shine charm.",
+    factSnippet: "Set in the Europe region with Tirana as its capital, it connects local-language public life, AL reference identity, and regional and global links.",
     likes: 285,
     dislikes: 195,
   },
@@ -67,7 +67,7 @@ export const countryFixtures = [
     capital: "Yerevan",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Armenia.svg",
-    factSnippet: "Armenia: Yerevan brings passport-stamp drama.",
+    factSnippet: "Set in the Asia region with Yerevan as its capital, it connects local-language public life, AM reference identity, and regional and global links.",
     likes: 322,
     dislikes: 224,
   },
@@ -77,7 +77,7 @@ export const countryFixtures = [
     capital: "Luanda",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Angola.svg",
-    factSnippet: "Angola: Luanda brings sunny cafe plans.",
+    factSnippet: "Set in the Africa region with Luanda as its capital, it connects Portuguese-language public life, kwanza-based commerce, and regional and global links.",
     likes: 359,
     dislikes: 253,
   },
@@ -87,7 +87,7 @@ export const countryFixtures = [
     capital: "Unknown",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20Antarctic%20Treaty.svg",
-    factSnippet: "Antarctica: world-map tiny print with harbor breeze.",
+    factSnippet: "Set in the the polar region region with a compact administrative center, it connects local-language public life, AQ reference identity, and regional and global links.",
     likes: 396,
     dislikes: 282,
   },
@@ -97,7 +97,7 @@ export const countryFixtures = [
     capital: "Buenos Aires",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Argentina.svg",
-    factSnippet: "Argentina: Buenos Aires brings market-day color.",
+    factSnippet: "Set in the South America region with Buenos Aires as its capital, it connects Spanish-language public life, Argentine convertible peso-based commerce, and regional and global links.",
     likes: 433,
     dislikes: 311,
   },
@@ -107,7 +107,7 @@ export const countryFixtures = [
     capital: "Pago Pago",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20American%20Samoa.svg",
-    factSnippet: "American Samoa: Pago Pago brings postcard mischief.",
+    factSnippet: "Set in the Insular Oceania region with Pago Pago as its capital, it connects English-language public life, United States dollar-based commerce, and regional and global links.",
     likes: 470,
     dislikes: 340,
   },
@@ -117,7 +117,7 @@ export const countryFixtures = [
     capital: "Vienna",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Austria.svg",
-    factSnippet: "Austria: Vienna brings snack-stop curiosity.",
+    factSnippet: "Set in the Europe region with Vienna as its capital, it connects local-language public life, euro-based commerce, and regional and global links.",
     likes: 507,
     dislikes: 369,
   },
@@ -127,7 +127,7 @@ export const countryFixtures = [
     capital: "Canberra",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Australia%20%28converted%29.svg",
-    factSnippet: "Australia: Canberra brings island-hop plans.",
+    factSnippet: "Set in the Oceania region with Canberra as its capital, it connects Auslan-language public life, service and trade networks, and regional and global links.",
     likes: 544,
     dislikes: 398,
   },
@@ -137,7 +137,7 @@ export const countryFixtures = [
     capital: "Oranjestad",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Aruba.svg",
-    factSnippet: "Aruba: Oranjestad brings airport-layover dreams.",
+    factSnippet: "Set in the North America region with Oranjestad as its capital, it connects Dutch-language public life, service and trade networks, and regional and global links.",
     likes: 581,
     dislikes: 427,
   },
@@ -147,7 +147,7 @@ export const countryFixtures = [
     capital: "Mariehamn",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20%C3%85land.svg",
-    factSnippet: "Aland Islands: Mariehamn brings rain-or-shine charm.",
+    factSnippet: "Set in the its region region with Mariehamn as its capital, it connects Swedish-language public life, euro-based commerce, and regional and global links.",
     likes: 618,
     dislikes: 456,
   },
@@ -157,7 +157,7 @@ export const countryFixtures = [
     capital: "Baku",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Azerbaijan.svg",
-    factSnippet: "Azerbaijan: Baku brings flag-quiz flair.",
+    factSnippet: "Set in the Asia region with Baku as its capital, it connects local-language public life, AZ reference identity, and regional and global links.",
     likes: 655,
     dislikes: 485,
   },
@@ -167,7 +167,7 @@ export const countryFixtures = [
     capital: "Sarajevo",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Bosnia%20and%20Herzegovina.svg",
-    factSnippet: "Bosnia and Herzegovina: Sarajevo brings market-day color.",
+    factSnippet: "Set in the Europe region with Sarajevo as its capital, it connects Bosnian-language public life, convertible mark-based commerce, and regional and global links.",
     likes: 692,
     dislikes: 514,
   },
@@ -177,7 +177,7 @@ export const countryFixtures = [
     capital: "Bridgetown",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Barbados.svg",
-    factSnippet: "Barbados: Bridgetown brings postcard mischief.",
+    factSnippet: "Set in the North America region with Bridgetown as its capital, it connects Bajan Creole-language public life, Barbadian dollar-based commerce, and regional and global links.",
     likes: 729,
     dislikes: 543,
   },
@@ -187,7 +187,7 @@ export const countryFixtures = [
     capital: "Dhaka",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Bangladesh.svg",
-    factSnippet: "Bangladesh: Dhaka brings island-hop plans.",
+    factSnippet: "Set in the Asia region with Dhaka as its capital, it connects Bangla-language public life, service and trade networks, and regional and global links.",
     likes: 766,
     dislikes: 572,
   },
@@ -197,7 +197,7 @@ export const countryFixtures = [
     capital: "Brussels",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Belgium.svg",
-    factSnippet: "Belgium: Brussels brings capital-city cameos.",
+    factSnippet: "Set in the Europe region with Brussels as its capital, it connects Dutch-language public life, euro-based commerce, and regional and global links.",
     likes: 803,
     dislikes: 601,
   },
@@ -207,7 +207,7 @@ export const countryFixtures = [
     capital: "Ouagadougou",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Burkina%20Faso.svg",
-    factSnippet: "Burkina Faso: Ouagadougou brings airport-layover dreams.",
+    factSnippet: "Set in the Africa region with Ouagadougou as its capital, it connects Bissa-language public life, West African CFA franc-based commerce, and regional and global links.",
     likes: 840,
     dislikes: 630,
   },
@@ -217,7 +217,7 @@ export const countryFixtures = [
     capital: "Sofia",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Bulgaria.svg",
-    factSnippet: "Bulgaria: Sofia brings rain-or-shine charm.",
+    factSnippet: "Set in the Europe region with Sofia as its capital, it connects local-language public life, euro-based commerce, and regional and global links.",
     likes: 877,
     dislikes: 659,
   },
@@ -227,7 +227,7 @@ export const countryFixtures = [
     capital: "Manama",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Bahrain.svg",
-    factSnippet: "Bahrain: Manama brings passport-stamp drama.",
+    factSnippet: "Set in the Asia region with Manama as its capital, it connects Arabic-language public life, service and trade networks, and regional and global links.",
     likes: 914,
     dislikes: 688,
   },
@@ -237,7 +237,7 @@ export const countryFixtures = [
     capital: "Gitega",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Burundi.svg",
-    factSnippet: "Burundi: Gitega brings flag-quiz flair.",
+    factSnippet: "Set in the Africa region with Gitega as its capital, it connects English-language public life, service and trade networks, and regional and global links.",
     likes: 951,
     dislikes: 717,
   },
@@ -247,7 +247,7 @@ export const countryFixtures = [
     capital: "Porto-Novo",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Benin.svg",
-    factSnippet: "Benin: Porto-Novo brings sunny cafe plans.",
+    factSnippet: "Set in the Africa region with Porto-Novo as its capital, it connects French-language public life, West African CFA franc-based commerce, and regional and global links.",
     likes: 988,
     dislikes: 746,
   },
@@ -257,7 +257,7 @@ export const countryFixtures = [
     capital: "Gustavia",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Saint%20Barth%C3%A9lemy%20%28local%29.svg",
-    factSnippet: "Saint Barthelemy: Gustavia brings harbor breeze.",
+    factSnippet: "Set in the North America region with Gustavia as its capital, it connects French-language public life, euro-based commerce, and regional and global links.",
     likes: 125,
     dislikes: 75,
   },
@@ -267,7 +267,7 @@ export const countryFixtures = [
     capital: "Hamilton",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Bermuda.svg",
-    factSnippet: "Bermuda: Hamilton brings market-day color.",
+    factSnippet: "Set in the North America region with Hamilton as its capital, it connects English-language public life, Bermudian dollar-based commerce, and regional and global links.",
     likes: 162,
     dislikes: 104,
   },
@@ -277,7 +277,7 @@ export const countryFixtures = [
     capital: "Bandar Seri Begawan",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Brunei.svg",
-    factSnippet: "Brunei Darussalam: Bandar Seri Begawan brings postcard mischief.",
+    factSnippet: "Set in the Asia region with Bandar Seri Begawan as its capital, it connects British English-language public life, Brunei dollar-based commerce, and regional and global links.",
     likes: 199,
     dislikes: 133,
   },
@@ -287,7 +287,7 @@ export const countryFixtures = [
     capital: "La Paz, Sucre",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Bolivia.svg",
-    factSnippet: "Bolivia: La Paz brings snack-stop curiosity.",
+    factSnippet: "Set in the South America region with La Paz as its capital, it connects Aymara-language public life, service and trade networks, and regional and global links.",
     likes: 236,
     dislikes: 162,
   },
@@ -297,7 +297,7 @@ export const countryFixtures = [
     capital: "Unknown",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Bonaire%2C%20Sint%20Eustatius%20and%20Saba.svg",
-    factSnippet: "Bonaire and friends: world-map tiny print with capital-city cameos.",
+    factSnippet: "Set in the North America region with a compact administrative center, it connects Dutch-language public life, United States dollar-based commerce, and regional and global links.",
     likes: 273,
     dislikes: 191,
   },
@@ -307,7 +307,7 @@ export const countryFixtures = [
     capital: "Brasília",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Brazil.svg",
-    factSnippet: "Brazil: Brasília brings airport-layover dreams.",
+    factSnippet: "Set in the South America region with Brasília as its capital, it connects Portuguese-language public life, service and trade networks, and regional and global links.",
     likes: 310,
     dislikes: 220,
   },
@@ -317,7 +317,7 @@ export const countryFixtures = [
     capital: "Nassau",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20Bahamas.svg",
-    factSnippet: "Bahamas: Nassau brings rain-or-shine charm.",
+    factSnippet: "Set in the North America region with Nassau as its capital, it connects English-language public life, Bahamian dollar-based commerce, and regional and global links.",
     likes: 347,
     dislikes: 249,
   },
@@ -327,7 +327,7 @@ export const countryFixtures = [
     capital: "Thimphu",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Bhutan.svg",
-    factSnippet: "Bhutan: Thimphu brings passport-stamp drama.",
+    factSnippet: "Set in the Asia region with Thimphu as its capital, it connects Dzongkha-language public life, ngultrum-based commerce, and regional and global links.",
     likes: 384,
     dislikes: 278,
   },
@@ -337,7 +337,7 @@ export const countryFixtures = [
     capital: "Unknown",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Norway.svg",
-    factSnippet: "Bouvet Island: world-map tiny print with sunny cafe plans.",
+    factSnippet: "Set in the Antarctica region with a compact administrative center, it connects local-language public life, BV reference identity, and regional and global links.",
     likes: 421,
     dislikes: 307,
   },
@@ -347,7 +347,7 @@ export const countryFixtures = [
     capital: "Gaborone",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Botswana.svg",
-    factSnippet: "Botswana: Gaborone brings mountain-map energy.",
+    factSnippet: "Set in the Africa region with Gaborone as its capital, it connects English-language public life, pula-based commerce, and regional and global links.",
     likes: 458,
     dislikes: 336,
   },
@@ -357,7 +357,7 @@ export const countryFixtures = [
     capital: "Minsk",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Belarus.svg",
-    factSnippet: "Belarus: Minsk brings market-day color.",
+    factSnippet: "Set in the Europe region with Minsk as its capital, it connects local-language public life, BY reference identity, and regional and global links.",
     likes: 495,
     dislikes: 365,
   },
@@ -367,7 +367,7 @@ export const countryFixtures = [
     capital: "Belmopan",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Belize.svg",
-    factSnippet: "Belize: Belmopan brings postcard mischief.",
+    factSnippet: "Set in the North America region with Belmopan as its capital, it connects English-language public life, dollar-based commerce, and regional and global links.",
     likes: 532,
     dislikes: 394,
   },
@@ -377,7 +377,7 @@ export const countryFixtures = [
     capital: "Ottawa",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Canada%20%28Pantone%29.svg",
-    factSnippet: "Canada: Ottawa brings airport-layover dreams.",
+    factSnippet: "Set in the North America region with Ottawa as its capital, it connects English-language public life, Canadian dollar-based commerce, and regional and global links.",
     likes: 569,
     dislikes: 423,
   },
@@ -387,7 +387,7 @@ export const countryFixtures = [
     capital: "West Island",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20Cocos%20%28Keeling%29%20Island.svg",
-    factSnippet: "Cocos Islands: West Island brings passport-stamp drama.",
+    factSnippet: "Set in the Oceania region with West Island as its capital, it connects English-language public life, Australian dollar-based commerce, and regional and global links.",
     likes: 606,
     dislikes: 452,
   },
@@ -397,7 +397,7 @@ export const countryFixtures = [
     capital: "Kinshasa",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20Democratic%20Republic%20of%20the%20Congo.svg",
-    factSnippet: "D.R. Congo: Kinshasa brings flag-quiz flair.",
+    factSnippet: "Set in the Africa region with Kinshasa as its capital, it connects French-language public life, Congolese franc-based commerce, and regional and global links.",
     likes: 643,
     dislikes: 481,
   },
@@ -407,7 +407,7 @@ export const countryFixtures = [
     capital: "Bangui",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20Central%20African%20Republic.svg",
-    factSnippet: "Central African Republic: Bangui brings mountain-map energy.",
+    factSnippet: "Set in the Africa region with Bangui as its capital, it connects French-language public life, Central African CFA franc-based commerce, and regional and global links.",
     likes: 680,
     dislikes: 510,
   },
@@ -417,7 +417,7 @@ export const countryFixtures = [
     capital: "Brazzaville",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20Republic%20of%20the%20Congo.svg",
-    factSnippet: "Congo: Brazzaville brings harbor breeze.",
+    factSnippet: "Set in the Africa region with Brazzaville as its capital, it connects French-language public life, Central African CFA franc-based commerce, and regional and global links.",
     likes: 717,
     dislikes: 539,
   },
@@ -427,7 +427,7 @@ export const countryFixtures = [
     capital: "Bern",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Switzerland.svg",
-    factSnippet: "Switzerland: Bern brings market-day color.",
+    factSnippet: "Set in the Europe region with Bern as its capital, it connects French-language public life, Swiss franc-based commerce, and regional and global links.",
     likes: 754,
     dislikes: 568,
   },
@@ -437,7 +437,7 @@ export const countryFixtures = [
     capital: "Yamoussoukro",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20C%C3%B4te%20d%27Ivoire.svg",
-    factSnippet: "Cote d'Ivoire: Yamoussoukro brings postcard mischief.",
+    factSnippet: "Set in the Africa region with Yamoussoukro as its capital, it connects French-language public life, West African CFA franc-based commerce, and regional and global links.",
     likes: 791,
     dislikes: 597,
   },
@@ -447,7 +447,7 @@ export const countryFixtures = [
     capital: "Avarua",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20Cook%20Islands.svg",
-    factSnippet: "Cook Islands: Avarua brings island-hop plans.",
+    factSnippet: "Set in the Insular Oceania region with Avarua as its capital, it connects local-language public life, dollar-based commerce, and regional and global links.",
     likes: 828,
     dislikes: 626,
   },
@@ -457,7 +457,7 @@ export const countryFixtures = [
     capital: "Santiago",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Chile.svg",
-    factSnippet: "Chile: Santiago brings capital-city cameos.",
+    factSnippet: "Set in the South America region with Santiago as its capital, it connects Spanish-language public life, service and trade networks, and regional and global links.",
     likes: 865,
     dislikes: 655,
   },
@@ -467,7 +467,7 @@ export const countryFixtures = [
     capital: "Yaoundé",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Cameroon.svg",
-    factSnippet: "Cameroon: Yaoundé brings airport-layover dreams.",
+    factSnippet: "Set in the Africa region with Yaoundé as its capital, it connects English-language public life, Central African CFA franc-based commerce, and regional and global links.",
     likes: 902,
     dislikes: 684,
   },
@@ -477,7 +477,7 @@ export const countryFixtures = [
     capital: "Beijing",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20People%27s%20Republic%20of%20China.svg",
-    factSnippet: "China: Beijing brings rain-or-shine charm.",
+    factSnippet: "Set in the Asia region with Beijing as its capital, it connects Putonghua-language public life, renminbi-based commerce, and regional and global links.",
     likes: 939,
     dislikes: 713,
   },
@@ -487,7 +487,7 @@ export const countryFixtures = [
     capital: "Bogotá",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Colombia.svg",
-    factSnippet: "Colombia: Bogotá brings passport-stamp drama.",
+    factSnippet: "Set in the South America region with Bogotá as its capital, it connects Spanish-language public life, service and trade networks, and regional and global links.",
     likes: 976,
     dislikes: 742,
   },
@@ -497,7 +497,7 @@ export const countryFixtures = [
     capital: "San José",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Costa%20Rica.svg",
-    factSnippet: "Costa Rica: San José brings mountain-map energy.",
+    factSnippet: "Set in the North America region with San José as its capital, it connects Spanish-language public life, service and trade networks, and regional and global links.",
     likes: 113,
     dislikes: 71,
   },
@@ -507,7 +507,7 @@ export const countryFixtures = [
     capital: "Havana",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Cuba.svg",
-    factSnippet: "Cuba: Havana brings postcard mischief.",
+    factSnippet: "Set in the North America region with Havana as its capital, it connects Spanish-language public life, service and trade networks, and regional and global links.",
     likes: 150,
     dislikes: 100,
   },
@@ -517,7 +517,7 @@ export const countryFixtures = [
     capital: "Praia",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Cape%20Verde.svg",
-    factSnippet: "Cabo Verde: Praia brings snack-stop curiosity.",
+    factSnippet: "Set in the Africa region with Praia as its capital, it connects Cape Verdean Creole-language public life, Cape Verdean escudo-based commerce, and regional and global links.",
     likes: 187,
     dislikes: 129,
   },
@@ -527,7 +527,7 @@ export const countryFixtures = [
     capital: "Willemstad",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Cura%C3%A7ao.svg",
-    factSnippet: "Curacao: Willemstad brings island-hop plans.",
+    factSnippet: "Set in the North America region with Willemstad as its capital, it connects Dutch-language public life, Caribbean guilder-based commerce, and regional and global links.",
     likes: 224,
     dislikes: 158,
   },
@@ -537,7 +537,7 @@ export const countryFixtures = [
     capital: "Flying Fish Cove",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Christmas%20Island.svg",
-    factSnippet: "Christmas Island: Flying Fish Cove brings capital-city cameos.",
+    factSnippet: "Set in the Asia region with Flying Fish Cove as its capital, it connects English-language public life, Australian dollar-based commerce, and regional and global links.",
     likes: 261,
     dislikes: 187,
   },
@@ -547,7 +547,7 @@ export const countryFixtures = [
     capital: "Nicosia",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Cyprus.svg",
-    factSnippet: "Cyprus: Nicosia brings airport-layover dreams.",
+    factSnippet: "Set in the Asia region with Nicosia as its capital, it connects Greek-language public life, euro-based commerce, and regional and global links.",
     likes: 298,
     dislikes: 216,
   },
@@ -557,7 +557,7 @@ export const countryFixtures = [
     capital: "Prague",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20Czech%20Republic.svg",
-    factSnippet: "Czechia: Prague brings rain-or-shine charm.",
+    factSnippet: "Set in the Europe region with Prague as its capital, it connects Czech-language public life, Czech koruna-based commerce, and regional and global links.",
     likes: 335,
     dislikes: 245,
   },
@@ -567,7 +567,7 @@ export const countryFixtures = [
     capital: "Berlin",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Germany.svg",
-    factSnippet: "Germany: Berlin brings snack-stop curiosity.",
+    factSnippet: "Set in the Europe region with Berlin as its capital, it connects German-language public life, euro-based commerce, and regional and global links.",
     likes: 372,
     dislikes: 274,
   },
@@ -577,7 +577,7 @@ export const countryFixtures = [
     capital: "Djibouti",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Djibouti.svg",
-    factSnippet: "Djibouti: Djibouti brings passport-stamp drama.",
+    factSnippet: "Set in the Africa region with its DJ-listed capital city, it connects Arabic-language public life, service and trade networks, and regional and global links.",
     likes: 409,
     dislikes: 303,
   },
@@ -587,7 +587,7 @@ export const countryFixtures = [
     capital: "Copenhagen",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Denmark.svg",
-    factSnippet: "Denmark: Copenhagen brings flag-quiz flair.",
+    factSnippet: "Set in the Europe region with Copenhagen as its capital, it connects Danish-language public life, Danish krone-based commerce, and regional and global links.",
     likes: 446,
     dislikes: 332,
   },
@@ -597,7 +597,7 @@ export const countryFixtures = [
     capital: "Roseau",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Dominica.svg",
-    factSnippet: "Dominica: Roseau brings mountain-map energy.",
+    factSnippet: "Set in the North America region with Roseau as its capital, it connects English-language public life, Eastern Caribbean dollar-based commerce, and regional and global links.",
     likes: 483,
     dislikes: 361,
   },
@@ -607,7 +607,7 @@ export const countryFixtures = [
     capital: "Santo Domingo",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20Dominican%20Republic.svg",
-    factSnippet: "Dominican Republic: Santo Domingo brings market-day color.",
+    factSnippet: "Set in the North America region with Santo Domingo as its capital, it connects Spanish-language public life, Dominican peso-based commerce, and regional and global links.",
     likes: 520,
     dislikes: 390,
   },
@@ -617,7 +617,7 @@ export const countryFixtures = [
     capital: "Algiers",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Algeria.svg",
-    factSnippet: "Algeria: Algiers brings harbor breeze.",
+    factSnippet: "Set in the Africa region with Algiers as its capital, it connects Arabic-language public life, service and trade networks, and regional and global links.",
     likes: 557,
     dislikes: 419,
   },
@@ -627,7 +627,7 @@ export const countryFixtures = [
     capital: "Quito",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Ecuador.svg",
-    factSnippet: "Ecuador: world-map tiny print with airport-layover dreams.",
+    factSnippet: "Set in the South America region with a compact administrative center, it connects Northern Quichua-language public life, United States dollar-based commerce, and regional and global links.",
     likes: 594,
     dislikes: 448,
   },
@@ -637,7 +637,7 @@ export const countryFixtures = [
     capital: "Tallinn",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Estonia.svg",
-    factSnippet: "Estonia: Tallinn brings passport-stamp drama.",
+    factSnippet: "Set in the Europe region with Tallinn as its capital, it connects local-language public life, euro-based commerce, and regional and global links.",
     likes: 631,
     dislikes: 477,
   },
@@ -647,7 +647,7 @@ export const countryFixtures = [
     capital: "Cairo",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Egypt.svg",
-    factSnippet: "Egypt: Cairo brings sunny cafe plans.",
+    factSnippet: "Set in the Africa region with Cairo as its capital, it connects Arabic-language public life, service and trade networks, and regional and global links.",
     likes: 668,
     dislikes: 506,
   },
@@ -657,7 +657,7 @@ export const countryFixtures = [
     capital: "Unknown",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Western%20Sahara*.svg",
-    factSnippet: "Western Sahara: world-map tiny print with mountain-map energy.",
+    factSnippet: "Set in the Africa region with a compact administrative center, it connects Arabic-language public life, Moroccan dirham-based commerce, and regional and global links.",
     likes: 705,
     dislikes: 535,
   },
@@ -667,7 +667,7 @@ export const countryFixtures = [
     capital: "Asmara",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Eritrea.svg",
-    factSnippet: "Eritrea: Asmara brings flag-quiz flair.",
+    factSnippet: "Set in the Africa region with Asmara as its capital, it connects Arabic-language public life, nakfa-based commerce, and regional and global links.",
     likes: 742,
     dislikes: 564,
   },
@@ -677,7 +677,7 @@ export const countryFixtures = [
     capital: "Madrid",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Spain.svg",
-    factSnippet: "Spain: Madrid brings sunny cafe plans.",
+    factSnippet: "Set in the Europe region with Madrid as its capital, it connects Spanish-language public life, euro-based commerce, and regional and global links.",
     likes: 779,
     dislikes: 593,
   },
@@ -687,7 +687,7 @@ export const countryFixtures = [
     capital: "Addis Ababa",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Ethiopia.svg",
-    factSnippet: "Ethiopia: Addis Ababa brings mountain-map energy.",
+    factSnippet: "Set in the Africa region with Addis Ababa as its capital, it connects Amharic-language public life, bir-based commerce, and regional and global links.",
     likes: 816,
     dislikes: 622,
   },
@@ -697,7 +697,7 @@ export const countryFixtures = [
     capital: "Helsinki",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Finland.svg",
-    factSnippet: "Finland: Helsinki brings capital-city cameos.",
+    factSnippet: "Set in the Europe region with Helsinki as its capital, it connects Finnish-language public life, euro-based commerce, and regional and global links.",
     likes: 853,
     dislikes: 651,
   },
@@ -707,7 +707,7 @@ export const countryFixtures = [
     capital: "Suva",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Fiji.svg",
-    factSnippet: "Fiji: Suva brings airport-layover dreams.",
+    factSnippet: "Set in the Insular Oceania region with Suva as its capital, it connects English-language public life, service and trade networks, and regional and global links.",
     likes: 890,
     dislikes: 680,
   },
@@ -717,7 +717,7 @@ export const countryFixtures = [
     capital: "Stanley",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20Falkland%20Islands.svg",
-    factSnippet: "Falklands: Stanley brings rain-or-shine charm.",
+    factSnippet: "Set in the South America region with Stanley as its capital, it connects British English-language public life, Falkland Islands pound-based commerce, and regional and global links.",
     likes: 927,
     dislikes: 709,
   },
@@ -727,7 +727,7 @@ export const countryFixtures = [
     capital: "Palikir",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20Federated%20States%20of%20Micronesia.svg",
-    factSnippet: "Micronesia: Palikir brings flag-quiz flair.",
+    factSnippet: "Set in the Oceania region with Palikir as its capital, it connects English-language public life, United States dollar-based commerce, and regional and global links.",
     likes: 964,
     dislikes: 738,
   },
@@ -737,7 +737,7 @@ export const countryFixtures = [
     capital: "Tórshavn",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20Faroe%20Islands.svg",
-    factSnippet: "Faroe Islands: Tórshavn brings mountain-map energy.",
+    factSnippet: "Set in the Europe region with Tórshavn as its capital, it connects Danish-language public life, Faroese króna-based commerce, and regional and global links.",
     likes: 101,
     dislikes: 67,
   },
@@ -747,7 +747,7 @@ export const countryFixtures = [
     capital: "Paris",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20France.svg",
-    factSnippet: "France: Paris brings postcard mischief.",
+    factSnippet: "Set in the Europe region with Paris as its capital, it connects French-language public life, CFP Franc-based commerce, and regional and global links.",
     likes: 138,
     dislikes: 96,
   },
@@ -757,7 +757,7 @@ export const countryFixtures = [
     capital: "Libreville",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Gabon.svg",
-    factSnippet: "Gabon: Libreville brings postcard mischief.",
+    factSnippet: "Set in the Africa region with Libreville as its capital, it connects French-language public life, Central African CFA franc-based commerce, and regional and global links.",
     likes: 175,
     dislikes: 125,
   },
@@ -767,7 +767,7 @@ export const countryFixtures = [
     capital: "London",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20United%20Kingdom%20%283-5%29.svg",
-    factSnippet: "United Kingdom: London brings snack-stop curiosity.",
+    factSnippet: "Set in the Europe region with London as its capital, it connects English-language public life, pound sterling-based commerce, and regional and global links.",
     likes: 212,
     dislikes: 154,
   },
@@ -777,7 +777,7 @@ export const countryFixtures = [
     capital: "St. George's",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Grenada.svg",
-    factSnippet: "Grenada: St. George's brings capital-city cameos.",
+    factSnippet: "Set in the North America region with St George's as its capital, it connects English-language public life, Eastern Caribbean dollar-based commerce, and regional and global links.",
     likes: 249,
     dislikes: 183,
   },
@@ -787,7 +787,7 @@ export const countryFixtures = [
     capital: "Tbilisi",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Georgia.svg",
-    factSnippet: "Georgia: Tbilisi brings airport-layover dreams.",
+    factSnippet: "Set in the Europe region with Tbilisi as its capital, it connects local-language public life, GE reference identity, and regional and global links.",
     likes: 286,
     dislikes: 212,
   },
@@ -797,7 +797,7 @@ export const countryFixtures = [
     capital: "Cayenne",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20France.svg",
-    factSnippet: "French Guiana: Cayenne brings rain-or-shine charm.",
+    factSnippet: "Set in the South America region with Cayenne as its capital, it connects French-language public life, euro-based commerce, and regional and global links.",
     likes: 323,
     dislikes: 241,
   },
@@ -807,7 +807,7 @@ export const countryFixtures = [
     capital: "Saint Peter Port",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Guernsey.svg",
-    factSnippet: "Guernsey: Saint Peter Port brings passport-stamp drama.",
+    factSnippet: "Set in the Europe region with Saint Peter Port as its capital, it connects English-language public life, pound-based commerce, and regional and global links.",
     likes: 360,
     dislikes: 270,
   },
@@ -817,7 +817,7 @@ export const countryFixtures = [
     capital: "Accra",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Ghana.svg",
-    factSnippet: "Ghana: Accra brings flag-quiz flair.",
+    factSnippet: "Set in the Africa region with Accra as its capital, it connects English-language public life, cedi-based commerce, and regional and global links.",
     likes: 397,
     dislikes: 299,
   },
@@ -827,7 +827,7 @@ export const countryFixtures = [
     capital: "Gibraltar",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Gibraltar.svg",
-    factSnippet: "Gibraltar: Gibraltar brings sunny cafe plans.",
+    factSnippet: "Set in the Europe region with its GI-listed capital city, it connects British English-language public life, pound-based commerce, and regional and global links.",
     likes: 434,
     dislikes: 328,
   },
@@ -837,7 +837,7 @@ export const countryFixtures = [
     capital: "Nuuk",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Greenland.svg",
-    factSnippet: "Greenland: Nuuk brings market-day color.",
+    factSnippet: "Set in the North America region with Nuuk as its capital, it connects local-language public life, Danish krone-based commerce, and regional and global links.",
     likes: 471,
     dislikes: 357,
   },
@@ -847,7 +847,7 @@ export const countryFixtures = [
     capital: "Banjul",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20The%20Gambia.svg",
-    factSnippet: "Gambia: Banjul brings postcard mischief.",
+    factSnippet: "Set in the Africa region with Banjul as its capital, it connects English-language public life, dalasi-based commerce, and regional and global links.",
     likes: 508,
     dislikes: 386,
   },
@@ -857,7 +857,7 @@ export const countryFixtures = [
     capital: "Conakry",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Guinea.svg",
-    factSnippet: "Guinea: Conakry brings snack-stop curiosity.",
+    factSnippet: "Set in the Africa region with Conakry as its capital, it connects French-language public life, service and trade networks, and regional and global links.",
     likes: 545,
     dislikes: 415,
   },
@@ -867,7 +867,7 @@ export const countryFixtures = [
     capital: "Basse-Terre",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20France.svg",
-    factSnippet: "Guadeloupe: Basse-Terre brings capital-city cameos.",
+    factSnippet: "Set in the North America region with Basse-Terre as its capital, it connects local-language public life, euro-based commerce, and regional and global links.",
     likes: 582,
     dislikes: 444,
   },
@@ -877,7 +877,7 @@ export const countryFixtures = [
     capital: "Ciudad de la Paz",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Equatorial%20Guinea.svg",
-    factSnippet: "Equatorial Guinea: Ciudad de la Paz brings airport-layover dreams.",
+    factSnippet: "Set in the Africa region with Ciudad de la Paz as its capital, it connects French-language public life, Central African CFA franc-based commerce, and regional and global links.",
     likes: 619,
     dislikes: 473,
   },
@@ -887,7 +887,7 @@ export const countryFixtures = [
     capital: "Athens",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Greece.svg",
-    factSnippet: "Greece: Athens brings rain-or-shine charm.",
+    factSnippet: "Set in the Europe region with Athens as its capital, it connects Greek-language public life, euro-based commerce, and regional and global links.",
     likes: 656,
     dislikes: 502,
   },
@@ -897,7 +897,7 @@ export const countryFixtures = [
     capital: "King Edward Point",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20South%20Georgia%20and%20the%20South%20Sandwich%20Islands.svg",
-    factSnippet: "South Georgia: King Edward Point brings passport-stamp drama.",
+    factSnippet: "Set in the South America region with King Edward Point as its capital, it connects English-language public life, pound sterling-based commerce, and regional and global links.",
     likes: 693,
     dislikes: 531,
   },
@@ -907,7 +907,7 @@ export const countryFixtures = [
     capital: "Guatemala City",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Guatemala.svg",
-    factSnippet: "Guatemala: Guatemala City brings flag-quiz flair.",
+    factSnippet: "Set in the North America region with its GT-listed capital city, it connects Spanish-language public life, quetzal-based commerce, and regional and global links.",
     likes: 730,
     dislikes: 560,
   },
@@ -917,7 +917,7 @@ export const countryFixtures = [
     capital: "Hagåtña",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Guam.svg",
-    factSnippet: "Guam: Hagåtña brings sunny cafe plans.",
+    factSnippet: "Set in the Oceania region with Hagåtña as its capital, it connects Chamorro-language public life, United States dollar-based commerce, and regional and global links.",
     likes: 767,
     dislikes: 589,
   },
@@ -927,7 +927,7 @@ export const countryFixtures = [
     capital: "Bissau",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Guinea-Bissau.svg",
-    factSnippet: "Guinea-Bissau: Bissau brings harbor breeze.",
+    factSnippet: "Set in the Africa region with Bissau as its capital, it connects Portuguese-language public life, West African CFA franc-based commerce, and regional and global links.",
     likes: 804,
     dislikes: 618,
   },
@@ -937,7 +937,7 @@ export const countryFixtures = [
     capital: "Georgetown",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Guyana.svg",
-    factSnippet: "Guyana: Georgetown brings postcard mischief.",
+    factSnippet: "Set in the South America region with Georgetown as its capital, it connects English-language public life, Guyanese dollar-based commerce, and regional and global links.",
     likes: 841,
     dislikes: 647,
   },
@@ -947,7 +947,7 @@ export const countryFixtures = [
     capital: "Unknown",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Hong%20Kong.svg",
-    factSnippet: "Hong Kong: world-map tiny print with capital-city cameos.",
+    factSnippet: "Set in the Asia region with a compact administrative center, it connects Standard Chinese-language public life, dollar-based commerce, and regional and global links.",
     likes: 878,
     dislikes: 676,
   },
@@ -957,7 +957,7 @@ export const countryFixtures = [
     capital: "Unknown",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Australia%20%28converted%29.svg",
-    factSnippet: "Heard and McDonald Islands: world-map tiny print with rain-or-shine charm.",
+    factSnippet: "Set in the Antarctica region with a compact administrative center, it connects English-language public life, service and trade networks, and regional and global links.",
     likes: 915,
     dislikes: 705,
   },
@@ -967,7 +967,7 @@ export const countryFixtures = [
     capital: "Tegucigalpa",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Honduras%20%281949%E2%80%932022%2C%202026%E2%80%93present%29.svg",
-    factSnippet: "Honduras: Tegucigalpa brings passport-stamp drama.",
+    factSnippet: "Set in the North America region with Tegucigalpa as its capital, it connects Spanish-language public life, Honduran lempira-based commerce, and regional and global links.",
     likes: 952,
     dislikes: 734,
   },
@@ -977,7 +977,7 @@ export const countryFixtures = [
     capital: "Zagreb",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Croatia.svg",
-    factSnippet: "Croatia: Zagreb brings harbor breeze.",
+    factSnippet: "Set in the Europe region with Zagreb as its capital, it connects local-language public life, euro-based commerce, and regional and global links.",
     likes: 989,
     dislikes: 63,
   },
@@ -987,7 +987,7 @@ export const countryFixtures = [
     capital: "Port-au-Prince",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Haiti.svg",
-    factSnippet: "Haiti: Port-au-Prince brings postcard mischief.",
+    factSnippet: "Set in the North America region with Port-au-Prince as its capital, it connects French-language public life, gourde-based commerce, and regional and global links.",
     likes: 126,
     dislikes: 92,
   },
@@ -997,7 +997,7 @@ export const countryFixtures = [
     capital: "Budapest",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Hungary.svg",
-    factSnippet: "Hungary: Budapest brings snack-stop curiosity.",
+    factSnippet: "Set in the Europe region with Budapest as its capital, it connects Hungarian-language public life, forint-based commerce, and regional and global links.",
     likes: 163,
     dislikes: 121,
   },
@@ -1007,7 +1007,7 @@ export const countryFixtures = [
     capital: "Jakarta",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Indonesia.svg",
-    factSnippet: "Indonesia: Jakarta brings snack-stop curiosity.",
+    factSnippet: "Set in the Asia region with Jakarta as its capital, it connects local-language public life, rupiah-based commerce, and regional and global links.",
     likes: 200,
     dislikes: 150,
   },
@@ -1017,7 +1017,7 @@ export const countryFixtures = [
     capital: "Dublin",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Ireland.svg",
-    factSnippet: "Ireland: Dublin brings island-hop plans.",
+    factSnippet: "Set in the Europe region with Dublin as its capital, it connects English-language public life, euro-based commerce, and regional and global links.",
     likes: 237,
     dislikes: 179,
   },
@@ -1027,7 +1027,7 @@ export const countryFixtures = [
     capital: "Jerusalem",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Israel.svg",
-    factSnippet: "Israel: Jerusalem brings mountain-map energy.",
+    factSnippet: "Set in the Asia region with Jerusalem as its capital, it connects Hebrew-language public life, new shekel-based commerce, and regional and global links.",
     likes: 274,
     dislikes: 208,
   },
@@ -1037,7 +1037,7 @@ export const countryFixtures = [
     capital: "Douglas",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20Isle%20of%20Man.svg",
-    factSnippet: "Isle of Man: Douglas brings harbor breeze.",
+    factSnippet: "Set in the Europe region with Douglas as its capital, it connects English-language public life, Manx pound-based commerce, and regional and global links.",
     likes: 311,
     dislikes: 237,
   },
@@ -1047,7 +1047,7 @@ export const countryFixtures = [
     capital: "New Delhi",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20India.svg",
-    factSnippet: "India: New Delhi brings market-day color.",
+    factSnippet: "Set in the Asia region with New Delhi as its capital, it connects English-language public life, service and trade networks, and regional and global links.",
     likes: 348,
     dislikes: 266,
   },
@@ -1057,7 +1057,7 @@ export const countryFixtures = [
     capital: "Diego Garcia",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20Commissioner%20of%20the%20British%20Indian%20Ocean%20Territory.svg",
-    factSnippet: "British Indian Ocean Territory: Diego Garcia brings postcard mischief.",
+    factSnippet: "Set in the Africa region with Diego Garcia as its capital, it connects English-language public life, pound sterling-based commerce, and regional and global links.",
     likes: 385,
     dislikes: 295,
   },
@@ -1067,7 +1067,7 @@ export const countryFixtures = [
     capital: "Baghdad",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Iraq.svg",
-    factSnippet: "Iraq: Baghdad brings island-hop plans.",
+    factSnippet: "Set in the Asia region with Baghdad as its capital, it connects Arabic-language public life, service and trade networks, and regional and global links.",
     likes: 422,
     dislikes: 324,
   },
@@ -1077,7 +1077,7 @@ export const countryFixtures = [
     capital: "Tehran",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Iran.svg",
-    factSnippet: "Iran: Tehran brings capital-city cameos.",
+    factSnippet: "Set in the Asia region with Tehran as its capital, it connects Persian-language public life, service and trade networks, and regional and global links.",
     likes: 459,
     dislikes: 353,
   },
@@ -1087,7 +1087,7 @@ export const countryFixtures = [
     capital: "Reykjavík",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Iceland.svg",
-    factSnippet: "Iceland: Reykjavík brings airport-layover dreams.",
+    factSnippet: "Set in the Europe region with Reykjavík as its capital, it connects local-language public life, IS reference identity, and regional and global links.",
     likes: 496,
     dislikes: 382,
   },
@@ -1097,7 +1097,7 @@ export const countryFixtures = [
     capital: "Rome",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Italy.svg",
-    factSnippet: "Italy: Rome brings rain-or-shine charm.",
+    factSnippet: "Set in the Europe region with Rome as its capital, it connects Italian-language public life, euro-based commerce, and regional and global links.",
     likes: 533,
     dislikes: 411,
   },
@@ -1107,7 +1107,7 @@ export const countryFixtures = [
     capital: "Saint Helier",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Jersey.svg",
-    factSnippet: "Jersey: Saint Helier brings flag-quiz flair.",
+    factSnippet: "Set in the Europe region with Saint Helier as its capital, it connects English-language public life, pound-based commerce, and regional and global links.",
     likes: 570,
     dislikes: 440,
   },
@@ -1117,7 +1117,7 @@ export const countryFixtures = [
     capital: "Kingston",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Jamaica.svg",
-    factSnippet: "Jamaica: Kingston brings capital-city cameos.",
+    factSnippet: "Set in the North America region with Kingston as its capital, it connects English-language public life, service and trade networks, and regional and global links.",
     likes: 607,
     dislikes: 469,
   },
@@ -1127,7 +1127,7 @@ export const countryFixtures = [
     capital: "Amman",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Jordan.svg",
-    factSnippet: "Jordan: Amman brings rain-or-shine charm.",
+    factSnippet: "Set in the Asia region with Amman as its capital, it connects Arabic-language public life, service and trade networks, and regional and global links.",
     likes: 644,
     dislikes: 498,
   },
@@ -1137,7 +1137,7 @@ export const countryFixtures = [
     capital: "Tokyo",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Japan.svg",
-    factSnippet: "Japan: Tokyo brings passport-stamp drama.",
+    factSnippet: "Set in the Asia region with Tokyo as its capital, it connects local-language public life, yen-based commerce, and regional and global links.",
     likes: 681,
     dislikes: 527,
   },
@@ -1147,7 +1147,7 @@ export const countryFixtures = [
     capital: "Nairobi",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Kenya.svg",
-    factSnippet: "Kenya: Nairobi brings postcard mischief.",
+    factSnippet: "Set in the Africa region with Nairobi as its capital, it connects English-language public life, service and trade networks, and regional and global links.",
     likes: 718,
     dislikes: 556,
   },
@@ -1157,7 +1157,7 @@ export const countryFixtures = [
     capital: "Bishkek",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Kyrgyzstan.svg",
-    factSnippet: "Kyrgyzstan: Bishkek brings island-hop plans.",
+    factSnippet: "Set in the Asia region with Bishkek as its capital, it connects Kyrgyz-language public life, Kyrgyz som-based commerce, and regional and global links.",
     likes: 755,
     dislikes: 585,
   },
@@ -1167,7 +1167,7 @@ export const countryFixtures = [
     capital: "Phnom Penh",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Cambodia.svg",
-    factSnippet: "Cambodia: Phnom Penh brings capital-city cameos.",
+    factSnippet: "Set in the Asia region with Phnom Penh as its capital, it connects Khmer-language public life, riel-based commerce, and regional and global links.",
     likes: 792,
     dislikes: 614,
   },
@@ -1177,7 +1177,7 @@ export const countryFixtures = [
     capital: "South Tarawa",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Kiribati.svg",
-    factSnippet: "Kiribati: South Tarawa brings airport-layover dreams.",
+    factSnippet: "Set in the Insular Oceania region with South Tarawa as its capital, it connects English-language public life, Australian dollar-based commerce, and regional and global links.",
     likes: 829,
     dislikes: 643,
   },
@@ -1187,7 +1187,7 @@ export const countryFixtures = [
     capital: "Moroni",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20Comoros.svg",
-    factSnippet: "Comoros: Moroni brings sunny cafe plans.",
+    factSnippet: "Set in the Africa region with Moroni as its capital, it connects Arabic-language public life, Comorian franc-based commerce, and regional and global links.",
     likes: 866,
     dislikes: 672,
   },
@@ -1197,7 +1197,7 @@ export const countryFixtures = [
     capital: "Basseterre",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Saint%20Kitts%20and%20Nevis.svg",
-    factSnippet: "Saint Kitts and Nevis: Basseterre brings mountain-map energy.",
+    factSnippet: "Set in the North America region with Basseterre as its capital, it connects English-language public life, Eastern Caribbean dollar-based commerce, and regional and global links.",
     likes: 903,
     dislikes: 701,
   },
@@ -1207,7 +1207,7 @@ export const countryFixtures = [
     capital: "Pyongyang",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20North%20Korea.svg",
-    factSnippet: "North Korea: Pyongyang brings market-day color.",
+    factSnippet: "Set in the Asia region with Pyongyang as its capital, it connects Korean-language public life, service and trade networks, and regional and global links.",
     likes: 940,
     dislikes: 730,
   },
@@ -1217,7 +1217,7 @@ export const countryFixtures = [
     capital: "Seoul",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20South%20Korea.svg",
-    factSnippet: "South Korea: Seoul brings snack-stop curiosity.",
+    factSnippet: "Set in the Asia region with Seoul as its capital, it connects Korean-language public life, Korean mun-based commerce, and regional and global links.",
     likes: 977,
     dislikes: 59,
   },
@@ -1227,7 +1227,7 @@ export const countryFixtures = [
     capital: "Kuwait City",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Kuwait.svg",
-    factSnippet: "Kuwait: Kuwait City brings passport-stamp drama.",
+    factSnippet: "Set in the Asia region with its KW-listed capital city, it connects Arabic-language public life, service and trade networks, and regional and global links.",
     likes: 114,
     dislikes: 88,
   },
@@ -1237,7 +1237,7 @@ export const countryFixtures = [
     capital: "George Town",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20Cayman%20Islands.svg",
-    factSnippet: "Cayman Islands: George Town brings sunny cafe plans.",
+    factSnippet: "Set in the North America region with George Town as its capital, it connects English-language public life, dollar-based commerce, and regional and global links.",
     likes: 151,
     dislikes: 117,
   },
@@ -1247,7 +1247,7 @@ export const countryFixtures = [
     capital: "Astana",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Kazakhstan.svg",
-    factSnippet: "Kazakhstan: Astana brings mountain-map energy.",
+    factSnippet: "Set in the Asia region with Astana as its capital, it connects Kazakh-language public life, service and trade networks, and regional and global links.",
     likes: 188,
     dislikes: 146,
   },
@@ -1257,7 +1257,7 @@ export const countryFixtures = [
     capital: "Vientiane",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Laos.svg",
-    factSnippet: "Laos: Vientiane brings snack-stop curiosity.",
+    factSnippet: "Set in the Asia region with Vientiane as its capital, it connects Lao-language public life, Lao kip-based commerce, and regional and global links.",
     likes: 225,
     dislikes: 175,
   },
@@ -1267,7 +1267,7 @@ export const countryFixtures = [
     capital: "Beirut",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Lebanon.svg",
-    factSnippet: "Lebanon: Beirut brings island-hop plans.",
+    factSnippet: "Set in the Asia region with Beirut as its capital, it connects Arabic-language public life, Lebanese pound-based commerce, and regional and global links.",
     likes: 262,
     dislikes: 204,
   },
@@ -1277,7 +1277,7 @@ export const countryFixtures = [
     capital: "Castries",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Saint%20Lucia.svg",
-    factSnippet: "Saint Lucia: Castries brings capital-city cameos.",
+    factSnippet: "Set in the North America region with Castries as its capital, it connects English-language public life, Eastern Caribbean dollar-based commerce, and regional and global links.",
     likes: 299,
     dislikes: 233,
   },
@@ -1287,7 +1287,7 @@ export const countryFixtures = [
     capital: "Vaduz",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Liechtenstein.svg",
-    factSnippet: "Liechtenstein: Vaduz brings mountain-map energy.",
+    factSnippet: "Set in the Europe region with Vaduz as its capital, it connects German-language public life, Swiss franc-based commerce, and regional and global links.",
     likes: 336,
     dislikes: 262,
   },
@@ -1297,7 +1297,7 @@ export const countryFixtures = [
     capital: "Colombo, Sri Jayawardenepura Kotte",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Sri%20Lanka.svg",
-    factSnippet: "Sri Lanka: Colombo brings market-day color.",
+    factSnippet: "Set in the Asia region with Colombo as its capital, it connects Sinhala-language public life, service and trade networks, and regional and global links.",
     likes: 373,
     dislikes: 291,
   },
@@ -1307,7 +1307,7 @@ export const countryFixtures = [
     capital: "Monrovia",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Liberia.svg",
-    factSnippet: "Liberia: Monrovia brings passport-stamp drama.",
+    factSnippet: "Set in the Africa region with Monrovia as its capital, it connects English-language public life, service and trade networks, and regional and global links.",
     likes: 410,
     dislikes: 320,
   },
@@ -1317,7 +1317,7 @@ export const countryFixtures = [
     capital: "Maseru",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Lesotho.svg",
-    factSnippet: "Lesotho: Maseru brings flag-quiz flair.",
+    factSnippet: "Set in the Africa region with Maseru as its capital, it connects English-language public life, loti-based commerce, and regional and global links.",
     likes: 447,
     dislikes: 349,
   },
@@ -1327,7 +1327,7 @@ export const countryFixtures = [
     capital: "Vilnius",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Lithuania.svg",
-    factSnippet: "Lithuania: Vilnius brings sunny cafe plans.",
+    factSnippet: "Set in the Europe region with Vilnius as its capital, it connects local-language public life, euro-based commerce, and regional and global links.",
     likes: 484,
     dislikes: 378,
   },
@@ -1337,7 +1337,7 @@ export const countryFixtures = [
     capital: "Luxembourg",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Luxembourg.svg",
-    factSnippet: "Luxembourg: Luxembourg brings mountain-map energy.",
+    factSnippet: "Set in the Europe region with its LU-listed capital city, it connects French-language public life, euro-based commerce, and regional and global links.",
     likes: 521,
     dislikes: 407,
   },
@@ -1347,7 +1347,7 @@ export const countryFixtures = [
     capital: "Riga",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Latvia.svg",
-    factSnippet: "Latvia: Riga brings harbor breeze.",
+    factSnippet: "Set in the Europe region with Riga as its capital, it connects local-language public life, euro-based commerce, and regional and global links.",
     likes: 558,
     dislikes: 436,
   },
@@ -1357,7 +1357,7 @@ export const countryFixtures = [
     capital: "Tripoli",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Libya.svg",
-    factSnippet: "Libya: Tripoli brings snack-stop curiosity.",
+    factSnippet: "Set in the Africa region with Tripoli as its capital, it connects Arabic-language public life, service and trade networks, and regional and global links.",
     likes: 595,
     dislikes: 465,
   },
@@ -1367,7 +1367,7 @@ export const countryFixtures = [
     capital: "Rabat",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Morocco.svg",
-    factSnippet: "Morocco: Rabat brings passport-stamp drama.",
+    factSnippet: "Set in the Africa region with Rabat as its capital, it connects Arabic-language public life, Moroccan dirham-based commerce, and regional and global links.",
     likes: 632,
     dislikes: 494,
   },
@@ -1377,7 +1377,7 @@ export const countryFixtures = [
     capital: "Monaco",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Monaco.svg",
-    factSnippet: "Monaco: Monaco brings sunny cafe plans.",
+    factSnippet: "Set in the Europe region with its MC-listed capital city, it connects French-language public life, euro-based commerce, and regional and global links.",
     likes: 669,
     dislikes: 523,
   },
@@ -1387,7 +1387,7 @@ export const countryFixtures = [
     capital: "Chișinău",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Moldova.svg",
-    factSnippet: "Moldova: Chișinău brings mountain-map energy.",
+    factSnippet: "Set in the Europe region with Chișinău as its capital, it connects Romanian-language public life, service and trade networks, and regional and global links.",
     likes: 706,
     dislikes: 552,
   },
@@ -1397,7 +1397,7 @@ export const countryFixtures = [
     capital: "Podgorica",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Montenegro.svg",
-    factSnippet: "Montenegro: Podgorica brings harbor breeze.",
+    factSnippet: "Set in the Europe region with Podgorica as its capital, it connects Montenegrin-language public life, euro-based commerce, and regional and global links.",
     likes: 743,
     dislikes: 581,
   },
@@ -1407,7 +1407,7 @@ export const countryFixtures = [
     capital: "Marigot",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20France.svg",
-    factSnippet: "Saint Martin: Marigot brings market-day color.",
+    factSnippet: "Set in the North America region with Marigot as its capital, it connects French-language public life, euro-based commerce, and regional and global links.",
     likes: 780,
     dislikes: 610,
   },
@@ -1417,7 +1417,7 @@ export const countryFixtures = [
     capital: "Antananarivo",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Madagascar.svg",
-    factSnippet: "Madagascar: Antananarivo brings postcard mischief.",
+    factSnippet: "Set in the Africa region with Antananarivo as its capital, it connects French-language public life, ariary-based commerce, and regional and global links.",
     likes: 817,
     dislikes: 639,
   },
@@ -1427,7 +1427,7 @@ export const countryFixtures = [
     capital: "Majuro",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20Marshall%20Islands.svg",
-    factSnippet: "Marshall Islands: Majuro brings snack-stop curiosity.",
+    factSnippet: "Set in the Oceania region with Majuro as its capital, it connects English-language public life, SOV-based commerce, and regional and global links.",
     likes: 854,
     dislikes: 668,
   },
@@ -1437,7 +1437,7 @@ export const countryFixtures = [
     capital: "Skopje",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20North%20Macedonia.svg",
-    factSnippet: "North Macedonia: Skopje brings airport-layover dreams.",
+    factSnippet: "Set in the Europe region with Skopje as its capital, it connects Albanian-language public life, Macedonian denar-based commerce, and regional and global links.",
     likes: 891,
     dislikes: 697,
   },
@@ -1447,7 +1447,7 @@ export const countryFixtures = [
     capital: "Bamako",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Mali.svg",
-    factSnippet: "Mali: Bamako brings rain-or-shine charm.",
+    factSnippet: "Set in the Africa region with Bamako as its capital, it connects Bambara-language public life, West African CFA franc-based commerce, and regional and global links.",
     likes: 928,
     dislikes: 726,
   },
@@ -1457,7 +1457,7 @@ export const countryFixtures = [
     capital: "Naypyidaw",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Myanmar.svg",
-    factSnippet: "Myanmar: Naypyidaw brings passport-stamp drama.",
+    factSnippet: "Set in the Asia region with Naypyidaw as its capital, it connects Burmese-language public life, kyat-based commerce, and regional and global links.",
     likes: 965,
     dislikes: 55,
   },
@@ -1467,7 +1467,7 @@ export const countryFixtures = [
     capital: "Ulaanbaatar",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Mongolia.svg",
-    factSnippet: "Mongolia: Ulaanbaatar brings flag-quiz flair.",
+    factSnippet: "Set in the Asia region with Ulaanbaatar as its capital, it connects local-language public life, MN reference identity, and regional and global links.",
     likes: 102,
     dislikes: 84,
   },
@@ -1477,7 +1477,7 @@ export const countryFixtures = [
     capital: "Unknown",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Macau.svg",
-    factSnippet: "Macao: world-map tiny print with sunny cafe plans.",
+    factSnippet: "Set in the Asia region with a compact administrative center, it connects Cantonese-language public life, Hong Kong dollar-based commerce, and regional and global links.",
     likes: 139,
     dislikes: 113,
   },
@@ -1487,7 +1487,7 @@ export const countryFixtures = [
     capital: "Saipan",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20Northern%20Mariana%20Islands.svg",
-    factSnippet: "Northern Marianas: Saipan brings mountain-map energy.",
+    factSnippet: "Set in the Insular Oceania region with Saipan as its capital, it connects Carolinian-language public life, United States dollar-based commerce, and regional and global links.",
     likes: 176,
     dislikes: 142,
   },
@@ -1497,7 +1497,7 @@ export const countryFixtures = [
     capital: "Fort-de-France",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag-of-Martinique.svg",
-    factSnippet: "Martinique: Fort-de-France brings harbor breeze.",
+    factSnippet: "Set in the North America region with Fort-de-France as its capital, it connects local-language public life, euro-based commerce, and regional and global links.",
     likes: 213,
     dislikes: 171,
   },
@@ -1507,7 +1507,7 @@ export const countryFixtures = [
     capital: "Nouakchott",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Mauritania.svg",
-    factSnippet: "Mauritania: Nouakchott brings market-day color.",
+    factSnippet: "Set in the Africa region with Nouakchott as its capital, it connects Arabic-language public life, service and trade networks, and regional and global links.",
     likes: 250,
     dislikes: 200,
   },
@@ -1517,7 +1517,7 @@ export const countryFixtures = [
     capital: "Brades, Plymouth",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Montserrat.svg",
-    factSnippet: "Montserrat: Brades brings postcard mischief.",
+    factSnippet: "Set in the North America region with Brades as its capital, it connects English-language public life, Eastern Caribbean dollar-based commerce, and regional and global links.",
     likes: 287,
     dislikes: 229,
   },
@@ -1527,7 +1527,7 @@ export const countryFixtures = [
     capital: "Valletta",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Malta.svg",
-    factSnippet: "Malta: Valletta brings snack-stop curiosity.",
+    factSnippet: "Set in the Europe region with Valletta as its capital, it connects English-language public life, euro-based commerce, and regional and global links.",
     likes: 324,
     dislikes: 258,
   },
@@ -1537,7 +1537,7 @@ export const countryFixtures = [
     capital: "Port Louis",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Mauritius.svg",
-    factSnippet: "Mauritius: Port Louis brings island-hop plans.",
+    factSnippet: "Set in the Africa region with Port Louis as its capital, it connects English-language public life, Mauritian rupee-based commerce, and regional and global links.",
     likes: 361,
     dislikes: 287,
   },
@@ -1547,7 +1547,7 @@ export const countryFixtures = [
     capital: "Malé",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Maldives.svg",
-    factSnippet: "Maldives: Malé brings capital-city cameos.",
+    factSnippet: "Set in the Asia region with Malé as its capital, it connects Maldivian-language public life, Maldivian rufiyaa-based commerce, and regional and global links.",
     likes: 398,
     dislikes: 316,
   },
@@ -1557,7 +1557,7 @@ export const countryFixtures = [
     capital: "Lilongwe",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Malawi.svg",
-    factSnippet: "Malawi: Lilongwe brings airport-layover dreams.",
+    factSnippet: "Set in the Africa region with Lilongwe as its capital, it connects Chewa-language public life, service and trade networks, and regional and global links.",
     likes: 435,
     dislikes: 345,
   },
@@ -1567,7 +1567,7 @@ export const countryFixtures = [
     capital: "Mexico City",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Mexico.svg",
-    factSnippet: "Mexico: Mexico City brings rain-or-shine charm.",
+    factSnippet: "Set in the North America region with its MX-listed capital city, it connects nahuatl-language public life, peso-based commerce, and regional and global links.",
     likes: 472,
     dislikes: 374,
   },
@@ -1577,7 +1577,7 @@ export const countryFixtures = [
     capital: "Kuala Lumpur",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Malaysia.svg",
-    factSnippet: "Malaysia: Kuala Lumpur brings passport-stamp drama.",
+    factSnippet: "Set in the Asia region with Kuala Lumpur as its capital, it connects Malay-language public life, service and trade networks, and regional and global links.",
     likes: 509,
     dislikes: 403,
   },
@@ -1587,7 +1587,7 @@ export const countryFixtures = [
     capital: "Maputo",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Mozambique.svg",
-    factSnippet: "Mozambique: Maputo brings flag-quiz flair.",
+    factSnippet: "Set in the Africa region with Maputo as its capital, it connects Portuguese-language public life, Mozambican metical-based commerce, and regional and global links.",
     likes: 546,
     dislikes: 432,
   },
@@ -1597,7 +1597,7 @@ export const countryFixtures = [
     capital: "Windhoek",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Namibia.svg",
-    factSnippet: "Namibia: Windhoek brings market-day color.",
+    factSnippet: "Set in the Africa region with Windhoek as its capital, it connects English-language public life, service and trade networks, and regional and global links.",
     likes: 583,
     dislikes: 461,
   },
@@ -1607,7 +1607,7 @@ export const countryFixtures = [
     capital: "Nouméa",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20FLNKS.svg",
-    factSnippet: "New Caledonia: Nouméa brings snack-stop curiosity.",
+    factSnippet: "Set in the Insular Oceania region with Nouméa as its capital, it connects French-language public life, CFP Franc-based commerce, and regional and global links.",
     likes: 620,
     dislikes: 490,
   },
@@ -1617,7 +1617,7 @@ export const countryFixtures = [
     capital: "Niamey",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Niger.svg",
-    factSnippet: "Niger: Niamey brings capital-city cameos.",
+    factSnippet: "Set in the Africa region with Niamey as its capital, it connects Hausa-language public life, West African CFA franc-based commerce, and regional and global links.",
     likes: 657,
     dislikes: 519,
   },
@@ -1627,7 +1627,7 @@ export const countryFixtures = [
     capital: "Kingston",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Norfolk%20Island.svg",
-    factSnippet: "Norfolk Island: Kingston brings airport-layover dreams.",
+    factSnippet: "Set in the Insular Oceania region with Kingston as its capital, it connects English-language public life, Australian dollar-based commerce, and regional and global links.",
     likes: 694,
     dislikes: 548,
   },
@@ -1637,7 +1637,7 @@ export const countryFixtures = [
     capital: "Q3787",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Nigeria.svg",
-    factSnippet: "Nigeria: world-map tiny print with rain-or-shine charm.",
+    factSnippet: "Set in the Africa region with a compact administrative center, it connects English-language public life, naira-based commerce, and regional and global links.",
     likes: 731,
     dislikes: 577,
   },
@@ -1647,7 +1647,7 @@ export const countryFixtures = [
     capital: "Managua",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Nicaragua.svg",
-    factSnippet: "Nicaragua: Managua brings flag-quiz flair.",
+    factSnippet: "Set in the North America region with Managua as its capital, it connects Spanish-language public life, service and trade networks, and regional and global links.",
     likes: 768,
     dislikes: 606,
   },
@@ -1657,7 +1657,7 @@ export const countryFixtures = [
     capital: "Amsterdam",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20Netherlands.svg",
-    factSnippet: "Netherlands: Amsterdam brings harbor breeze.",
+    factSnippet: "Set in the Europe region with Amsterdam as its capital, it connects Dutch-language public life, Aruban florin-based commerce, and regional and global links.",
     likes: 805,
     dislikes: 635,
   },
@@ -1667,7 +1667,7 @@ export const countryFixtures = [
     capital: "Oslo",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Norway.svg",
-    factSnippet: "Norway: Oslo brings snack-stop curiosity.",
+    factSnippet: "Set in the Europe region with Oslo as its capital, it connects Bokmål-language public life, Norwegian krone-based commerce, and regional and global links.",
     likes: 842,
     dislikes: 664,
   },
@@ -1677,7 +1677,7 @@ export const countryFixtures = [
     capital: "Kathmandu",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Nepal.svg",
-    factSnippet: "Nepal: Kathmandu brings island-hop plans.",
+    factSnippet: "Set in the Asia region with Kathmandu as its capital, it connects local-language public life, NP reference identity, and regional and global links.",
     likes: 879,
     dislikes: 693,
   },
@@ -1687,7 +1687,7 @@ export const countryFixtures = [
     capital: "Yaren District",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Nauru.svg",
-    factSnippet: "Nauru: Yaren District brings airport-layover dreams.",
+    factSnippet: "Set in the Oceania region with Yaren District as its capital, it connects English-language public life, Australian dollar-based commerce, and regional and global links.",
     likes: 916,
     dislikes: 722,
   },
@@ -1697,7 +1697,7 @@ export const countryFixtures = [
     capital: "Alofi",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Niue.svg",
-    factSnippet: "Niue: Alofi brings flag-quiz flair.",
+    factSnippet: "Set in the Insular Oceania region with Alofi as its capital, it connects English-language public life, New Zealand dollar-based commerce, and regional and global links.",
     likes: 953,
     dislikes: 51,
   },
@@ -1707,7 +1707,7 @@ export const countryFixtures = [
     capital: "Wellington",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20New%20Zealand.svg",
-    factSnippet: "New Zealand: Wellington brings postcard mischief.",
+    factSnippet: "Set in the Oceania region with Wellington as its capital, it connects English-language public life, dollar-based commerce, and regional and global links.",
     likes: 990,
     dislikes: 80,
   },
@@ -1717,7 +1717,7 @@ export const countryFixtures = [
     capital: "Muscat",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Oman.svg",
-    factSnippet: "Oman: Muscat brings airport-layover dreams.",
+    factSnippet: "Set in the Asia region with Muscat as its capital, it connects Arabic-language public life, service and trade networks, and regional and global links.",
     likes: 127,
     dislikes: 109,
   },
@@ -1727,7 +1727,7 @@ export const countryFixtures = [
     capital: "Panama City",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Panama.svg",
-    factSnippet: "Panama: Panama City brings mountain-map energy.",
+    factSnippet: "Set in the North America region with its PA-listed capital city, it connects Spanish-language public life, service and trade networks, and regional and global links.",
     likes: 164,
     dislikes: 138,
   },
@@ -1737,7 +1737,7 @@ export const countryFixtures = [
     capital: "Lima",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Peru.svg",
-    factSnippet: "Peru: Lima brings snack-stop curiosity.",
+    factSnippet: "Set in the South America region with Lima as its capital, it connects Aymara-language public life, Nuevo sol-based commerce, and regional and global links.",
     likes: 201,
     dislikes: 167,
   },
@@ -1747,7 +1747,7 @@ export const countryFixtures = [
     capital: "Papeete",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20French%20Polynesia.svg",
-    factSnippet: "French Polynesia: Papeete brings island-hop plans.",
+    factSnippet: "Set in the Insular Oceania region with Papeete as its capital, it connects French-language public life, CFP Franc-based commerce, and regional and global links.",
     likes: 238,
     dislikes: 196,
   },
@@ -1757,7 +1757,7 @@ export const countryFixtures = [
     capital: "Port Moresby",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Papua%20New%20Guinea.svg",
-    factSnippet: "Papua New Guinea: Port Moresby brings capital-city cameos.",
+    factSnippet: "Set in the Oceania region with Port Moresby as its capital, it connects English-language public life, kina-based commerce, and regional and global links.",
     likes: 275,
     dislikes: 225,
   },
@@ -1767,7 +1767,7 @@ export const countryFixtures = [
     capital: "Manila",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20Philippines.svg",
-    factSnippet: "Philippines: Manila brings airport-layover dreams.",
+    factSnippet: "Set in the Asia region with Manila as its capital, it connects English-language public life, Philippine peso-based commerce, and regional and global links.",
     likes: 312,
     dislikes: 254,
   },
@@ -1777,7 +1777,7 @@ export const countryFixtures = [
     capital: "Islamabad",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Pakistan.svg",
-    factSnippet: "Pakistan: Islamabad brings flag-quiz flair.",
+    factSnippet: "Set in the Asia region with Islamabad as its capital, it connects English-language public life, service and trade networks, and regional and global links.",
     likes: 349,
     dislikes: 283,
   },
@@ -1787,7 +1787,7 @@ export const countryFixtures = [
     capital: "Warsaw",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Poland.svg",
-    factSnippet: "Poland: Warsaw brings sunny cafe plans.",
+    factSnippet: "Set in the Europe region with Warsaw as its capital, it connects Polish-language public life, złoty-based commerce, and regional and global links.",
     likes: 386,
     dislikes: 312,
   },
@@ -1797,7 +1797,7 @@ export const countryFixtures = [
     capital: "Saint-Pierre",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Saint-Pierre%20and%20Miquelon.svg",
-    factSnippet: "Saint Pierre and Miquelon: Saint-Pierre brings mountain-map energy.",
+    factSnippet: "Set in the North America region with Saint-Pierre as its capital, it connects French-language public life, euro-based commerce, and regional and global links.",
     likes: 423,
     dislikes: 341,
   },
@@ -1807,7 +1807,7 @@ export const countryFixtures = [
     capital: "Adamstown",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20Pitcairn%20Islands.svg",
-    factSnippet: "Pitcairn: Adamstown brings harbor breeze.",
+    factSnippet: "Set in the Insular Oceania region with Adamstown as its capital, it connects English-language public life, New Zealand dollar-based commerce, and regional and global links.",
     likes: 460,
     dislikes: 370,
   },
@@ -1817,7 +1817,7 @@ export const countryFixtures = [
     capital: "San Juan",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Puerto%20Rico.svg",
-    factSnippet: "Puerto Rico: San Juan brings island-hop plans.",
+    factSnippet: "Set in the North America region with San Juan as its capital, it connects English-language public life, United States dollar-based commerce, and regional and global links.",
     likes: 497,
     dislikes: 399,
   },
@@ -1827,7 +1827,7 @@ export const countryFixtures = [
     capital: "East Jerusalem, Ramallah",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Palestine.svg",
-    factSnippet: "Palestine: East Jerusalem brings capital-city cameos.",
+    factSnippet: "Set in the Asia region with East Jerusalem as its capital, it connects Arabic-language public life, new shekel-based commerce, and regional and global links.",
     likes: 534,
     dislikes: 428,
   },
@@ -1837,7 +1837,7 @@ export const countryFixtures = [
     capital: "Lisbon",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Portugal%20%28official%29.svg",
-    factSnippet: "Portugal: Lisbon brings airport-layover dreams.",
+    factSnippet: "Set in the Europe region with Lisbon as its capital, it connects Portuguese-language public life, euro-based commerce, and regional and global links.",
     likes: 571,
     dislikes: 457,
   },
@@ -1847,7 +1847,7 @@ export const countryFixtures = [
     capital: "Ngerulmud",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Palau.svg",
-    factSnippet: "Palau: Ngerulmud brings flag-quiz flair.",
+    factSnippet: "Set in the Insular Oceania region with Ngerulmud as its capital, it connects English-language public life, United States dollar-based commerce, and regional and global links.",
     likes: 608,
     dislikes: 486,
   },
@@ -1857,7 +1857,7 @@ export const countryFixtures = [
     capital: "Asunción",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Paraguay.svg",
-    factSnippet: "Paraguay: Asunción brings mountain-map energy.",
+    factSnippet: "Set in the South America region with Asunción as its capital, it connects Guarani-language public life, service and trade networks, and regional and global links.",
     likes: 645,
     dislikes: 515,
   },
@@ -1867,7 +1867,7 @@ export const countryFixtures = [
     capital: "Doha",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Qatar.svg",
-    factSnippet: "Qatar: Doha brings island-hop plans.",
+    factSnippet: "Set in the Asia region with Doha as its capital, it connects Arabic-language public life, service and trade networks, and regional and global links.",
     likes: 682,
     dislikes: 544,
   },
@@ -1877,7 +1877,7 @@ export const countryFixtures = [
     capital: "Saint-Denis",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Proposed%20flag%20of%20R%C3%A9union%20%28VAR%29.svg",
-    factSnippet: "Reunion: Saint-Denis brings market-day color.",
+    factSnippet: "Set in the Africa region with Saint-Denis as its capital, it connects French-language public life, euro-based commerce, and regional and global links.",
     likes: 719,
     dislikes: 573,
   },
@@ -1887,7 +1887,7 @@ export const countryFixtures = [
     capital: "Bucharest",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Romania.svg",
-    factSnippet: "Romania: Bucharest brings mountain-map energy.",
+    factSnippet: "Set in the Europe region with Bucharest as its capital, it connects local-language public life, RO reference identity, and regional and global links.",
     likes: 756,
     dislikes: 602,
   },
@@ -1897,7 +1897,7 @@ export const countryFixtures = [
     capital: "Belgrade",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Serbia.svg",
-    factSnippet: "Serbia: Belgrade brings snack-stop curiosity.",
+    factSnippet: "Set in the Europe region with Belgrade as its capital, it connects local-language public life, RS reference identity, and regional and global links.",
     likes: 793,
     dislikes: 631,
   },
@@ -1907,7 +1907,7 @@ export const countryFixtures = [
     capital: "Moscow",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Russia.svg",
-    factSnippet: "Russia: Moscow brings capital-city cameos.",
+    factSnippet: "Set in the Asia region with Moscow as its capital, it connects local-language public life, RU reference identity, and regional and global links.",
     likes: 830,
     dislikes: 660,
   },
@@ -1917,7 +1917,7 @@ export const countryFixtures = [
     capital: "Kigali",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Rwanda.svg",
-    factSnippet: "Rwanda: Kigali brings rain-or-shine charm.",
+    factSnippet: "Set in the Africa region with Kigali as its capital, it connects English-language public life, service and trade networks, and regional and global links.",
     likes: 867,
     dislikes: 689,
   },
@@ -1927,7 +1927,7 @@ export const countryFixtures = [
     capital: "Riyadh",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Saudi%20Arabia.svg",
-    factSnippet: "Saudi Arabia: Riyadh brings postcard mischief.",
+    factSnippet: "Set in the Asia region with Riyadh as its capital, it connects Arabic-language public life, Saudi riyal-based commerce, and regional and global links.",
     likes: 904,
     dislikes: 718,
   },
@@ -1937,7 +1937,7 @@ export const countryFixtures = [
     capital: "Honiara",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20Solomon%20Islands.svg",
-    factSnippet: "Solomon Islands: Honiara brings snack-stop curiosity.",
+    factSnippet: "Set in the Insular Oceania region with Honiara as its capital, it connects English-language public life, dollar-based commerce, and regional and global links.",
     likes: 941,
     dislikes: 747,
   },
@@ -1947,7 +1947,7 @@ export const countryFixtures = [
     capital: "Victoria",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Seychelles.svg",
-    factSnippet: "Seychelles: Victoria brings island-hop plans.",
+    factSnippet: "Set in the Africa region with Victoria as its capital, it connects English-language public life, Seychellois rupee-based commerce, and regional and global links.",
     likes: 978,
     dislikes: 76,
   },
@@ -1957,7 +1957,7 @@ export const countryFixtures = [
     capital: "Khartoum",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Sudan.svg",
-    factSnippet: "Sudan: Khartoum brings capital-city cameos.",
+    factSnippet: "Set in the Africa region with Khartoum as its capital, it connects Arabic-language public life, service and trade networks, and regional and global links.",
     likes: 115,
     dislikes: 105,
   },
@@ -1967,7 +1967,7 @@ export const countryFixtures = [
     capital: "Stockholm",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Sweden.svg",
-    factSnippet: "Sweden: Stockholm brings airport-layover dreams.",
+    factSnippet: "Set in the Europe region with Stockholm as its capital, it connects Swedish-language public life, Swedish krona-based commerce, and regional and global links.",
     likes: 152,
     dislikes: 134,
   },
@@ -1977,7 +1977,7 @@ export const countryFixtures = [
     capital: "Singapore",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Singapore.svg",
-    factSnippet: "Singapore: Singapore brings passport-stamp drama.",
+    factSnippet: "Set in the Asia region with its SG-listed capital city, it connects English-language public life, dollar-based commerce, and regional and global links.",
     likes: 189,
     dislikes: 163,
   },
@@ -1987,7 +1987,7 @@ export const countryFixtures = [
     capital: "Jamestown",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20United%20Kingdom%20%281-2%29.svg",
-    factSnippet: "Saint Helena: Jamestown brings flag-quiz flair.",
+    factSnippet: "Set in the Africa region with Jamestown as its capital, it connects English-language public life, pound sterling-based commerce, and regional and global links.",
     likes: 226,
     dislikes: 192,
   },
@@ -1997,7 +1997,7 @@ export const countryFixtures = [
     capital: "Ljubljana",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Slovenia.svg",
-    factSnippet: "Slovenia: Ljubljana brings sunny cafe plans.",
+    factSnippet: "Set in the Europe region with Ljubljana as its capital, it connects Slovene-language public life, euro-based commerce, and regional and global links.",
     likes: 263,
     dislikes: 221,
   },
@@ -2007,7 +2007,7 @@ export const countryFixtures = [
     capital: "Unknown",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Norway.svg",
-    factSnippet: "Svalbard: world-map tiny print with mountain-map energy.",
+    factSnippet: "Set in the Europe region with a compact administrative center, it connects Norwegian-language public life, Norwegian krone-based commerce, and regional and global links.",
     likes: 300,
     dislikes: 250,
   },
@@ -2017,7 +2017,7 @@ export const countryFixtures = [
     capital: "Bratislava",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Slovakia.svg",
-    factSnippet: "Slovakia: Bratislava brings harbor breeze.",
+    factSnippet: "Set in the Europe region with Bratislava as its capital, it connects Slovak-language public life, euro-based commerce, and regional and global links.",
     likes: 337,
     dislikes: 279,
   },
@@ -2027,7 +2027,7 @@ export const countryFixtures = [
     capital: "Freetown",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Sierra%20Leone.svg",
-    factSnippet: "Sierra Leone: Freetown brings market-day color.",
+    factSnippet: "Set in the Africa region with Freetown as its capital, it connects English-language public life, leone-based commerce, and regional and global links.",
     likes: 374,
     dislikes: 308,
   },
@@ -2037,7 +2037,7 @@ export const countryFixtures = [
     capital: "San Marino",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20San%20Marino.svg",
-    factSnippet: "San Marino: San Marino brings postcard mischief.",
+    factSnippet: "Set in the Europe region with its SM-listed capital city, it connects Italian-language public life, euro-based commerce, and regional and global links.",
     likes: 411,
     dislikes: 337,
   },
@@ -2047,7 +2047,7 @@ export const countryFixtures = [
     capital: "Dakar",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Senegal.svg",
-    factSnippet: "Senegal: Dakar brings snack-stop curiosity.",
+    factSnippet: "Set in the Africa region with Dakar as its capital, it connects Badyara-language public life, West African CFA franc-based commerce, and regional and global links.",
     likes: 448,
     dislikes: 366,
   },
@@ -2057,7 +2057,7 @@ export const countryFixtures = [
     capital: "Mogadishu",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Somalia.svg",
-    factSnippet: "Somalia: Mogadishu brings island-hop plans.",
+    factSnippet: "Set in the Africa region with Mogadishu as its capital, it connects Arabic-language public life, Somali shilling-based commerce, and regional and global links.",
     likes: 485,
     dislikes: 395,
   },
@@ -2067,7 +2067,7 @@ export const countryFixtures = [
     capital: "Paramaribo",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Suriname.svg",
-    factSnippet: "Suriname: Paramaribo brings rain-or-shine charm.",
+    factSnippet: "Set in the South America region with Paramaribo as its capital, it connects Dutch-language public life, service and trade networks, and regional and global links.",
     likes: 522,
     dislikes: 424,
   },
@@ -2077,7 +2077,7 @@ export const countryFixtures = [
     capital: "Juba",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20South%20Sudan.svg",
-    factSnippet: "South Sudan: Juba brings passport-stamp drama.",
+    factSnippet: "Set in the Africa region with Juba as its capital, it connects English-language public life, service and trade networks, and regional and global links.",
     likes: 559,
     dislikes: 453,
   },
@@ -2087,7 +2087,7 @@ export const countryFixtures = [
     capital: "São Tomé",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20S%C3%A3o%20Tom%C3%A9%20and%20Pr%C3%ADncipe.svg",
-    factSnippet: "Sao Tome and Principe: São Tomé brings flag-quiz flair.",
+    factSnippet: "Set in the Africa region with São Tomé as its capital, it connects Portuguese-language public life, São Tomé and Príncipe dobra-based commerce, and regional and global links.",
     likes: 596,
     dislikes: 482,
   },
@@ -2097,7 +2097,7 @@ export const countryFixtures = [
     capital: "San Salvador",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20El%20Salvador.svg",
-    factSnippet: "El Salvador: San Salvador brings mountain-map energy.",
+    factSnippet: "Set in the North America region with San Salvador as its capital, it connects Spanish-language public life, Bitcoin-based commerce, and regional and global links.",
     likes: 633,
     dislikes: 511,
   },
@@ -2107,7 +2107,7 @@ export const countryFixtures = [
     capital: "Philipsburg",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Sint%20Maarten.svg",
-    factSnippet: "Sint Maarten: Philipsburg brings market-day color.",
+    factSnippet: "Set in the North America region with Philipsburg as its capital, it connects Dutch-language public life, Caribbean guilder-based commerce, and regional and global links.",
     likes: 670,
     dislikes: 540,
   },
@@ -2117,7 +2117,7 @@ export const countryFixtures = [
     capital: "Damascus",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Syria%20%282025-%29.svg",
-    factSnippet: "Syria: Damascus brings postcard mischief.",
+    factSnippet: "Set in the Asia region with Damascus as its capital, it connects Arabic-language public life, service and trade networks, and regional and global links.",
     likes: 707,
     dislikes: 569,
   },
@@ -2127,7 +2127,7 @@ export const countryFixtures = [
     capital: "Lobamba, Mbabane",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Eswatini.svg",
-    factSnippet: "Eswatini: Lobamba brings snack-stop curiosity.",
+    factSnippet: "Set in the Africa region with Lobamba as its capital, it connects English-language public life, lilangeni-based commerce, and regional and global links.",
     likes: 744,
     dislikes: 598,
   },
@@ -2137,7 +2137,7 @@ export const countryFixtures = [
     capital: "Cockburn Town",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20Turks%20and%20Caicos%20Islands.svg",
-    factSnippet: "Turks and Caicos: Cockburn Town brings flag-quiz flair.",
+    factSnippet: "Set in the North America region with Cockburn Town as its capital, it connects English-language public life, United States dollar-based commerce, and regional and global links.",
     likes: 781,
     dislikes: 627,
   },
@@ -2147,7 +2147,7 @@ export const countryFixtures = [
     capital: "N'Djamena",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Chad.svg",
-    factSnippet: "Chad: N'Djamena brings sunny cafe plans.",
+    factSnippet: "Set in the Africa region with N'Djamena as its capital, it connects Arabic-language public life, Central African CFA franc-based commerce, and regional and global links.",
     likes: 818,
     dislikes: 656,
   },
@@ -2157,7 +2157,7 @@ export const countryFixtures = [
     capital: "Port-aux-Français",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20French%20Southern%20and%20Antarctic%20Lands.svg",
-    factSnippet: "French Southern Lands: Port-aux-Français brings harbor breeze.",
+    factSnippet: "Set in the Africa region with Port-aux-Français as its capital, it connects French-language public life, euro-based commerce, and regional and global links.",
     likes: 855,
     dislikes: 685,
   },
@@ -2167,7 +2167,7 @@ export const countryFixtures = [
     capital: "Lomé",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Togo%20%283-2%29.svg",
-    factSnippet: "Togo: Lomé brings market-day color.",
+    factSnippet: "Set in the Africa region with Lomé as its capital, it connects French-language public life, West African CFA franc-based commerce, and regional and global links.",
     likes: 892,
     dislikes: 714,
   },
@@ -2177,7 +2177,7 @@ export const countryFixtures = [
     capital: "Bangkok",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Thailand.svg",
-    factSnippet: "Thailand: Bangkok brings postcard mischief.",
+    factSnippet: "Set in the Asia region with Bangkok as its capital, it connects Thai-language public life, baht-based commerce, and regional and global links.",
     likes: 929,
     dislikes: 743,
   },
@@ -2187,7 +2187,7 @@ export const countryFixtures = [
     capital: "Dushanbe",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Tajikistan.svg",
-    factSnippet: "Tajikistan: Dushanbe brings island-hop plans.",
+    factSnippet: "Set in the Asia region with Dushanbe as its capital, it connects Tajik-language public life, service and trade networks, and regional and global links.",
     likes: 966,
     dislikes: 72,
   },
@@ -2197,7 +2197,7 @@ export const countryFixtures = [
     capital: "Unknown",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Tokelau.svg",
-    factSnippet: "Tokelau: world-map tiny print with capital-city cameos.",
+    factSnippet: "Set in the Insular Oceania region with a compact administrative center, it connects English-language public life, New Zealand dollar-based commerce, and regional and global links.",
     likes: 103,
     dislikes: 101,
   },
@@ -2207,7 +2207,7 @@ export const countryFixtures = [
     capital: "Dili",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20East%20Timor.svg",
-    factSnippet: "Timor-Leste: Dili brings airport-layover dreams.",
+    factSnippet: "Set in the Asia region with Dili as its capital, it connects Portuguese-language public life, East Timor centavo coins-based commerce, and regional and global links.",
     likes: 140,
     dislikes: 130,
   },
@@ -2217,7 +2217,7 @@ export const countryFixtures = [
     capital: "Ashgabat",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Turkmenistan.svg",
-    factSnippet: "Turkmenistan: Ashgabat brings rain-or-shine charm.",
+    factSnippet: "Set in the Asia region with Ashgabat as its capital, it connects Turkmen-language public life, new manat-based commerce, and regional and global links.",
     likes: 177,
     dislikes: 159,
   },
@@ -2227,7 +2227,7 @@ export const countryFixtures = [
     capital: "Tunis",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Tunisia.svg",
-    factSnippet: "Tunisia: Tunis brings passport-stamp drama.",
+    factSnippet: "Set in the Africa region with Tunis as its capital, it connects Arabic-language public life, service and trade networks, and regional and global links.",
     likes: 214,
     dislikes: 188,
   },
@@ -2237,7 +2237,7 @@ export const countryFixtures = [
     capital: "Nukuʻalofa",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Tonga.svg",
-    factSnippet: "Tonga: Nukuʻalofa brings flag-quiz flair.",
+    factSnippet: "Set in the Oceania region with Nukuʻalofa as its capital, it connects English-language public life, service and trade networks, and regional and global links.",
     likes: 251,
     dislikes: 217,
   },
@@ -2247,7 +2247,7 @@ export const countryFixtures = [
     capital: "Ankara",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Turkey.svg",
-    factSnippet: "Turkiye: Ankara brings harbor breeze.",
+    factSnippet: "Set in the Asia region with Ankara as its capital, it connects Turkish-language public life, Turkish lira-based commerce, and regional and global links.",
     likes: 288,
     dislikes: 246,
   },
@@ -2257,7 +2257,7 @@ export const countryFixtures = [
     capital: "Port of Spain",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Trinidad%20and%20Tobago.svg",
-    factSnippet: "Trinidad and Tobago: Port of Spain brings postcard mischief.",
+    factSnippet: "Set in the North America region with Port of Spain as its capital, it connects English-language public life, dollar-based commerce, and regional and global links.",
     likes: 325,
     dislikes: 275,
   },
@@ -2267,7 +2267,7 @@ export const countryFixtures = [
     capital: "Funafuti",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Tuvalu.svg",
-    factSnippet: "Tuvalu: Funafuti brings island-hop plans.",
+    factSnippet: "Set in the Insular Oceania region with Funafuti as its capital, it connects English-language public life, Australian dollar-based commerce, and regional and global links.",
     likes: 362,
     dislikes: 304,
   },
@@ -2277,7 +2277,7 @@ export const countryFixtures = [
     capital: "Taipei",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20Republic%20of%20China.svg",
-    factSnippet: "Taiwan: Taipei brings capital-city cameos.",
+    factSnippet: "Set in the Asia region with Taipei as its capital, it connects Amis-language public life, service and trade networks, and regional and global links.",
     likes: 399,
     dislikes: 333,
   },
@@ -2287,7 +2287,7 @@ export const countryFixtures = [
     capital: "Dodoma",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Tanzania.svg",
-    factSnippet: "Tanzania: Dodoma brings passport-stamp drama.",
+    factSnippet: "Set in the Africa region with Dodoma as its capital, it connects English-language public life, service and trade networks, and regional and global links.",
     likes: 436,
     dislikes: 362,
   },
@@ -2297,7 +2297,7 @@ export const countryFixtures = [
     capital: "Kyiv",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Ukraine.svg",
-    factSnippet: "Ukraine: Kyiv brings harbor breeze.",
+    factSnippet: "Set in the Europe region with Kyiv as its capital, it connects Ukrainian-language public life, hryvnia-based commerce, and regional and global links.",
     likes: 473,
     dislikes: 391,
   },
@@ -2307,7 +2307,7 @@ export const countryFixtures = [
     capital: "Kampala",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Uganda.svg",
-    factSnippet: "Uganda: Kampala brings airport-layover dreams.",
+    factSnippet: "Set in the Africa region with Kampala as its capital, it connects English-language public life, service and trade networks, and regional and global links.",
     likes: 510,
     dislikes: 420,
   },
@@ -2317,7 +2317,7 @@ export const countryFixtures = [
     capital: "Unknown",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20United%20States.svg",
-    factSnippet: "U.S. Outlying Islands: world-map tiny print with harbor breeze.",
+    factSnippet: "Set in the Insular Oceania region with a compact administrative center, it connects English-language public life, United States dollar-based commerce, and regional and global links.",
     likes: 547,
     dislikes: 449,
   },
@@ -2327,7 +2327,7 @@ export const countryFixtures = [
     capital: "Washington, D.C.",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20United%20States%20%28DDD-F-416E%20specifications%29.svg",
-    factSnippet: "United States: Washington brings airport-layover dreams.",
+    factSnippet: "Set in the North America region with Washington as its capital, it connects Hawaiian-language public life, dollar-based commerce, and regional and global links.",
     likes: 584,
     dislikes: 478,
   },
@@ -2337,7 +2337,7 @@ export const countryFixtures = [
     capital: "Montevideo",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Uruguay.svg",
-    factSnippet: "Uruguay: Montevideo brings harbor breeze.",
+    factSnippet: "Set in the South America region with Montevideo as its capital, it connects local-language public life, UY reference identity, and regional and global links.",
     likes: 621,
     dislikes: 507,
   },
@@ -2347,7 +2347,7 @@ export const countryFixtures = [
     capital: "Tashkent",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Uzbekistan.svg",
-    factSnippet: "Uzbekistan: Tashkent brings market-day color.",
+    factSnippet: "Set in the Asia region with Tashkent as its capital, it connects Uzbek-language public life, Uzbek som-based commerce, and regional and global links.",
     likes: 658,
     dislikes: 536,
   },
@@ -2357,7 +2357,7 @@ export const countryFixtures = [
     capital: "Vatican City",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Vatican%20City%20%282023%E2%80%93present%29.svg",
-    factSnippet: "Vatican City: Vatican City brings capital-city cameos.",
+    factSnippet: "Set in the Europe region with its VA-listed capital city, it connects Italian-language public life, euro-based commerce, and regional and global links.",
     likes: 695,
     dislikes: 565,
   },
@@ -2367,7 +2367,7 @@ export const countryFixtures = [
     capital: "Kingstown",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Saint%20Vincent%20and%20the%20Grenadines.svg",
-    factSnippet: "Saint Vincent and the Grenadines: Kingstown brings rain-or-shine charm.",
+    factSnippet: "Set in the North America region with Kingstown as its capital, it connects English-language public life, Eastern Caribbean dollar-based commerce, and regional and global links.",
     likes: 732,
     dislikes: 594,
   },
@@ -2377,7 +2377,7 @@ export const countryFixtures = [
     capital: "Caracas",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Venezuela.svg",
-    factSnippet: "Venezuela: Caracas brings flag-quiz flair.",
+    factSnippet: "Set in the South America region with Caracas as its capital, it connects Spanish-language public life, sovereign bolivar-based commerce, and regional and global links.",
     likes: 769,
     dislikes: 623,
   },
@@ -2387,7 +2387,7 @@ export const countryFixtures = [
     capital: "Road Town",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20British%20Virgin%20Islands.svg",
-    factSnippet: "British Virgin Islands: Road Town brings mountain-map energy.",
+    factSnippet: "Set in the North America region with Road Town as its capital, it connects English-language public life, United States dollar-based commerce, and regional and global links.",
     likes: 806,
     dislikes: 652,
   },
@@ -2397,7 +2397,7 @@ export const countryFixtures = [
     capital: "Charlotte Amalie",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20United%20States%20Virgin%20Islands.svg",
-    factSnippet: "U.S. Virgin Islands: Charlotte Amalie brings market-day color.",
+    factSnippet: "Set in the North America region with Charlotte Amalie as its capital, it connects English-language public life, United States dollar-based commerce, and regional and global links.",
     likes: 843,
     dislikes: 681,
   },
@@ -2407,7 +2407,7 @@ export const countryFixtures = [
     capital: "Hanoi",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Vietnam.svg",
-    factSnippet: "Vietnam: Hanoi brings airport-layover dreams.",
+    factSnippet: "Set in the Asia region with Hanoi as its capital, it connects local-language public life, VN reference identity, and regional and global links.",
     likes: 880,
     dislikes: 710,
   },
@@ -2417,7 +2417,7 @@ export const countryFixtures = [
     capital: "Port Vila",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Vanuatu.svg",
-    factSnippet: "Vanuatu: Port Vila brings market-day color.",
+    factSnippet: "Set in the Insular Oceania region with Port Vila as its capital, it connects Bislama-language public life, vatus-based commerce, and regional and global links.",
     likes: 917,
     dislikes: 739,
   },
@@ -2427,7 +2427,7 @@ export const countryFixtures = [
     capital: "Mata-Utu",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Wallis%20and%20Futuna.svg",
-    factSnippet: "Wallis and Futuna: Mata-Utu brings snack-stop curiosity.",
+    factSnippet: "Set in the Insular Oceania region with Mata-Utu as its capital, it connects French-language public life, CFP Franc-based commerce, and regional and global links.",
     likes: 954,
     dislikes: 68,
   },
@@ -2437,7 +2437,7 @@ export const countryFixtures = [
     capital: "Apia",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Samoa.svg",
-    factSnippet: "Samoa: Apia brings island-hop plans.",
+    factSnippet: "Set in the Oceania region with Apia as its capital, it connects English-language public life, service and trade networks, and regional and global links.",
     likes: 991,
     dislikes: 97,
   },
@@ -2447,7 +2447,7 @@ export const countryFixtures = [
     capital: "Aden, Sanaa",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Yemen.svg",
-    factSnippet: "Yemen: Aden brings harbor breeze.",
+    factSnippet: "Set in the Asia region with Aden as its capital, it connects Arabic-language public life, service and trade networks, and regional and global links.",
     likes: 128,
     dislikes: 126,
   },
@@ -2457,7 +2457,7 @@ export const countryFixtures = [
     capital: "Dzaoudzi, Mamoudzou",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Mayotte%20%28Local%29.svg",
-    factSnippet: "Mayotte: Dzaoudzi brings snack-stop curiosity.",
+    factSnippet: "Set in the Africa region with Dzaoudzi as its capital, it connects Bushi-language public life, euro-based commerce, and regional and global links.",
     likes: 165,
     dislikes: 155,
   },
@@ -2467,7 +2467,7 @@ export const countryFixtures = [
     capital: "Bloemfontein, Cape Town, Pretoria",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20South%20Africa.svg",
-    factSnippet: "South Africa: Bloemfontein brings market-day color.",
+    factSnippet: "Set in the Africa region with Bloemfontein as its capital, it connects Afrikaans-language public life, rand-based commerce, and regional and global links.",
     likes: 202,
     dislikes: 184,
   },
@@ -2477,7 +2477,7 @@ export const countryFixtures = [
     capital: "Lusaka",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Zambia.svg",
-    factSnippet: "Zambia: Lusaka brings market-day color.",
+    factSnippet: "Set in the Africa region with Lusaka as its capital, it connects English-language public life, service and trade networks, and regional and global links.",
     likes: 239,
     dislikes: 213,
   },
@@ -2487,7 +2487,7 @@ export const countryFixtures = [
     capital: "Harare",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Zimbabwe.svg",
-    factSnippet: "Zimbabwe: Harare brings mountain-map energy.",
+    factSnippet: "Set in the Africa region with Harare as its capital, it connects Barwe-language public life, Australian dollar-based commerce, and regional and global links.",
     likes: 276,
     dislikes: 242,
   },

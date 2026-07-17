@@ -20,11 +20,14 @@ import {
 
 const tempDirectories = [];
 
-const binding = ({ code, name, capital, flagImageUrl }) => ({
+const binding = ({ code, name, capital, flagImageUrl, continent, language, currency }) => ({
   iso: { value: code },
   ...(name ? { countryLabel: { value: name } } : {}),
   ...(capital ? { capitalLabel: { value: capital } } : {}),
   ...(flagImageUrl ? { flag: { value: flagImageUrl } } : {}),
+  ...(continent ? { continentLabel: { value: continent } } : {}),
+  ...(language ? { officialLanguageLabel: { value: language } } : {}),
+  ...(currency ? { currencyLabel: { value: currency } } : {}),
 });
 
 const createTempDirectory = async () => {
@@ -153,11 +156,17 @@ describe("normalizeWikidataMetadataBindings", () => {
           code: "US",
           capital: "Washington, D.C.",
           flagImageUrl: "http://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20United%20States.svg",
+          continent: "North America",
+          language: "English",
+          currency: "United States dollar",
         }),
         binding({
           code: "US",
           capital: "Washington, D.C.",
           flagImageUrl: "http://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20United%20States.svg",
+          continent: "North America",
+          language: "English",
+          currency: "United States dollar",
         }),
       ]),
     ).toEqual(
@@ -168,6 +177,9 @@ describe("normalizeWikidataMetadataBindings", () => {
             capital: "Washington, D.C.",
             flagImageUrl:
               "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20United%20States.svg",
+            continents: ["North America"],
+            languages: ["English"],
+            currencies: ["United States dollar"],
           },
         ],
       ]),
@@ -206,28 +218,41 @@ describe("mergeCountryFixtureSources", () => {
         name: "Canada",
         capital: "Ottawa",
         flagImageUrl: "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Canada.svg",
+        continents: [],
+        languages: [],
+        currencies: [],
       },
       {
         code: "EH",
         name: "Western Sahara",
         capital: "",
         flagImageUrl: "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Western%20Sahara.svg",
+        continents: [],
+        languages: [],
+        currencies: [],
       },
     ]);
   });
 });
 
 describe("createCountryFactSnippet", () => {
-  it("creates a short playful snippet from country metadata", () => {
+  it("creates a compact profile summary from country metadata", () => {
     const snippet = createCountryFactSnippet({
       code: "JP",
       name: "Japan",
       capital: "Tokyo",
+      subregion: "Eastern Asia",
+      landlocked: false,
+      borderCount: 0,
+      languages: ["Japanese"],
+      currencies: ["Japanese yen"],
     });
 
-    expect(snippet).toContain("Japan");
+    expect(snippet).not.toContain("Japan");
     expect(snippet).toContain("Tokyo");
-    expect(snippet).not.toContain("Static catalog profile");
+    expect(snippet).toContain("Eastern Asia");
+    expect(snippet).toContain("local-language public life");
+    expect(snippet).toMatch(/\.$/);
     expect(snippet.length).toBeLessThanOrEqual(countrySnippetMaxLength);
   });
 
@@ -237,6 +262,11 @@ describe("createCountryFactSnippet", () => {
         code: "HM",
         name: "Heard Island and McDonald Islands",
         capital: "Unknown",
+        subregion: "Antarctic",
+        landlocked: false,
+        borderCount: 0,
+        languages: ["English"],
+        currencies: ["Australian dollar"],
       }).length,
     ).toBeLessThanOrEqual(countrySnippetMaxLength);
   });
@@ -249,19 +279,29 @@ describe("addCountryFactSnippets", () => {
         code: "BR",
         name: "Brazil",
         capital: "Brasilia",
+        subregion: "South America",
+        landlocked: false,
+        borderCount: 10,
+        languages: ["Portuguese"],
+        currencies: ["Brazilian real"],
         flagImageUrl: "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Brazil.svg",
       },
       {
         code: "JP",
         name: "Japan",
         capital: "Tokyo",
+        subregion: "Eastern Asia",
+        landlocked: false,
+        borderCount: 0,
+        languages: ["Japanese"],
+        currencies: ["Japanese yen"],
         flagImageUrl: "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Japan.svg",
       },
     ]);
 
     expect(countries.map((country) => country.factSnippet)).toEqual([
-      "Brazil: Brasilia brings airport-layover dreams.",
-      "Japan: Tokyo brings passport-stamp drama.",
+      "Set in coastal South America with Brasilia as its capital, it connects Portuguese-language public life, service and trade networks, and 10 neighbors.",
+      "Set in coastal Eastern Asia with Tokyo as its capital, it connects local-language public life, JP reference identity, and regional and global links.",
     ]);
   });
 });
@@ -276,21 +316,28 @@ describe("readWikidataCountryFixtures", () => {
         });
       }
 
-      return Promise.resolve({
-        ok: true,
-        json: () =>
-          Promise.resolve({
-            results: {
-              bindings: [
-                binding({
-                  code: "JP",
-                  capital: "Tokyo",
-                  flagImageUrl: "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Japan.svg",
-                }),
-              ],
-            },
-          }),
-      });
+      if (url.startsWith("https://query.wikidata.org/")) {
+        return Promise.resolve({
+          ok: true,
+          json: () =>
+            Promise.resolve({
+              results: {
+                bindings: [
+                  binding({
+                    code: "JP",
+                    capital: "Tokyo",
+                    flagImageUrl: "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Japan.svg",
+                    continent: "Asia",
+                    language: "Japanese",
+                    currency: "Japanese yen",
+                  }),
+                ],
+              },
+            }),
+        });
+      }
+
+      throw new Error(`Unexpected URL ${url}`);
     });
 
     await expect(
@@ -300,8 +347,9 @@ describe("readWikidataCountryFixtures", () => {
         code: "JP",
         name: "Japan",
         capital: "Tokyo",
-        factSnippet: "Japan: Tokyo brings passport-stamp drama.",
         flagImageUrl: "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Japan.svg",
+        factSnippet:
+          "Set in the Asia region with Tokyo as its capital, it connects local-language public life, JP reference identity, and regional and global links.",
       },
     ]);
 
@@ -341,21 +389,28 @@ describe("runGenerateCountryFixtures", () => {
         });
       }
 
-      return Promise.resolve({
-        ok: true,
-        json: () =>
-          Promise.resolve({
-            results: {
-              bindings: [
-                binding({
-                  code: "BR",
-                  capital: "Brasilia",
-                  flagImageUrl: "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Brazil.svg",
-                }),
-              ],
-            },
-          }),
-      });
+      if (url.startsWith("https://query.wikidata.org/")) {
+        return Promise.resolve({
+          ok: true,
+          json: () =>
+            Promise.resolve({
+              results: {
+                bindings: [
+                  binding({
+                    code: "BR",
+                    capital: "Brasilia",
+                    flagImageUrl: "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Brazil.svg",
+                    continent: "South America",
+                    language: "Portuguese",
+                    currency: "Brazilian real",
+                  }),
+                ],
+              },
+            }),
+        });
+      }
+
+      throw new Error(`Unexpected URL ${url}`);
     });
 
     await runGenerateCountryFixtures({
@@ -372,7 +427,8 @@ describe("runGenerateCountryFixtures", () => {
             name: "Brazil",
             capital: "Brasilia",
             flagImageUrl: "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Brazil.svg",
-            factSnippet: "Brazil: Brasilia brings airport-layover dreams.",
+            factSnippet:
+              "Set in the South America region with Brasilia as its capital, it connects Portuguese-language public life, service and trade networks, and regional and global links.",
           },
         ],
         null,

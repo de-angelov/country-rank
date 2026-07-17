@@ -2,6 +2,8 @@ import { describe, expect, it, vi } from "vitest";
 
 import {
   countryCatalogKey,
+  countryVoteDislikesKey,
+  countryVoteLikesKey,
   runSeedRedisVotes,
 } from "./seed-redis-votes.mjs";
 
@@ -30,6 +32,7 @@ const createClientFactory = () => {
   const client = {
     close: vi.fn(() => Promise.resolve()),
     connect: vi.fn(() => Promise.resolve()),
+    del: vi.fn(() => Promise.resolve()),
     hSet: vi.fn(() => Promise.resolve()),
     set: vi.fn(() => Promise.resolve()),
   };
@@ -42,11 +45,20 @@ const createClientFactory = () => {
 };
 
 describe("runSeedRedisVotes", () => {
-  it("writes the country catalog document and vote hashes from the same fixtures", async () => {
+  it("writes a metadata-only country catalog document and aggregate vote hashes", async () => {
     const { client, clientFactory } = createClientFactory();
     const logger = {
       log: vi.fn(),
     };
+    const expectedCatalog = countryFixtures.map(
+      ({ code, name, capital, factSnippet, flagImageUrl }) => ({
+        code,
+        name,
+        capital,
+        factSnippet,
+        flagImageUrl,
+      }),
+    );
 
     await runSeedRedisVotes({
       env: { REDIS_URL: "redis://localhost:6379" },
@@ -60,18 +72,35 @@ describe("runSeedRedisVotes", () => {
     });
     expect(client.set).toHaveBeenCalledWith(
       countryCatalogKey,
-      JSON.stringify(countryFixtures),
+      JSON.stringify(expectedCatalog),
     );
-    expect(client.hSet).toHaveBeenNthCalledWith(1, "country:votes:BR", {
-      likes: "7",
-      dislikes: "3",
+    expect(JSON.parse(client.set.mock.calls[0][1])).not.toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          likes: expect.any(Number),
+        }),
+      ]),
+    );
+    expect(client.del).toHaveBeenCalledWith([
+      countryVoteLikesKey,
+      countryVoteDislikesKey,
+      "country:votes:BR",
+      "country:votes:JP",
+    ]);
+    expect(client.hSet).toHaveBeenNthCalledWith(1, countryVoteLikesKey, {
+      BR: "7",
+      JP: "11",
     });
-    expect(client.hSet).toHaveBeenNthCalledWith(2, "country:votes:JP", {
-      likes: "11",
-      dislikes: "1",
+    expect(client.hSet).toHaveBeenNthCalledWith(2, countryVoteDislikesKey, {
+      BR: "3",
+      JP: "1",
     });
+    expect(client.hSet).not.toHaveBeenCalledWith(
+      expect.stringMatching(/^country:votes:[A-Z]{2}$/),
+      expect.anything(),
+    );
     expect(logger.log).toHaveBeenCalledWith(
-      "Seeded Redis country catalog and 2 country vote total(s).",
+      "Seeded Redis country catalog and aggregate vote totals for 2 country record(s).",
     );
   });
 
@@ -92,7 +121,7 @@ describe("runSeedRedisVotes", () => {
         clientFactory,
       }),
     ).rejects.toThrow(
-      "Country fixtures must include two-letter codes and integer vote totals.",
+      "Country fixtures must include metadata, two-letter codes, and integer vote totals.",
     );
     expect(client.connect).not.toHaveBeenCalled();
   });

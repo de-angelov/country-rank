@@ -52,21 +52,53 @@ const assertSeedableCountryFixtures = (countryFixtures) => {
     if (
       typeof country?.code !== "string" ||
       !/^[A-Z]{2}$/.test(country.code) ||
+      typeof country.name !== "string" ||
+      typeof country.capital !== "string" ||
+      typeof country.factSnippet !== "string" ||
+      typeof country.flagImageUrl !== "string" ||
       !Number.isInteger(country.likes) ||
       !Number.isInteger(country.dislikes)
     ) {
       throw new Error(
-        "Country fixtures must include two-letter codes and integer vote totals.",
+        "Country fixtures must include metadata, two-letter codes, and integer vote totals.",
       );
     }
   }
 };
 
-const voteTotalsKey = (countryCode) => `country:votes:${countryCode}`;
 export const countryCatalogKey = "country:catalog";
+export const countryVoteLikesKey = "country:votes:likes";
+export const countryVoteDislikesKey = "country:votes:dislikes";
+
+const legacyCountryVoteTotalsKey = (countryCode) => `country:votes:${countryCode}`;
+
+const toCountryCatalogRecord = ({
+  code,
+  name,
+  capital,
+  factSnippet,
+  flagImageUrl,
+}) => ({
+  code,
+  name,
+  capital,
+  factSnippet,
+  flagImageUrl,
+});
 
 const serializeCountryCatalog = (countryFixtures) =>
-  JSON.stringify(countryFixtures);
+  JSON.stringify(countryFixtures.map(toCountryCatalogRecord));
+
+const toVoteHash = (countryFixtures, voteType) =>
+  Object.fromEntries(
+    countryFixtures.map((country) => [country.code, country[voteType].toString()]),
+  );
+
+const toRefreshedVoteKeys = (countryFixtures) => [
+  countryVoteLikesKey,
+  countryVoteDislikesKey,
+  ...countryFixtures.map((country) => legacyCountryVoteTotalsKey(country.code)),
+];
 
 export const seedRedisCountryData = async ({
   redisUrl,
@@ -79,13 +111,12 @@ export const seedRedisCountryData = async ({
 
   try {
     await client.set(countryCatalogKey, serializeCountryCatalog(countryFixtures));
-
-    for (const country of countryFixtures) {
-      await client.hSet(voteTotalsKey(country.code), {
-        likes: country.likes.toString(),
-        dislikes: country.dislikes.toString(),
-      });
-    }
+    await client.del(toRefreshedVoteKeys(countryFixtures));
+    await client.hSet(countryVoteLikesKey, toVoteHash(countryFixtures, "likes"));
+    await client.hSet(
+      countryVoteDislikesKey,
+      toVoteHash(countryFixtures, "dislikes"),
+    );
   } finally {
     await client.close();
   }
@@ -111,7 +142,7 @@ export const runSeedRedisVotes = async ({
   await seedRedisCountryData({ redisUrl, countryFixtures, clientFactory });
 
   logger.log(
-    `Seeded Redis country catalog and ${countryFixtures.length} country vote total(s).`,
+    `Seeded Redis country catalog and aggregate vote totals for ${countryFixtures.length} country record(s).`,
   );
 };
 

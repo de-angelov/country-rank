@@ -10,7 +10,7 @@ const navigationLinks = [
   { href: "/top-disliked", label: "Top Disliked" },
 ] as const;
 
-const bannerImageSrc = "/images/country-ranking-banner-v6.png";
+const bannerImageSrc = "/images/country-ranking-banner-v7.png";
 
 const styles = {
   root: "min-h-screen",

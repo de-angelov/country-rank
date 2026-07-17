@@ -1,7 +1,7 @@
 import { useMemo, useRef, useState } from "react";
 import { flushSync } from "react-dom";
 import { Search } from "lucide-react";
-import { useLoaderData } from "react-router";
+import { useLoaderData, useLocation, useNavigate } from "react-router";
 
 import { CountryCard } from "~/components/country-card/country-card";
 import {
@@ -14,7 +14,7 @@ import { Input } from "~/components/ui/input";
 import type { Country } from "~/countries";
 
 import type { Route } from "./+types/home";
-import { loadHomeRouteData } from "./home.server";
+import { loadHomeRouteData, type HomeRouteData } from "./home.server";
 import type { HomePaidVoteConfirmationState } from "./paid-vote-confirmation-state";
 import { clearPaidVoteRedirectQueryState } from "./paid-vote-redirect-query";
 
@@ -292,8 +292,47 @@ export function HomeCountriesContent({
   );
 }
 
-export default function Home() {
-  const { countries } = useLoaderData<typeof loader>();
+export function getHomeRoutePaidVoteConfirmationState(
+  routeData: HomeRouteData,
+): PaidVoteConfirmationState {
+  return routeData.paidVoteConfirmation ?? { status: "absent" };
+}
 
-  return <HomeCountriesContent countries={countries} />;
+type HomeRouteContentProps = Readonly<{
+  routeData: HomeRouteData;
+  currentUrl: string;
+  onClosePaidVoteConfirmation: (nextUrl: string) => void;
+}>;
+
+export function HomeRouteContent({
+  routeData,
+  currentUrl,
+  onClosePaidVoteConfirmation,
+}: HomeRouteContentProps) {
+  return (
+    <HomeCountriesContent
+      countries={routeData.countries}
+      paidVoteConfirmationState={getHomeRoutePaidVoteConfirmationState(
+        routeData,
+      )}
+      paidVoteConfirmationUrl={currentUrl}
+      onPaidVoteConfirmationClose={onClosePaidVoteConfirmation}
+    />
+  );
+}
+
+export default function Home() {
+  const routeData = useLoaderData<typeof loader>();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  return (
+    <HomeRouteContent
+      routeData={routeData}
+      currentUrl={`${location.pathname}${location.search}${location.hash}`}
+      onClosePaidVoteConfirmation={(nextUrl) =>
+        navigate(nextUrl, { replace: true })
+      }
+    />
+  );
 }

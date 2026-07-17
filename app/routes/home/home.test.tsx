@@ -8,10 +8,13 @@ import type { Country } from "~/countries";
 import {
   closePaidVoteConfirmationDialog,
   filterCountriesByName,
+  getHomeRoutePaidVoteConfirmationState,
   HomeCountriesContent,
+  HomeRouteContent,
   PaidVoteConfirmationDialog,
   PaidVoteConfirmationDialogContent,
   sortCountriesByDisplayName,
+  toPaidVoteDialogStatus,
 } from "./home";
 import { loadHomeCountries, loadHomeRouteData } from "./home.server";
 import {
@@ -387,6 +390,59 @@ describe("Home", () => {
     }
   });
 
+  it("connects applied paid vote route loader state to the dialog adapter", () => {
+    const confirmationState = getHomeRoutePaidVoteConfirmationState({
+      countries,
+      paidVoteConfirmation: {
+        status: "applied",
+        countryCode: "JP",
+        voteType: "like",
+        totals: {
+          countryCode: "JP",
+          likes: 13,
+          dislikes: 4,
+        },
+      },
+    });
+
+    expect(toPaidVoteDialogStatus(confirmationState, countries)).toEqual({
+      status: "applied",
+      country: {
+        name: "Japan",
+      },
+      voteType: "like",
+      totals: {
+        likes: 13,
+        dislikes: 4,
+      },
+    });
+  });
+
+  it("connects pending paid vote route loader state without claiming success", () => {
+    const confirmationState = getHomeRoutePaidVoteConfirmationState({
+      countries,
+      paidVoteConfirmation: {
+        status: "pending",
+      },
+    });
+
+    expect(toPaidVoteDialogStatus(confirmationState, countries)).toEqual({
+      status: "pending",
+    });
+  });
+
+  it("does not render paid vote confirmation from route data without redirect state", () => {
+    const html = renderToString(
+      <HomeRouteContent
+        routeData={{ countries }}
+        currentUrl="/"
+        onClosePaidVoteConfirmation={() => undefined}
+      />,
+    );
+
+    expect(visibleText(html)).not.toContain("Paid vote");
+  });
+
   it("renders an applied paid vote confirmation from explicit state", () => {
     const html = renderToString(
       <Dialog open>
@@ -469,7 +525,7 @@ describe("Home", () => {
     expect(html).toBe("");
   });
 
-  it("closes paid vote confirmation by clearing checkout query state", () => {
+  it("closes redirect-backed paid vote confirmation by clearing checkout query state", () => {
     const onCloseUrlChange = vi.fn();
 
     closePaidVoteConfirmationDialog({

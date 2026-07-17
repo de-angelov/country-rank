@@ -1,3 +1,4 @@
+import { logger, type ApplicationLogger } from "~/lib/logger.server";
 import {
   createStripeCheckoutSession,
   getStripeCheckoutConfig,
@@ -11,6 +12,7 @@ import type { VoteRequestPayload } from "~/votes/request.server";
 type CheckoutHandlerOptions = Readonly<{
   env?: NodeJS.ProcessEnv;
   createSession?: CreateStripeCheckoutSession;
+  logger?: ApplicationLogger;
 }>;
 
 const readVoteRequestPayload = async (
@@ -44,10 +46,24 @@ export const createCheckoutHandler =
   (options: CheckoutHandlerOptions = {}) =>
   async (request: Request) => {
     const env = options.env ?? process.env;
+    const paymentLogger = options.logger ?? logger;
     const payload = await readVoteRequestPayload(request);
     const checkoutRequestResult = validateStripeCheckoutRequest(payload, env);
 
     if (checkoutRequestResult.isErr()) {
+      if (checkoutRequestResult.error.code === "missing_stripe_checkout_config") {
+        paymentLogger.error(
+          {
+            route: "checkout",
+            action: "read_stripe_checkout_config",
+            errorCode: checkoutRequestResult.error.code,
+            envVar: checkoutRequestResult.error.envVar,
+            ...getRequestLogContext(request),
+          },
+          "Stripe checkout configuration was missing.",
+        );
+      }
+
       return Response.json(
         {
           ok: false,
@@ -79,6 +95,18 @@ export const createCheckoutHandler =
     );
 
     if (sessionResult.isErr()) {
+      paymentLogger.error(
+        {
+          route: "checkout",
+          action: "create_stripe_checkout_session",
+          errorCode: sessionResult.error.code,
+          countryCode: checkoutRequestResult.value.countryCode,
+          voteType: checkoutRequestResult.value.voteType,
+          ...getRequestLogContext(request),
+        },
+        "Stripe checkout session creation failed.",
+      );
+
       return Response.json(
         {
           ok: false,
@@ -129,3 +157,11 @@ const toStripeCheckoutSessionResponseError = (
   code: error.code,
   message: "We couldn't start checkout. Please try again in a moment.",
 });
+
+const getRequestLogContext = (request: Request) => {
+  const requestId =
+    request.headers.get("x-request-id") ??
+    request.headers.get("x-correlation-id");
+
+  return requestId ? { requestId } : {};
+};

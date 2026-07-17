@@ -3,7 +3,10 @@ import { flushSync } from "react-dom";
 import { Search } from "lucide-react";
 import { useLoaderData, useLocation, useNavigate } from "react-router";
 
-import { CountryCard } from "~/components/country-card/country-card";
+import {
+  CountryCard,
+  CountryCardVoteIconSprite,
+} from "~/components/country-card/country-card";
 import {
   PaidVoteDialog,
   PaidVoteDialogContent,
@@ -278,8 +281,13 @@ export function HomeCountriesContent({
       <div className="country-filter-transition grid gap-4">
         {resultCount > 0 ? (
           <section aria-label="Countries" className="grid gap-4 lg:grid-cols-2">
+            <CountryCardVoteIconSprite />
             {filteredCountries.map((country) => (
-              <CountryCard country={country} key={country.code} />
+              <CountryCard
+                country={country}
+                includeVoteIconSprite={false}
+                key={country.code}
+              />
             ))}
           </section>
         ) : (

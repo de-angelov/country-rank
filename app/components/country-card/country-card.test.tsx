@@ -40,7 +40,23 @@ describe("CountryCard", () => {
     expect(html).toContain('role="progressbar"');
     expect(html).toContain('aria-valuenow="95.');
     expect(html).toContain("transform:translateX(-4.");
-    expect(html).not.toContain("<svg");
+    expect(html).toContain('id="country-card-thumbs-up"');
+    expect(html).toContain('id="country-card-thumbs-down"');
+    expect(html.match(/<use href="#country-card-thumbs-up"/g)).toHaveLength(2);
+    expect(html.match(/<use href="#country-card-thumbs-down"/g)).toHaveLength(
+      2,
+    );
+    expect(html.match(/aria-hidden="true"/g)?.length).toBeGreaterThanOrEqual(5);
+    expect(
+      html.match(
+        /M15 5\.88 14 10h5\.83a2 2 0 0 1 1\.92 2\.56l-2\.33 8/g,
+      ),
+    ).toHaveLength(1);
+    expect(
+      html.match(
+        /M9 18\.12 10 14H4\.17a2 2 0 0 1-1\.92-2\.56l2\.33-8/g,
+      ),
+    ).toHaveLength(1);
     expect(html).not.toContain("<dt");
     expect(html).not.toContain("<dd");
   });

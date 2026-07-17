@@ -1,4 +1,7 @@
-import { CountryCard } from "~/components/country-card/country-card";
+import {
+  CountryCard,
+  CountryCardVoteIconSprite,
+} from "~/components/country-card/country-card";
 import type { Country } from "~/countries";
 import { cn } from "~/lib/utils";
 
@@ -40,26 +43,29 @@ export function RankedCountriesList({
   rankTone: RankTone;
 }) {
   return (
-    <ol className={styles.list} aria-label={ariaLabel}>
-      {countries.map((country, index) => {
-        const rankNumber = getDisplayedRankNumber({
-          index,
-          order: rankNumberOrder,
-          total: countries.length,
-        });
+    <>
+      <CountryCardVoteIconSprite />
+      <ol className={styles.list} aria-label={ariaLabel}>
+        {countries.map((country, index) => {
+          const rankNumber = getDisplayedRankNumber({
+            index,
+            order: rankNumberOrder,
+            total: countries.length,
+          });
 
-        return (
-          <li className={styles.row} key={country.code}>
-            <div
-              className={cn(styles.rankMarker, styles.rankTone[rankTone])}
-              aria-label={`Rank ${rankNumber}`}
-            >
-              {rankNumber}
-            </div>
-            <CountryCard country={country} />
-          </li>
-        );
-      })}
-    </ol>
+          return (
+            <li className={styles.row} key={country.code}>
+              <div
+                className={cn(styles.rankMarker, styles.rankTone[rankTone])}
+                aria-label={`Rank ${rankNumber}`}
+              >
+                {rankNumber}
+              </div>
+              <CountryCard country={country} includeVoteIconSprite={false} />
+            </li>
+          );
+        })}
+      </ol>
+    </>
   );
 }

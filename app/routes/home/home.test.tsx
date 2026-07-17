@@ -1,15 +1,22 @@
 import { renderToString } from "react-dom/server";
 import { errAsync, okAsync } from "neverthrow";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import type { Country } from "~/countries";
 
-import { filterCountriesByName, HomeCountriesContent } from "./home";
+import {
+  closePaidVoteConfirmationDialog,
+  filterCountriesByName,
+  HomeCountriesContent,
+  PaidVoteConfirmationDialog,
+  PaidVoteConfirmationDialogContent,
+} from "./home";
 import { loadHomeCountries } from "./home.server";
 import {
   clearPaidVoteRedirectQueryState,
   getPaidVoteRedirectQueryState,
 } from "./paid-vote-redirect-query";
+import { Dialog } from "~/components/ui/dialog";
 
 const visibleText = (html: string) => html.replaceAll("<!-- -->", "");
 
@@ -119,6 +126,95 @@ describe("Home", () => {
     for (const country of countries) {
       expect(html).not.toContain(country.name);
     }
+  });
+
+  it("renders an applied paid vote confirmation from explicit state", () => {
+    const html = renderToString(
+      <Dialog open>
+        <PaidVoteConfirmationDialogContent
+          confirmationState={{
+            status: "applied",
+            country: { name: "Japan" },
+            voteType: "like",
+            totals: {
+              likes: 13,
+              dislikes: 4,
+            },
+          }}
+        />
+      </Dialog>,
+    );
+    const text = visibleText(html);
+
+    expect(text).toContain("Paid vote applied");
+    expect(text).toContain("Your like vote for Japan was applied.");
+    expect(text).toContain("Updated totals for Japan");
+    expect(text).toContain("13");
+    expect(text).toContain("4");
+    expect(text).toContain("Close");
+  });
+
+  it("renders a pending paid vote confirmation from explicit state", () => {
+    const html = renderToString(
+      <Dialog open>
+        <PaidVoteConfirmationDialogContent
+          confirmationState={{ status: "pending" }}
+        />
+      </Dialog>,
+    );
+    const text = visibleText(html);
+
+    expect(text).toContain("Paid vote pending");
+    expect(text).toContain("We are still confirming your payment.");
+    expect(text).toContain("Your vote has not been applied yet.");
+    expect(text).not.toContain("Paid vote applied");
+    expect(text).not.toContain("Updated totals");
+  });
+
+  it("renders an invalid paid vote confirmation from explicit state", () => {
+    const html = renderToString(
+      <Dialog open>
+        <PaidVoteConfirmationDialogContent
+          confirmationState={{ status: "invalid" }}
+        />
+      </Dialog>,
+    );
+    const text = visibleText(html);
+
+    expect(text).toContain("Paid vote not found");
+    expect(text).toContain(
+      "We could not match this checkout session to a paid vote.",
+    );
+    expect(text).toContain("unrecognized");
+    expect(text).not.toContain("Paid vote applied");
+    expect(text).not.toContain("Updated totals");
+  });
+
+  it("does not render a paid vote confirmation dialog without explicit state", () => {
+    const html = renderToString(
+      <PaidVoteConfirmationDialog
+        confirmationState={{ status: "absent" }}
+        currentUrl="/?session_id=cs_test_paid_vote_123"
+        onCloseUrlChange={() => undefined}
+      />,
+    );
+
+    expect(html).toBe("");
+  });
+
+  it("closes paid vote confirmation by clearing checkout query state", () => {
+    const onCloseUrlChange = vi.fn();
+
+    closePaidVoteConfirmationDialog({
+      currentUrl:
+        "/?sort=liked&session_id=cs_test_paid_vote_123&filter=asia#countries",
+      onCloseUrlChange,
+    });
+
+    expect(onCloseUrlChange).toHaveBeenCalledOnce();
+    expect(onCloseUrlChange).toHaveBeenCalledWith(
+      "/?sort=liked&filter=asia#countries",
+    );
   });
 
   it("filters, changes, and clears country search results by name", () => {

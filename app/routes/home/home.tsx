@@ -4,11 +4,17 @@ import { Search } from "lucide-react";
 import { useLoaderData } from "react-router";
 
 import { CountryCard } from "~/components/country-card/country-card";
+import {
+  PaidVoteDialog,
+  PaidVoteDialogContent,
+  type PaidVoteStatus,
+} from "~/components/paid-vote-dialog/paid-vote-dialog";
 import { Card } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
 import type { Country } from "~/countries";
 
 import { loadHomeCountries } from "./home.server";
+import { clearPaidVoteRedirectQueryState } from "./paid-vote-redirect-query";
 
 export async function loader() {
   return {
@@ -36,6 +42,57 @@ export function filterCountriesByName(
   return countries.filter((country) =>
     country.name.toLocaleLowerCase().includes(normalizedQuery),
   );
+}
+
+export type PaidVoteConfirmationState =
+  | PaidVoteStatus
+  | Readonly<{
+      status: "absent";
+    }>;
+
+type PaidVoteConfirmationDialogProps = Readonly<{
+  confirmationState: PaidVoteConfirmationState;
+  currentUrl: string;
+  onCloseUrlChange: (nextUrl: string) => void;
+}>;
+
+export function closePaidVoteConfirmationDialog({
+  currentUrl,
+  onCloseUrlChange,
+}: Pick<
+  PaidVoteConfirmationDialogProps,
+  "currentUrl" | "onCloseUrlChange"
+>) {
+  onCloseUrlChange(clearPaidVoteRedirectQueryState(currentUrl));
+}
+
+export function PaidVoteConfirmationDialog({
+  confirmationState,
+  currentUrl,
+  onCloseUrlChange,
+}: PaidVoteConfirmationDialogProps) {
+  if (confirmationState.status === "absent") {
+    return null;
+  }
+
+  return (
+    <PaidVoteDialog
+      status={confirmationState}
+      onClose={() =>
+        closePaidVoteConfirmationDialog({ currentUrl, onCloseUrlChange })
+      }
+    />
+  );
+}
+
+export function PaidVoteConfirmationDialogContent({
+  confirmationState,
+}: Pick<PaidVoteConfirmationDialogProps, "confirmationState">) {
+  if (confirmationState.status === "absent") {
+    return null;
+  }
+
+  return <PaidVoteDialogContent status={confirmationState} />;
 }
 
 type SearchViewTransitionDocument = Document & {
@@ -77,9 +134,15 @@ function updateSearchQueryWithTransition(
 export function HomeCountriesContent({
   countries,
   initialSearch = "",
+  paidVoteConfirmationState = { status: "absent" },
+  paidVoteConfirmationUrl = "/",
+  onPaidVoteConfirmationClose = () => undefined,
 }: {
   countries: readonly Country[];
   initialSearch?: string;
+  paidVoteConfirmationState?: PaidVoteConfirmationState;
+  paidVoteConfirmationUrl?: string;
+  onPaidVoteConfirmationClose?: (nextUrl: string) => void;
 }) {
   const [searchQuery, setSearchQuery] = useState(initialSearch);
   const searchRef = useRef<HTMLDivElement>(null);
@@ -99,6 +162,12 @@ export function HomeCountriesContent({
 
   return (
     <main className="mx-auto grid w-full max-w-6xl gap-4 px-4 py-4 sm:px-6 sm:py-5 lg:px-8">
+      <PaidVoteConfirmationDialog
+        confirmationState={paidVoteConfirmationState}
+        currentUrl={paidVoteConfirmationUrl}
+        onCloseUrlChange={onPaidVoteConfirmationClose}
+      />
+
       <div className="grid gap-3 md:grid-cols-[1fr_minmax(18rem,24rem)] md:items-end md:gap-4">
         <div>
           <h1 className="text-3xl font-heading sm:text-4xl">Countries</h1>
@@ -108,11 +177,7 @@ export function HomeCountriesContent({
           </p>
         </div>
 
-        <div 
-          className="grid gap-2"
-          id="country-search"
-          ref={searchRef}
-        >
+        <div className="grid gap-2" id="country-search" ref={searchRef}>
           <label className="font-heading text-sm" htmlFor="country-search">
             Search countries
           </label>
@@ -140,17 +205,11 @@ export function HomeCountriesContent({
         </div>
       </div>
 
-      <div
-        className="country-filter-transition grid gap-4"
-  
-      >
+      <div className="country-filter-transition grid gap-4">
         {resultCount > 0 ? (
           <section aria-label="Countries" className="grid gap-4 lg:grid-cols-2">
             {filteredCountries.map((country) => (
-              <CountryCard
-                country={country}
-                key={country.code}
-              />
+              <CountryCard country={country} key={country.code} />
             ))}
           </section>
         ) : (

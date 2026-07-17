@@ -28,7 +28,7 @@ const styles = {
   article: "grid gap-4 bg-secondary-background p-4",
   header: "grid gap-4 sm:grid-cols-[minmax(7rem,10rem)_1fr] sm:items-center",
   flagFrame:
-    "aspect-[4/3] overflow-hidden rounded-base border-2 border-border bg-background",
+    "aspect-[4/3] min-h-24 overflow-hidden rounded-base border-2 border-border bg-background sm:min-h-0",
   flagImage: "h-full w-full object-cover",
   textBlock: "min-w-0",
   title: "truncate text-xl font-heading",
@@ -118,6 +118,8 @@ export function CountryCard({
                 src={country.flagImageUrl}
                 alt={`${country.name} flag`}
                 className={styles.flagImage}
+                width="320"
+                height="240"
                 loading="lazy"
               />
             </div>

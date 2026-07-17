@@ -211,6 +211,7 @@ describe("paid vote checkout route", () => {
       error: {
         code: "stripe_checkout_session_creation_failed",
         message: "We couldn't start checkout. Please try again in a moment.",
+        requestId: "req_checkout_failure",
       },
     });
     expect(JSON.stringify(body)).not.toContain("Stripe API unavailable");

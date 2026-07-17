@@ -254,6 +254,11 @@ const expectedIsoAlpha2Codes = [
   "ZW",
 ] as const;
 const snippetMaxLength = 80;
+const bannedSnippetPatterns = [
+  /\b(static catalog profile|test snippet|placeholder|todo)\b/i,
+  /\b(stupid|dumb|lazy|backward|primitive|terrorist|war-torn|poverty)\b/i,
+  /^[A-Z]{2}:/,
+];
 
 describe("countryFixtures", () => {
   it("contains the complete expected ISO alpha-2 country code set", () => {
@@ -284,6 +289,16 @@ describe("countryFixtures", () => {
     );
 
     expect(new Set(snippets).size).toBe(countryFixtures.length);
+  });
+
+  it("keeps snippets polished for public country cards", () => {
+    for (const country of countryFixtures) {
+      for (const bannedPattern of bannedSnippetPatterns) {
+        expect(country.factSnippet).not.toMatch(bannedPattern);
+      }
+
+      expect(country.factSnippet).toMatch(/[.!?]$/);
+    }
   });
 
   it("varies vote totals enough to manually verify liked and disliked rankings", () => {

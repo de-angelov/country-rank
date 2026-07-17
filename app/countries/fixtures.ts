@@ -7,7 +7,7 @@ export const countryFixtures = [
     capital: "Andorra la Vella",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Andorra.svg",
-    factSnippet: "Static catalog profile for AD.",
+    factSnippet: "Andorra: Andorra la Vella brings mountain-map energy.",
     likes: 100,
     dislikes: 50,
   },
@@ -17,7 +17,7 @@ export const countryFixtures = [
     capital: "Abu Dhabi",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20United%20Arab%20Emirates.svg",
-    factSnippet: "Static catalog profile for AE.",
+    factSnippet: "United Arab Emirates: Abu Dhabi brings harbor breeze.",
     likes: 137,
     dislikes: 79,
   },
@@ -27,7 +27,7 @@ export const countryFixtures = [
     capital: "Kabul",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20Taliban.svg",
-    factSnippet: "Static catalog profile for AF.",
+    factSnippet: "Afghanistan: Kabul brings market-day color.",
     likes: 174,
     dislikes: 108,
   },
@@ -37,7 +37,7 @@ export const countryFixtures = [
     capital: "St. John's",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Antigua%20and%20Barbuda.svg",
-    factSnippet: "Static catalog profile for AG.",
+    factSnippet: "Antigua and Barbuda: St. John's brings postcard mischief.",
     likes: 211,
     dislikes: 137,
   },
@@ -47,7 +47,7 @@ export const countryFixtures = [
     capital: "The Valley",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Anguilla.svg",
-    factSnippet: "Static catalog profile for AI.",
+    factSnippet: "Anguilla: The Valley brings island-hop plans.",
     likes: 248,
     dislikes: 166,
   },
@@ -57,7 +57,7 @@ export const countryFixtures = [
     capital: "Tirana",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Albania.svg",
-    factSnippet: "Static catalog profile for AL.",
+    factSnippet: "Albania: Tirana brings rain-or-shine charm.",
     likes: 285,
     dislikes: 195,
   },
@@ -67,7 +67,7 @@ export const countryFixtures = [
     capital: "Yerevan",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Armenia.svg",
-    factSnippet: "Static catalog profile for AM.",
+    factSnippet: "Armenia: Yerevan brings passport-stamp drama.",
     likes: 322,
     dislikes: 224,
   },
@@ -77,7 +77,7 @@ export const countryFixtures = [
     capital: "Luanda",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Angola.svg",
-    factSnippet: "Static catalog profile for AO.",
+    factSnippet: "Angola: Luanda brings sunny cafe plans.",
     likes: 359,
     dislikes: 253,
   },
@@ -87,7 +87,7 @@ export const countryFixtures = [
     capital: "Unknown",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20Antarctic%20Treaty.svg",
-    factSnippet: "Static catalog profile for AQ.",
+    factSnippet: "Antarctica: world-map tiny print with harbor breeze.",
     likes: 396,
     dislikes: 282,
   },
@@ -97,7 +97,7 @@ export const countryFixtures = [
     capital: "Buenos Aires",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Argentina.svg",
-    factSnippet: "Static catalog profile for AR.",
+    factSnippet: "Argentina: Buenos Aires brings market-day color.",
     likes: 433,
     dislikes: 311,
   },
@@ -107,7 +107,7 @@ export const countryFixtures = [
     capital: "Pago Pago",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20American%20Samoa.svg",
-    factSnippet: "Static catalog profile for AS.",
+    factSnippet: "American Samoa: Pago Pago brings postcard mischief.",
     likes: 470,
     dislikes: 340,
   },
@@ -117,7 +117,7 @@ export const countryFixtures = [
     capital: "Vienna",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Austria.svg",
-    factSnippet: "Static catalog profile for AT.",
+    factSnippet: "Austria: Vienna brings snack-stop curiosity.",
     likes: 507,
     dislikes: 369,
   },
@@ -127,7 +127,7 @@ export const countryFixtures = [
     capital: "Canberra",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Australia%20%28converted%29.svg",
-    factSnippet: "Static catalog profile for AU.",
+    factSnippet: "Australia: Canberra brings island-hop plans.",
     likes: 544,
     dislikes: 398,
   },
@@ -137,7 +137,7 @@ export const countryFixtures = [
     capital: "Oranjestad",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Aruba.svg",
-    factSnippet: "Static catalog profile for AW.",
+    factSnippet: "Aruba: Oranjestad brings airport-layover dreams.",
     likes: 581,
     dislikes: 427,
   },
@@ -147,7 +147,7 @@ export const countryFixtures = [
     capital: "Mariehamn",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20%C3%85land.svg",
-    factSnippet: "Static catalog profile for AX.",
+    factSnippet: "Aland Islands: Mariehamn brings rain-or-shine charm.",
     likes: 618,
     dislikes: 456,
   },
@@ -157,7 +157,7 @@ export const countryFixtures = [
     capital: "Baku",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Azerbaijan.svg",
-    factSnippet: "Static catalog profile for AZ.",
+    factSnippet: "Azerbaijan: Baku brings flag-quiz flair.",
     likes: 655,
     dislikes: 485,
   },
@@ -167,7 +167,7 @@ export const countryFixtures = [
     capital: "Sarajevo",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Bosnia%20and%20Herzegovina.svg",
-    factSnippet: "Static catalog profile for BA.",
+    factSnippet: "Bosnia and Herzegovina: Sarajevo brings market-day color.",
     likes: 692,
     dislikes: 514,
   },
@@ -177,7 +177,7 @@ export const countryFixtures = [
     capital: "Bridgetown",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Barbados.svg",
-    factSnippet: "Static catalog profile for BB.",
+    factSnippet: "Barbados: Bridgetown brings postcard mischief.",
     likes: 729,
     dislikes: 543,
   },
@@ -187,7 +187,7 @@ export const countryFixtures = [
     capital: "Dhaka",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Bangladesh.svg",
-    factSnippet: "Static catalog profile for BD.",
+    factSnippet: "Bangladesh: Dhaka brings island-hop plans.",
     likes: 766,
     dislikes: 572,
   },
@@ -197,7 +197,7 @@ export const countryFixtures = [
     capital: "Brussels",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Belgium.svg",
-    factSnippet: "Static catalog profile for BE.",
+    factSnippet: "Belgium: Brussels brings capital-city cameos.",
     likes: 803,
     dislikes: 601,
   },
@@ -207,7 +207,7 @@ export const countryFixtures = [
     capital: "Ouagadougou",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Burkina%20Faso.svg",
-    factSnippet: "Static catalog profile for BF.",
+    factSnippet: "Burkina Faso: Ouagadougou brings airport-layover dreams.",
     likes: 840,
     dislikes: 630,
   },
@@ -217,7 +217,7 @@ export const countryFixtures = [
     capital: "Sofia",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Bulgaria.svg",
-    factSnippet: "Static catalog profile for BG.",
+    factSnippet: "Bulgaria: Sofia brings rain-or-shine charm.",
     likes: 877,
     dislikes: 659,
   },
@@ -227,7 +227,7 @@ export const countryFixtures = [
     capital: "Manama",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Bahrain.svg",
-    factSnippet: "Static catalog profile for BH.",
+    factSnippet: "Bahrain: Manama brings passport-stamp drama.",
     likes: 914,
     dislikes: 688,
   },
@@ -237,7 +237,7 @@ export const countryFixtures = [
     capital: "Gitega",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Burundi.svg",
-    factSnippet: "Static catalog profile for BI.",
+    factSnippet: "Burundi: Gitega brings flag-quiz flair.",
     likes: 951,
     dislikes: 717,
   },
@@ -247,7 +247,7 @@ export const countryFixtures = [
     capital: "Porto-Novo",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Benin.svg",
-    factSnippet: "Static catalog profile for BJ.",
+    factSnippet: "Benin: Porto-Novo brings sunny cafe plans.",
     likes: 988,
     dislikes: 746,
   },
@@ -257,7 +257,7 @@ export const countryFixtures = [
     capital: "Gustavia",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Saint%20Barth%C3%A9lemy%20%28local%29.svg",
-    factSnippet: "Static catalog profile for BL.",
+    factSnippet: "Saint Barthelemy: Gustavia brings harbor breeze.",
     likes: 125,
     dislikes: 75,
   },
@@ -267,7 +267,7 @@ export const countryFixtures = [
     capital: "Hamilton",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Bermuda.svg",
-    factSnippet: "Static catalog profile for BM.",
+    factSnippet: "Bermuda: Hamilton brings market-day color.",
     likes: 162,
     dislikes: 104,
   },
@@ -277,7 +277,7 @@ export const countryFixtures = [
     capital: "Bandar Seri Begawan",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Brunei.svg",
-    factSnippet: "Static catalog profile for BN.",
+    factSnippet: "Brunei Darussalam: Bandar Seri Begawan brings postcard mischief.",
     likes: 199,
     dislikes: 133,
   },
@@ -287,7 +287,7 @@ export const countryFixtures = [
     capital: "La Paz, Sucre",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Bolivia.svg",
-    factSnippet: "Static catalog profile for BO.",
+    factSnippet: "Bolivia: La Paz brings snack-stop curiosity.",
     likes: 236,
     dislikes: 162,
   },
@@ -297,7 +297,7 @@ export const countryFixtures = [
     capital: "Unknown",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Bonaire%2C%20Sint%20Eustatius%20and%20Saba.svg",
-    factSnippet: "Static catalog profile for BQ.",
+    factSnippet: "Bonaire and friends: world-map tiny print with capital-city cameos.",
     likes: 273,
     dislikes: 191,
   },
@@ -307,7 +307,7 @@ export const countryFixtures = [
     capital: "Brasília",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Brazil.svg",
-    factSnippet: "Static catalog profile for BR.",
+    factSnippet: "Brazil: Brasília brings airport-layover dreams.",
     likes: 310,
     dislikes: 220,
   },
@@ -317,7 +317,7 @@ export const countryFixtures = [
     capital: "Nassau",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20Bahamas.svg",
-    factSnippet: "Static catalog profile for BS.",
+    factSnippet: "Bahamas: Nassau brings rain-or-shine charm.",
     likes: 347,
     dislikes: 249,
   },
@@ -327,7 +327,7 @@ export const countryFixtures = [
     capital: "Thimphu",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Bhutan.svg",
-    factSnippet: "Static catalog profile for BT.",
+    factSnippet: "Bhutan: Thimphu brings passport-stamp drama.",
     likes: 384,
     dislikes: 278,
   },
@@ -337,7 +337,7 @@ export const countryFixtures = [
     capital: "Unknown",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Norway.svg",
-    factSnippet: "Static catalog profile for BV.",
+    factSnippet: "Bouvet Island: world-map tiny print with sunny cafe plans.",
     likes: 421,
     dislikes: 307,
   },
@@ -347,7 +347,7 @@ export const countryFixtures = [
     capital: "Gaborone",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Botswana.svg",
-    factSnippet: "Static catalog profile for BW.",
+    factSnippet: "Botswana: Gaborone brings mountain-map energy.",
     likes: 458,
     dislikes: 336,
   },
@@ -357,7 +357,7 @@ export const countryFixtures = [
     capital: "Minsk",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Belarus.svg",
-    factSnippet: "Static catalog profile for BY.",
+    factSnippet: "Belarus: Minsk brings market-day color.",
     likes: 495,
     dislikes: 365,
   },
@@ -367,7 +367,7 @@ export const countryFixtures = [
     capital: "Belmopan",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Belize.svg",
-    factSnippet: "Static catalog profile for BZ.",
+    factSnippet: "Belize: Belmopan brings postcard mischief.",
     likes: 532,
     dislikes: 394,
   },
@@ -377,7 +377,7 @@ export const countryFixtures = [
     capital: "Ottawa",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Canada%20%28Pantone%29.svg",
-    factSnippet: "Static catalog profile for CA.",
+    factSnippet: "Canada: Ottawa brings airport-layover dreams.",
     likes: 569,
     dislikes: 423,
   },
@@ -387,7 +387,7 @@ export const countryFixtures = [
     capital: "West Island",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20Cocos%20%28Keeling%29%20Island.svg",
-    factSnippet: "Static catalog profile for CC.",
+    factSnippet: "Cocos Islands: West Island brings passport-stamp drama.",
     likes: 606,
     dislikes: 452,
   },
@@ -397,7 +397,7 @@ export const countryFixtures = [
     capital: "Kinshasa",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20Democratic%20Republic%20of%20the%20Congo.svg",
-    factSnippet: "Static catalog profile for CD.",
+    factSnippet: "D.R. Congo: Kinshasa brings flag-quiz flair.",
     likes: 643,
     dislikes: 481,
   },
@@ -407,7 +407,7 @@ export const countryFixtures = [
     capital: "Bangui",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20Central%20African%20Republic.svg",
-    factSnippet: "Static catalog profile for CF.",
+    factSnippet: "Central African Republic: Bangui brings mountain-map energy.",
     likes: 680,
     dislikes: 510,
   },
@@ -417,7 +417,7 @@ export const countryFixtures = [
     capital: "Brazzaville",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20Republic%20of%20the%20Congo.svg",
-    factSnippet: "Static catalog profile for CG.",
+    factSnippet: "Congo: Brazzaville brings harbor breeze.",
     likes: 717,
     dislikes: 539,
   },
@@ -427,7 +427,7 @@ export const countryFixtures = [
     capital: "Bern",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Switzerland.svg",
-    factSnippet: "Static catalog profile for CH.",
+    factSnippet: "Switzerland: Bern brings market-day color.",
     likes: 754,
     dislikes: 568,
   },
@@ -437,7 +437,7 @@ export const countryFixtures = [
     capital: "Yamoussoukro",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20C%C3%B4te%20d%27Ivoire.svg",
-    factSnippet: "Static catalog profile for CI.",
+    factSnippet: "Cote d'Ivoire: Yamoussoukro brings postcard mischief.",
     likes: 791,
     dislikes: 597,
   },
@@ -447,7 +447,7 @@ export const countryFixtures = [
     capital: "Avarua",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20Cook%20Islands.svg",
-    factSnippet: "Static catalog profile for CK.",
+    factSnippet: "Cook Islands: Avarua brings island-hop plans.",
     likes: 828,
     dislikes: 626,
   },
@@ -457,7 +457,7 @@ export const countryFixtures = [
     capital: "Santiago",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Chile.svg",
-    factSnippet: "Static catalog profile for CL.",
+    factSnippet: "Chile: Santiago brings capital-city cameos.",
     likes: 865,
     dislikes: 655,
   },
@@ -467,7 +467,7 @@ export const countryFixtures = [
     capital: "Yaoundé",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Cameroon.svg",
-    factSnippet: "Static catalog profile for CM.",
+    factSnippet: "Cameroon: Yaoundé brings airport-layover dreams.",
     likes: 902,
     dislikes: 684,
   },
@@ -477,7 +477,7 @@ export const countryFixtures = [
     capital: "Beijing",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20People%27s%20Republic%20of%20China.svg",
-    factSnippet: "Static catalog profile for CN.",
+    factSnippet: "China: Beijing brings rain-or-shine charm.",
     likes: 939,
     dislikes: 713,
   },
@@ -487,7 +487,7 @@ export const countryFixtures = [
     capital: "Bogotá",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Colombia.svg",
-    factSnippet: "Static catalog profile for CO.",
+    factSnippet: "Colombia: Bogotá brings passport-stamp drama.",
     likes: 976,
     dislikes: 742,
   },
@@ -497,7 +497,7 @@ export const countryFixtures = [
     capital: "San José",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Costa%20Rica.svg",
-    factSnippet: "Static catalog profile for CR.",
+    factSnippet: "Costa Rica: San José brings mountain-map energy.",
     likes: 113,
     dislikes: 71,
   },
@@ -507,7 +507,7 @@ export const countryFixtures = [
     capital: "Havana",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Cuba.svg",
-    factSnippet: "Static catalog profile for CU.",
+    factSnippet: "Cuba: Havana brings postcard mischief.",
     likes: 150,
     dislikes: 100,
   },
@@ -517,7 +517,7 @@ export const countryFixtures = [
     capital: "Praia",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Cape%20Verde.svg",
-    factSnippet: "Static catalog profile for CV.",
+    factSnippet: "Cabo Verde: Praia brings snack-stop curiosity.",
     likes: 187,
     dislikes: 129,
   },
@@ -527,7 +527,7 @@ export const countryFixtures = [
     capital: "Willemstad",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Cura%C3%A7ao.svg",
-    factSnippet: "Static catalog profile for CW.",
+    factSnippet: "Curacao: Willemstad brings island-hop plans.",
     likes: 224,
     dislikes: 158,
   },
@@ -537,7 +537,7 @@ export const countryFixtures = [
     capital: "Flying Fish Cove",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Christmas%20Island.svg",
-    factSnippet: "Static catalog profile for CX.",
+    factSnippet: "Christmas Island: Flying Fish Cove brings capital-city cameos.",
     likes: 261,
     dislikes: 187,
   },
@@ -547,7 +547,7 @@ export const countryFixtures = [
     capital: "Nicosia",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Cyprus.svg",
-    factSnippet: "Static catalog profile for CY.",
+    factSnippet: "Cyprus: Nicosia brings airport-layover dreams.",
     likes: 298,
     dislikes: 216,
   },
@@ -557,7 +557,7 @@ export const countryFixtures = [
     capital: "Prague",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20Czech%20Republic.svg",
-    factSnippet: "Static catalog profile for CZ.",
+    factSnippet: "Czechia: Prague brings rain-or-shine charm.",
     likes: 335,
     dislikes: 245,
   },
@@ -567,7 +567,7 @@ export const countryFixtures = [
     capital: "Berlin",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Germany.svg",
-    factSnippet: "Static catalog profile for DE.",
+    factSnippet: "Germany: Berlin brings snack-stop curiosity.",
     likes: 372,
     dislikes: 274,
   },
@@ -577,7 +577,7 @@ export const countryFixtures = [
     capital: "Djibouti",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Djibouti.svg",
-    factSnippet: "Static catalog profile for DJ.",
+    factSnippet: "Djibouti: Djibouti brings passport-stamp drama.",
     likes: 409,
     dislikes: 303,
   },
@@ -587,7 +587,7 @@ export const countryFixtures = [
     capital: "Copenhagen",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Denmark.svg",
-    factSnippet: "Static catalog profile for DK.",
+    factSnippet: "Denmark: Copenhagen brings flag-quiz flair.",
     likes: 446,
     dislikes: 332,
   },
@@ -597,7 +597,7 @@ export const countryFixtures = [
     capital: "Roseau",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Dominica.svg",
-    factSnippet: "Static catalog profile for DM.",
+    factSnippet: "Dominica: Roseau brings mountain-map energy.",
     likes: 483,
     dislikes: 361,
   },
@@ -607,7 +607,7 @@ export const countryFixtures = [
     capital: "Santo Domingo",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20Dominican%20Republic.svg",
-    factSnippet: "Static catalog profile for DO.",
+    factSnippet: "Dominican Republic: Santo Domingo brings market-day color.",
     likes: 520,
     dislikes: 390,
   },
@@ -617,7 +617,7 @@ export const countryFixtures = [
     capital: "Algiers",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Algeria.svg",
-    factSnippet: "Static catalog profile for DZ.",
+    factSnippet: "Algeria: Algiers brings harbor breeze.",
     likes: 557,
     dislikes: 419,
   },
@@ -627,7 +627,7 @@ export const countryFixtures = [
     capital: "Quito",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Ecuador.svg",
-    factSnippet: "Static catalog profile for EC.",
+    factSnippet: "Ecuador: world-map tiny print with airport-layover dreams.",
     likes: 594,
     dislikes: 448,
   },
@@ -637,7 +637,7 @@ export const countryFixtures = [
     capital: "Tallinn",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Estonia.svg",
-    factSnippet: "Static catalog profile for EE.",
+    factSnippet: "Estonia: Tallinn brings passport-stamp drama.",
     likes: 631,
     dislikes: 477,
   },
@@ -647,7 +647,7 @@ export const countryFixtures = [
     capital: "Cairo",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Egypt.svg",
-    factSnippet: "Static catalog profile for EG.",
+    factSnippet: "Egypt: Cairo brings sunny cafe plans.",
     likes: 668,
     dislikes: 506,
   },
@@ -657,7 +657,7 @@ export const countryFixtures = [
     capital: "Unknown",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Western%20Sahara*.svg",
-    factSnippet: "Static catalog profile for EH.",
+    factSnippet: "Western Sahara: world-map tiny print with mountain-map energy.",
     likes: 705,
     dislikes: 535,
   },
@@ -667,7 +667,7 @@ export const countryFixtures = [
     capital: "Asmara",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Eritrea.svg",
-    factSnippet: "Static catalog profile for ER.",
+    factSnippet: "Eritrea: Asmara brings flag-quiz flair.",
     likes: 742,
     dislikes: 564,
   },
@@ -677,7 +677,7 @@ export const countryFixtures = [
     capital: "Madrid",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Spain.svg",
-    factSnippet: "Static catalog profile for ES.",
+    factSnippet: "Spain: Madrid brings sunny cafe plans.",
     likes: 779,
     dislikes: 593,
   },
@@ -687,7 +687,7 @@ export const countryFixtures = [
     capital: "Addis Ababa",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Ethiopia.svg",
-    factSnippet: "Static catalog profile for ET.",
+    factSnippet: "Ethiopia: Addis Ababa brings mountain-map energy.",
     likes: 816,
     dislikes: 622,
   },
@@ -697,7 +697,7 @@ export const countryFixtures = [
     capital: "Helsinki",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Finland.svg",
-    factSnippet: "Static catalog profile for FI.",
+    factSnippet: "Finland: Helsinki brings capital-city cameos.",
     likes: 853,
     dislikes: 651,
   },
@@ -707,7 +707,7 @@ export const countryFixtures = [
     capital: "Suva",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Fiji.svg",
-    factSnippet: "Static catalog profile for FJ.",
+    factSnippet: "Fiji: Suva brings airport-layover dreams.",
     likes: 890,
     dislikes: 680,
   },
@@ -717,7 +717,7 @@ export const countryFixtures = [
     capital: "Stanley",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20Falkland%20Islands.svg",
-    factSnippet: "Static catalog profile for FK.",
+    factSnippet: "Falklands: Stanley brings rain-or-shine charm.",
     likes: 927,
     dislikes: 709,
   },
@@ -727,7 +727,7 @@ export const countryFixtures = [
     capital: "Palikir",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20Federated%20States%20of%20Micronesia.svg",
-    factSnippet: "Static catalog profile for FM.",
+    factSnippet: "Micronesia: Palikir brings flag-quiz flair.",
     likes: 964,
     dislikes: 738,
   },
@@ -737,7 +737,7 @@ export const countryFixtures = [
     capital: "Tórshavn",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20Faroe%20Islands.svg",
-    factSnippet: "Static catalog profile for FO.",
+    factSnippet: "Faroe Islands: Tórshavn brings mountain-map energy.",
     likes: 101,
     dislikes: 67,
   },
@@ -747,7 +747,7 @@ export const countryFixtures = [
     capital: "Paris",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20France.svg",
-    factSnippet: "Static catalog profile for FR.",
+    factSnippet: "France: Paris brings postcard mischief.",
     likes: 138,
     dislikes: 96,
   },
@@ -757,7 +757,7 @@ export const countryFixtures = [
     capital: "Libreville",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Gabon.svg",
-    factSnippet: "Static catalog profile for GA.",
+    factSnippet: "Gabon: Libreville brings postcard mischief.",
     likes: 175,
     dislikes: 125,
   },
@@ -767,7 +767,7 @@ export const countryFixtures = [
     capital: "London",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20United%20Kingdom%20%283-5%29.svg",
-    factSnippet: "Static catalog profile for GB.",
+    factSnippet: "United Kingdom: London brings snack-stop curiosity.",
     likes: 212,
     dislikes: 154,
   },
@@ -777,7 +777,7 @@ export const countryFixtures = [
     capital: "St. George's",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Grenada.svg",
-    factSnippet: "Static catalog profile for GD.",
+    factSnippet: "Grenada: St. George's brings capital-city cameos.",
     likes: 249,
     dislikes: 183,
   },
@@ -787,7 +787,7 @@ export const countryFixtures = [
     capital: "Tbilisi",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Georgia.svg",
-    factSnippet: "Static catalog profile for GE.",
+    factSnippet: "Georgia: Tbilisi brings airport-layover dreams.",
     likes: 286,
     dislikes: 212,
   },
@@ -797,7 +797,7 @@ export const countryFixtures = [
     capital: "Cayenne",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20France.svg",
-    factSnippet: "Static catalog profile for GF.",
+    factSnippet: "French Guiana: Cayenne brings rain-or-shine charm.",
     likes: 323,
     dislikes: 241,
   },
@@ -807,7 +807,7 @@ export const countryFixtures = [
     capital: "Saint Peter Port",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Guernsey.svg",
-    factSnippet: "Static catalog profile for GG.",
+    factSnippet: "Guernsey: Saint Peter Port brings passport-stamp drama.",
     likes: 360,
     dislikes: 270,
   },
@@ -817,7 +817,7 @@ export const countryFixtures = [
     capital: "Accra",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Ghana.svg",
-    factSnippet: "Static catalog profile for GH.",
+    factSnippet: "Ghana: Accra brings flag-quiz flair.",
     likes: 397,
     dislikes: 299,
   },
@@ -827,7 +827,7 @@ export const countryFixtures = [
     capital: "Gibraltar",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Gibraltar.svg",
-    factSnippet: "Static catalog profile for GI.",
+    factSnippet: "Gibraltar: Gibraltar brings sunny cafe plans.",
     likes: 434,
     dislikes: 328,
   },
@@ -837,7 +837,7 @@ export const countryFixtures = [
     capital: "Nuuk",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Greenland.svg",
-    factSnippet: "Static catalog profile for GL.",
+    factSnippet: "Greenland: Nuuk brings market-day color.",
     likes: 471,
     dislikes: 357,
   },
@@ -847,7 +847,7 @@ export const countryFixtures = [
     capital: "Banjul",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20The%20Gambia.svg",
-    factSnippet: "Static catalog profile for GM.",
+    factSnippet: "Gambia: Banjul brings postcard mischief.",
     likes: 508,
     dislikes: 386,
   },
@@ -857,7 +857,7 @@ export const countryFixtures = [
     capital: "Conakry",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Guinea.svg",
-    factSnippet: "Static catalog profile for GN.",
+    factSnippet: "Guinea: Conakry brings snack-stop curiosity.",
     likes: 545,
     dislikes: 415,
   },
@@ -867,7 +867,7 @@ export const countryFixtures = [
     capital: "Basse-Terre",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20France.svg",
-    factSnippet: "Static catalog profile for GP.",
+    factSnippet: "Guadeloupe: Basse-Terre brings capital-city cameos.",
     likes: 582,
     dislikes: 444,
   },
@@ -877,7 +877,7 @@ export const countryFixtures = [
     capital: "Ciudad de la Paz",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Equatorial%20Guinea.svg",
-    factSnippet: "Static catalog profile for GQ.",
+    factSnippet: "Equatorial Guinea: Ciudad de la Paz brings airport-layover dreams.",
     likes: 619,
     dislikes: 473,
   },
@@ -887,7 +887,7 @@ export const countryFixtures = [
     capital: "Athens",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Greece.svg",
-    factSnippet: "Static catalog profile for GR.",
+    factSnippet: "Greece: Athens brings rain-or-shine charm.",
     likes: 656,
     dislikes: 502,
   },
@@ -897,7 +897,7 @@ export const countryFixtures = [
     capital: "King Edward Point",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20South%20Georgia%20and%20the%20South%20Sandwich%20Islands.svg",
-    factSnippet: "Static catalog profile for GS.",
+    factSnippet: "South Georgia: King Edward Point brings passport-stamp drama.",
     likes: 693,
     dislikes: 531,
   },
@@ -907,7 +907,7 @@ export const countryFixtures = [
     capital: "Guatemala City",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Guatemala.svg",
-    factSnippet: "Static catalog profile for GT.",
+    factSnippet: "Guatemala: Guatemala City brings flag-quiz flair.",
     likes: 730,
     dislikes: 560,
   },
@@ -917,7 +917,7 @@ export const countryFixtures = [
     capital: "Hagåtña",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Guam.svg",
-    factSnippet: "Static catalog profile for GU.",
+    factSnippet: "Guam: Hagåtña brings sunny cafe plans.",
     likes: 767,
     dislikes: 589,
   },
@@ -927,7 +927,7 @@ export const countryFixtures = [
     capital: "Bissau",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Guinea-Bissau.svg",
-    factSnippet: "Static catalog profile for GW.",
+    factSnippet: "Guinea-Bissau: Bissau brings harbor breeze.",
     likes: 804,
     dislikes: 618,
   },
@@ -937,7 +937,7 @@ export const countryFixtures = [
     capital: "Georgetown",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Guyana.svg",
-    factSnippet: "Static catalog profile for GY.",
+    factSnippet: "Guyana: Georgetown brings postcard mischief.",
     likes: 841,
     dislikes: 647,
   },
@@ -947,7 +947,7 @@ export const countryFixtures = [
     capital: "Unknown",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Hong%20Kong.svg",
-    factSnippet: "Static catalog profile for HK.",
+    factSnippet: "Hong Kong: world-map tiny print with capital-city cameos.",
     likes: 878,
     dislikes: 676,
   },
@@ -957,7 +957,7 @@ export const countryFixtures = [
     capital: "Unknown",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Australia%20%28converted%29.svg",
-    factSnippet: "Static catalog profile for HM.",
+    factSnippet: "Heard and McDonald Islands: world-map tiny print with rain-or-shine charm.",
     likes: 915,
     dislikes: 705,
   },
@@ -967,7 +967,7 @@ export const countryFixtures = [
     capital: "Tegucigalpa",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Honduras%20%281949%E2%80%932022%2C%202026%E2%80%93present%29.svg",
-    factSnippet: "Static catalog profile for HN.",
+    factSnippet: "Honduras: Tegucigalpa brings passport-stamp drama.",
     likes: 952,
     dislikes: 734,
   },
@@ -977,7 +977,7 @@ export const countryFixtures = [
     capital: "Zagreb",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Croatia.svg",
-    factSnippet: "Static catalog profile for HR.",
+    factSnippet: "Croatia: Zagreb brings harbor breeze.",
     likes: 989,
     dislikes: 63,
   },
@@ -987,7 +987,7 @@ export const countryFixtures = [
     capital: "Port-au-Prince",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Haiti.svg",
-    factSnippet: "Static catalog profile for HT.",
+    factSnippet: "Haiti: Port-au-Prince brings postcard mischief.",
     likes: 126,
     dislikes: 92,
   },
@@ -997,7 +997,7 @@ export const countryFixtures = [
     capital: "Budapest",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Hungary.svg",
-    factSnippet: "Static catalog profile for HU.",
+    factSnippet: "Hungary: Budapest brings snack-stop curiosity.",
     likes: 163,
     dislikes: 121,
   },
@@ -1007,7 +1007,7 @@ export const countryFixtures = [
     capital: "Jakarta",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Indonesia.svg",
-    factSnippet: "Static catalog profile for ID.",
+    factSnippet: "Indonesia: Jakarta brings snack-stop curiosity.",
     likes: 200,
     dislikes: 150,
   },
@@ -1017,7 +1017,7 @@ export const countryFixtures = [
     capital: "Dublin",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Ireland.svg",
-    factSnippet: "Static catalog profile for IE.",
+    factSnippet: "Ireland: Dublin brings island-hop plans.",
     likes: 237,
     dislikes: 179,
   },
@@ -1027,7 +1027,7 @@ export const countryFixtures = [
     capital: "Jerusalem",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Israel.svg",
-    factSnippet: "Static catalog profile for IL.",
+    factSnippet: "Israel: Jerusalem brings mountain-map energy.",
     likes: 274,
     dislikes: 208,
   },
@@ -1037,7 +1037,7 @@ export const countryFixtures = [
     capital: "Douglas",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20Isle%20of%20Man.svg",
-    factSnippet: "Static catalog profile for IM.",
+    factSnippet: "Isle of Man: Douglas brings harbor breeze.",
     likes: 311,
     dislikes: 237,
   },
@@ -1047,7 +1047,7 @@ export const countryFixtures = [
     capital: "New Delhi",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20India.svg",
-    factSnippet: "Static catalog profile for IN.",
+    factSnippet: "India: New Delhi brings market-day color.",
     likes: 348,
     dislikes: 266,
   },
@@ -1057,7 +1057,7 @@ export const countryFixtures = [
     capital: "Diego Garcia",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20Commissioner%20of%20the%20British%20Indian%20Ocean%20Territory.svg",
-    factSnippet: "Static catalog profile for IO.",
+    factSnippet: "British Indian Ocean Territory: Diego Garcia brings postcard mischief.",
     likes: 385,
     dislikes: 295,
   },
@@ -1067,7 +1067,7 @@ export const countryFixtures = [
     capital: "Baghdad",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Iraq.svg",
-    factSnippet: "Static catalog profile for IQ.",
+    factSnippet: "Iraq: Baghdad brings island-hop plans.",
     likes: 422,
     dislikes: 324,
   },
@@ -1077,7 +1077,7 @@ export const countryFixtures = [
     capital: "Tehran",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Iran.svg",
-    factSnippet: "Static catalog profile for IR.",
+    factSnippet: "Iran: Tehran brings capital-city cameos.",
     likes: 459,
     dislikes: 353,
   },
@@ -1087,7 +1087,7 @@ export const countryFixtures = [
     capital: "Reykjavík",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Iceland.svg",
-    factSnippet: "Static catalog profile for IS.",
+    factSnippet: "Iceland: Reykjavík brings airport-layover dreams.",
     likes: 496,
     dislikes: 382,
   },
@@ -1097,7 +1097,7 @@ export const countryFixtures = [
     capital: "Rome",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Italy.svg",
-    factSnippet: "Static catalog profile for IT.",
+    factSnippet: "Italy: Rome brings rain-or-shine charm.",
     likes: 533,
     dislikes: 411,
   },
@@ -1107,7 +1107,7 @@ export const countryFixtures = [
     capital: "Saint Helier",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Jersey.svg",
-    factSnippet: "Static catalog profile for JE.",
+    factSnippet: "Jersey: Saint Helier brings flag-quiz flair.",
     likes: 570,
     dislikes: 440,
   },
@@ -1117,7 +1117,7 @@ export const countryFixtures = [
     capital: "Kingston",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Jamaica.svg",
-    factSnippet: "Static catalog profile for JM.",
+    factSnippet: "Jamaica: Kingston brings capital-city cameos.",
     likes: 607,
     dislikes: 469,
   },
@@ -1127,7 +1127,7 @@ export const countryFixtures = [
     capital: "Amman",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Jordan.svg",
-    factSnippet: "Static catalog profile for JO.",
+    factSnippet: "Jordan: Amman brings rain-or-shine charm.",
     likes: 644,
     dislikes: 498,
   },
@@ -1137,7 +1137,7 @@ export const countryFixtures = [
     capital: "Tokyo",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Japan.svg",
-    factSnippet: "Static catalog profile for JP.",
+    factSnippet: "Japan: Tokyo brings passport-stamp drama.",
     likes: 681,
     dislikes: 527,
   },
@@ -1147,7 +1147,7 @@ export const countryFixtures = [
     capital: "Nairobi",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Kenya.svg",
-    factSnippet: "Static catalog profile for KE.",
+    factSnippet: "Kenya: Nairobi brings postcard mischief.",
     likes: 718,
     dislikes: 556,
   },
@@ -1157,7 +1157,7 @@ export const countryFixtures = [
     capital: "Bishkek",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Kyrgyzstan.svg",
-    factSnippet: "Static catalog profile for KG.",
+    factSnippet: "Kyrgyzstan: Bishkek brings island-hop plans.",
     likes: 755,
     dislikes: 585,
   },
@@ -1167,7 +1167,7 @@ export const countryFixtures = [
     capital: "Phnom Penh",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Cambodia.svg",
-    factSnippet: "Static catalog profile for KH.",
+    factSnippet: "Cambodia: Phnom Penh brings capital-city cameos.",
     likes: 792,
     dislikes: 614,
   },
@@ -1177,7 +1177,7 @@ export const countryFixtures = [
     capital: "South Tarawa",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Kiribati.svg",
-    factSnippet: "Static catalog profile for KI.",
+    factSnippet: "Kiribati: South Tarawa brings airport-layover dreams.",
     likes: 829,
     dislikes: 643,
   },
@@ -1187,7 +1187,7 @@ export const countryFixtures = [
     capital: "Moroni",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20Comoros.svg",
-    factSnippet: "Static catalog profile for KM.",
+    factSnippet: "Comoros: Moroni brings sunny cafe plans.",
     likes: 866,
     dislikes: 672,
   },
@@ -1197,7 +1197,7 @@ export const countryFixtures = [
     capital: "Basseterre",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Saint%20Kitts%20and%20Nevis.svg",
-    factSnippet: "Static catalog profile for KN.",
+    factSnippet: "Saint Kitts and Nevis: Basseterre brings mountain-map energy.",
     likes: 903,
     dislikes: 701,
   },
@@ -1207,7 +1207,7 @@ export const countryFixtures = [
     capital: "Pyongyang",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20North%20Korea.svg",
-    factSnippet: "Static catalog profile for KP.",
+    factSnippet: "North Korea: Pyongyang brings market-day color.",
     likes: 940,
     dislikes: 730,
   },
@@ -1217,7 +1217,7 @@ export const countryFixtures = [
     capital: "Seoul",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20South%20Korea.svg",
-    factSnippet: "Static catalog profile for KR.",
+    factSnippet: "South Korea: Seoul brings snack-stop curiosity.",
     likes: 977,
     dislikes: 59,
   },
@@ -1227,7 +1227,7 @@ export const countryFixtures = [
     capital: "Kuwait City",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Kuwait.svg",
-    factSnippet: "Static catalog profile for KW.",
+    factSnippet: "Kuwait: Kuwait City brings passport-stamp drama.",
     likes: 114,
     dislikes: 88,
   },
@@ -1237,7 +1237,7 @@ export const countryFixtures = [
     capital: "George Town",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20Cayman%20Islands.svg",
-    factSnippet: "Static catalog profile for KY.",
+    factSnippet: "Cayman Islands: George Town brings sunny cafe plans.",
     likes: 151,
     dislikes: 117,
   },
@@ -1247,7 +1247,7 @@ export const countryFixtures = [
     capital: "Astana",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Kazakhstan.svg",
-    factSnippet: "Static catalog profile for KZ.",
+    factSnippet: "Kazakhstan: Astana brings mountain-map energy.",
     likes: 188,
     dislikes: 146,
   },
@@ -1257,7 +1257,7 @@ export const countryFixtures = [
     capital: "Vientiane",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Laos.svg",
-    factSnippet: "Static catalog profile for LA.",
+    factSnippet: "Laos: Vientiane brings snack-stop curiosity.",
     likes: 225,
     dislikes: 175,
   },
@@ -1267,7 +1267,7 @@ export const countryFixtures = [
     capital: "Beirut",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Lebanon.svg",
-    factSnippet: "Static catalog profile for LB.",
+    factSnippet: "Lebanon: Beirut brings island-hop plans.",
     likes: 262,
     dislikes: 204,
   },
@@ -1277,7 +1277,7 @@ export const countryFixtures = [
     capital: "Castries",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Saint%20Lucia.svg",
-    factSnippet: "Static catalog profile for LC.",
+    factSnippet: "Saint Lucia: Castries brings capital-city cameos.",
     likes: 299,
     dislikes: 233,
   },
@@ -1287,7 +1287,7 @@ export const countryFixtures = [
     capital: "Vaduz",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Liechtenstein.svg",
-    factSnippet: "Static catalog profile for LI.",
+    factSnippet: "Liechtenstein: Vaduz brings mountain-map energy.",
     likes: 336,
     dislikes: 262,
   },
@@ -1297,7 +1297,7 @@ export const countryFixtures = [
     capital: "Colombo, Sri Jayawardenepura Kotte",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Sri%20Lanka.svg",
-    factSnippet: "Static catalog profile for LK.",
+    factSnippet: "Sri Lanka: Colombo brings market-day color.",
     likes: 373,
     dislikes: 291,
   },
@@ -1307,7 +1307,7 @@ export const countryFixtures = [
     capital: "Monrovia",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Liberia.svg",
-    factSnippet: "Static catalog profile for LR.",
+    factSnippet: "Liberia: Monrovia brings passport-stamp drama.",
     likes: 410,
     dislikes: 320,
   },
@@ -1317,7 +1317,7 @@ export const countryFixtures = [
     capital: "Maseru",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Lesotho.svg",
-    factSnippet: "Static catalog profile for LS.",
+    factSnippet: "Lesotho: Maseru brings flag-quiz flair.",
     likes: 447,
     dislikes: 349,
   },
@@ -1327,7 +1327,7 @@ export const countryFixtures = [
     capital: "Vilnius",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Lithuania.svg",
-    factSnippet: "Static catalog profile for LT.",
+    factSnippet: "Lithuania: Vilnius brings sunny cafe plans.",
     likes: 484,
     dislikes: 378,
   },
@@ -1337,7 +1337,7 @@ export const countryFixtures = [
     capital: "Luxembourg",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Luxembourg.svg",
-    factSnippet: "Static catalog profile for LU.",
+    factSnippet: "Luxembourg: Luxembourg brings mountain-map energy.",
     likes: 521,
     dislikes: 407,
   },
@@ -1347,7 +1347,7 @@ export const countryFixtures = [
     capital: "Riga",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Latvia.svg",
-    factSnippet: "Static catalog profile for LV.",
+    factSnippet: "Latvia: Riga brings harbor breeze.",
     likes: 558,
     dislikes: 436,
   },
@@ -1357,7 +1357,7 @@ export const countryFixtures = [
     capital: "Tripoli",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Libya.svg",
-    factSnippet: "Static catalog profile for LY.",
+    factSnippet: "Libya: Tripoli brings snack-stop curiosity.",
     likes: 595,
     dislikes: 465,
   },
@@ -1367,7 +1367,7 @@ export const countryFixtures = [
     capital: "Rabat",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Morocco.svg",
-    factSnippet: "Static catalog profile for MA.",
+    factSnippet: "Morocco: Rabat brings passport-stamp drama.",
     likes: 632,
     dislikes: 494,
   },
@@ -1377,7 +1377,7 @@ export const countryFixtures = [
     capital: "Monaco",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Monaco.svg",
-    factSnippet: "Static catalog profile for MC.",
+    factSnippet: "Monaco: Monaco brings sunny cafe plans.",
     likes: 669,
     dislikes: 523,
   },
@@ -1387,7 +1387,7 @@ export const countryFixtures = [
     capital: "Chișinău",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Moldova.svg",
-    factSnippet: "Static catalog profile for MD.",
+    factSnippet: "Moldova: Chișinău brings mountain-map energy.",
     likes: 706,
     dislikes: 552,
   },
@@ -1397,7 +1397,7 @@ export const countryFixtures = [
     capital: "Podgorica",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Montenegro.svg",
-    factSnippet: "Static catalog profile for ME.",
+    factSnippet: "Montenegro: Podgorica brings harbor breeze.",
     likes: 743,
     dislikes: 581,
   },
@@ -1407,7 +1407,7 @@ export const countryFixtures = [
     capital: "Marigot",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20France.svg",
-    factSnippet: "Static catalog profile for MF.",
+    factSnippet: "Saint Martin: Marigot brings market-day color.",
     likes: 780,
     dislikes: 610,
   },
@@ -1417,7 +1417,7 @@ export const countryFixtures = [
     capital: "Antananarivo",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Madagascar.svg",
-    factSnippet: "Static catalog profile for MG.",
+    factSnippet: "Madagascar: Antananarivo brings postcard mischief.",
     likes: 817,
     dislikes: 639,
   },
@@ -1427,7 +1427,7 @@ export const countryFixtures = [
     capital: "Majuro",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20Marshall%20Islands.svg",
-    factSnippet: "Static catalog profile for MH.",
+    factSnippet: "Marshall Islands: Majuro brings snack-stop curiosity.",
     likes: 854,
     dislikes: 668,
   },
@@ -1437,7 +1437,7 @@ export const countryFixtures = [
     capital: "Skopje",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20North%20Macedonia.svg",
-    factSnippet: "Static catalog profile for MK.",
+    factSnippet: "North Macedonia: Skopje brings airport-layover dreams.",
     likes: 891,
     dislikes: 697,
   },
@@ -1447,7 +1447,7 @@ export const countryFixtures = [
     capital: "Bamako",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Mali.svg",
-    factSnippet: "Static catalog profile for ML.",
+    factSnippet: "Mali: Bamako brings rain-or-shine charm.",
     likes: 928,
     dislikes: 726,
   },
@@ -1457,7 +1457,7 @@ export const countryFixtures = [
     capital: "Naypyidaw",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Myanmar.svg",
-    factSnippet: "Static catalog profile for MM.",
+    factSnippet: "Myanmar: Naypyidaw brings passport-stamp drama.",
     likes: 965,
     dislikes: 55,
   },
@@ -1467,7 +1467,7 @@ export const countryFixtures = [
     capital: "Ulaanbaatar",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Mongolia.svg",
-    factSnippet: "Static catalog profile for MN.",
+    factSnippet: "Mongolia: Ulaanbaatar brings flag-quiz flair.",
     likes: 102,
     dislikes: 84,
   },
@@ -1477,7 +1477,7 @@ export const countryFixtures = [
     capital: "Unknown",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Macau.svg",
-    factSnippet: "Static catalog profile for MO.",
+    factSnippet: "Macao: world-map tiny print with sunny cafe plans.",
     likes: 139,
     dislikes: 113,
   },
@@ -1487,7 +1487,7 @@ export const countryFixtures = [
     capital: "Saipan",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20Northern%20Mariana%20Islands.svg",
-    factSnippet: "Static catalog profile for MP.",
+    factSnippet: "Northern Marianas: Saipan brings mountain-map energy.",
     likes: 176,
     dislikes: 142,
   },
@@ -1497,7 +1497,7 @@ export const countryFixtures = [
     capital: "Fort-de-France",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag-of-Martinique.svg",
-    factSnippet: "Static catalog profile for MQ.",
+    factSnippet: "Martinique: Fort-de-France brings harbor breeze.",
     likes: 213,
     dislikes: 171,
   },
@@ -1507,7 +1507,7 @@ export const countryFixtures = [
     capital: "Nouakchott",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Mauritania.svg",
-    factSnippet: "Static catalog profile for MR.",
+    factSnippet: "Mauritania: Nouakchott brings market-day color.",
     likes: 250,
     dislikes: 200,
   },
@@ -1517,7 +1517,7 @@ export const countryFixtures = [
     capital: "Brades, Plymouth",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Montserrat.svg",
-    factSnippet: "Static catalog profile for MS.",
+    factSnippet: "Montserrat: Brades brings postcard mischief.",
     likes: 287,
     dislikes: 229,
   },
@@ -1527,7 +1527,7 @@ export const countryFixtures = [
     capital: "Valletta",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Malta.svg",
-    factSnippet: "Static catalog profile for MT.",
+    factSnippet: "Malta: Valletta brings snack-stop curiosity.",
     likes: 324,
     dislikes: 258,
   },
@@ -1537,7 +1537,7 @@ export const countryFixtures = [
     capital: "Port Louis",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Mauritius.svg",
-    factSnippet: "Static catalog profile for MU.",
+    factSnippet: "Mauritius: Port Louis brings island-hop plans.",
     likes: 361,
     dislikes: 287,
   },
@@ -1547,7 +1547,7 @@ export const countryFixtures = [
     capital: "Malé",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Maldives.svg",
-    factSnippet: "Static catalog profile for MV.",
+    factSnippet: "Maldives: Malé brings capital-city cameos.",
     likes: 398,
     dislikes: 316,
   },
@@ -1557,7 +1557,7 @@ export const countryFixtures = [
     capital: "Lilongwe",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Malawi.svg",
-    factSnippet: "Static catalog profile for MW.",
+    factSnippet: "Malawi: Lilongwe brings airport-layover dreams.",
     likes: 435,
     dislikes: 345,
   },
@@ -1567,7 +1567,7 @@ export const countryFixtures = [
     capital: "Mexico City",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Mexico.svg",
-    factSnippet: "Static catalog profile for MX.",
+    factSnippet: "Mexico: Mexico City brings rain-or-shine charm.",
     likes: 472,
     dislikes: 374,
   },
@@ -1577,7 +1577,7 @@ export const countryFixtures = [
     capital: "Kuala Lumpur",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Malaysia.svg",
-    factSnippet: "Static catalog profile for MY.",
+    factSnippet: "Malaysia: Kuala Lumpur brings passport-stamp drama.",
     likes: 509,
     dislikes: 403,
   },
@@ -1587,7 +1587,7 @@ export const countryFixtures = [
     capital: "Maputo",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Mozambique.svg",
-    factSnippet: "Static catalog profile for MZ.",
+    factSnippet: "Mozambique: Maputo brings flag-quiz flair.",
     likes: 546,
     dislikes: 432,
   },
@@ -1597,7 +1597,7 @@ export const countryFixtures = [
     capital: "Windhoek",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Namibia.svg",
-    factSnippet: "Static catalog profile for NA.",
+    factSnippet: "Namibia: Windhoek brings market-day color.",
     likes: 583,
     dislikes: 461,
   },
@@ -1607,7 +1607,7 @@ export const countryFixtures = [
     capital: "Nouméa",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20FLNKS.svg",
-    factSnippet: "Static catalog profile for NC.",
+    factSnippet: "New Caledonia: Nouméa brings snack-stop curiosity.",
     likes: 620,
     dislikes: 490,
   },
@@ -1617,7 +1617,7 @@ export const countryFixtures = [
     capital: "Niamey",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Niger.svg",
-    factSnippet: "Static catalog profile for NE.",
+    factSnippet: "Niger: Niamey brings capital-city cameos.",
     likes: 657,
     dislikes: 519,
   },
@@ -1627,7 +1627,7 @@ export const countryFixtures = [
     capital: "Kingston",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Norfolk%20Island.svg",
-    factSnippet: "Static catalog profile for NF.",
+    factSnippet: "Norfolk Island: Kingston brings airport-layover dreams.",
     likes: 694,
     dislikes: 548,
   },
@@ -1637,7 +1637,7 @@ export const countryFixtures = [
     capital: "Q3787",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Nigeria.svg",
-    factSnippet: "Static catalog profile for NG.",
+    factSnippet: "Nigeria: world-map tiny print with rain-or-shine charm.",
     likes: 731,
     dislikes: 577,
   },
@@ -1647,7 +1647,7 @@ export const countryFixtures = [
     capital: "Managua",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Nicaragua.svg",
-    factSnippet: "Static catalog profile for NI.",
+    factSnippet: "Nicaragua: Managua brings flag-quiz flair.",
     likes: 768,
     dislikes: 606,
   },
@@ -1657,7 +1657,7 @@ export const countryFixtures = [
     capital: "Amsterdam",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20Netherlands.svg",
-    factSnippet: "Static catalog profile for NL.",
+    factSnippet: "Netherlands: Amsterdam brings harbor breeze.",
     likes: 805,
     dislikes: 635,
   },
@@ -1667,7 +1667,7 @@ export const countryFixtures = [
     capital: "Oslo",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Norway.svg",
-    factSnippet: "Static catalog profile for NO.",
+    factSnippet: "Norway: Oslo brings snack-stop curiosity.",
     likes: 842,
     dislikes: 664,
   },
@@ -1677,7 +1677,7 @@ export const countryFixtures = [
     capital: "Kathmandu",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Nepal.svg",
-    factSnippet: "Static catalog profile for NP.",
+    factSnippet: "Nepal: Kathmandu brings island-hop plans.",
     likes: 879,
     dislikes: 693,
   },
@@ -1687,7 +1687,7 @@ export const countryFixtures = [
     capital: "Yaren District",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Nauru.svg",
-    factSnippet: "Static catalog profile for NR.",
+    factSnippet: "Nauru: Yaren District brings airport-layover dreams.",
     likes: 916,
     dislikes: 722,
   },
@@ -1697,7 +1697,7 @@ export const countryFixtures = [
     capital: "Alofi",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Niue.svg",
-    factSnippet: "Static catalog profile for NU.",
+    factSnippet: "Niue: Alofi brings flag-quiz flair.",
     likes: 953,
     dislikes: 51,
   },
@@ -1707,7 +1707,7 @@ export const countryFixtures = [
     capital: "Wellington",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20New%20Zealand.svg",
-    factSnippet: "Static catalog profile for NZ.",
+    factSnippet: "New Zealand: Wellington brings postcard mischief.",
     likes: 990,
     dislikes: 80,
   },
@@ -1717,7 +1717,7 @@ export const countryFixtures = [
     capital: "Muscat",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Oman.svg",
-    factSnippet: "Static catalog profile for OM.",
+    factSnippet: "Oman: Muscat brings airport-layover dreams.",
     likes: 127,
     dislikes: 109,
   },
@@ -1727,7 +1727,7 @@ export const countryFixtures = [
     capital: "Panama City",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Panama.svg",
-    factSnippet: "Static catalog profile for PA.",
+    factSnippet: "Panama: Panama City brings mountain-map energy.",
     likes: 164,
     dislikes: 138,
   },
@@ -1737,7 +1737,7 @@ export const countryFixtures = [
     capital: "Lima",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Peru.svg",
-    factSnippet: "Static catalog profile for PE.",
+    factSnippet: "Peru: Lima brings snack-stop curiosity.",
     likes: 201,
     dislikes: 167,
   },
@@ -1747,7 +1747,7 @@ export const countryFixtures = [
     capital: "Papeete",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20French%20Polynesia.svg",
-    factSnippet: "Static catalog profile for PF.",
+    factSnippet: "French Polynesia: Papeete brings island-hop plans.",
     likes: 238,
     dislikes: 196,
   },
@@ -1757,7 +1757,7 @@ export const countryFixtures = [
     capital: "Port Moresby",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Papua%20New%20Guinea.svg",
-    factSnippet: "Static catalog profile for PG.",
+    factSnippet: "Papua New Guinea: Port Moresby brings capital-city cameos.",
     likes: 275,
     dislikes: 225,
   },
@@ -1767,7 +1767,7 @@ export const countryFixtures = [
     capital: "Manila",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20Philippines.svg",
-    factSnippet: "Static catalog profile for PH.",
+    factSnippet: "Philippines: Manila brings airport-layover dreams.",
     likes: 312,
     dislikes: 254,
   },
@@ -1777,7 +1777,7 @@ export const countryFixtures = [
     capital: "Islamabad",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Pakistan.svg",
-    factSnippet: "Static catalog profile for PK.",
+    factSnippet: "Pakistan: Islamabad brings flag-quiz flair.",
     likes: 349,
     dislikes: 283,
   },
@@ -1787,7 +1787,7 @@ export const countryFixtures = [
     capital: "Warsaw",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Poland.svg",
-    factSnippet: "Static catalog profile for PL.",
+    factSnippet: "Poland: Warsaw brings sunny cafe plans.",
     likes: 386,
     dislikes: 312,
   },
@@ -1797,7 +1797,7 @@ export const countryFixtures = [
     capital: "Saint-Pierre",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Saint-Pierre%20and%20Miquelon.svg",
-    factSnippet: "Static catalog profile for PM.",
+    factSnippet: "Saint Pierre and Miquelon: Saint-Pierre brings mountain-map energy.",
     likes: 423,
     dislikes: 341,
   },
@@ -1807,7 +1807,7 @@ export const countryFixtures = [
     capital: "Adamstown",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20Pitcairn%20Islands.svg",
-    factSnippet: "Static catalog profile for PN.",
+    factSnippet: "Pitcairn: Adamstown brings harbor breeze.",
     likes: 460,
     dislikes: 370,
   },
@@ -1817,7 +1817,7 @@ export const countryFixtures = [
     capital: "San Juan",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Puerto%20Rico.svg",
-    factSnippet: "Static catalog profile for PR.",
+    factSnippet: "Puerto Rico: San Juan brings island-hop plans.",
     likes: 497,
     dislikes: 399,
   },
@@ -1827,7 +1827,7 @@ export const countryFixtures = [
     capital: "East Jerusalem, Ramallah",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Palestine.svg",
-    factSnippet: "Static catalog profile for PS.",
+    factSnippet: "Palestine: East Jerusalem brings capital-city cameos.",
     likes: 534,
     dislikes: 428,
   },
@@ -1837,7 +1837,7 @@ export const countryFixtures = [
     capital: "Lisbon",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Portugal%20%28official%29.svg",
-    factSnippet: "Static catalog profile for PT.",
+    factSnippet: "Portugal: Lisbon brings airport-layover dreams.",
     likes: 571,
     dislikes: 457,
   },
@@ -1847,7 +1847,7 @@ export const countryFixtures = [
     capital: "Ngerulmud",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Palau.svg",
-    factSnippet: "Static catalog profile for PW.",
+    factSnippet: "Palau: Ngerulmud brings flag-quiz flair.",
     likes: 608,
     dislikes: 486,
   },
@@ -1857,7 +1857,7 @@ export const countryFixtures = [
     capital: "Asunción",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Paraguay.svg",
-    factSnippet: "Static catalog profile for PY.",
+    factSnippet: "Paraguay: Asunción brings mountain-map energy.",
     likes: 645,
     dislikes: 515,
   },
@@ -1867,7 +1867,7 @@ export const countryFixtures = [
     capital: "Doha",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Qatar.svg",
-    factSnippet: "Static catalog profile for QA.",
+    factSnippet: "Qatar: Doha brings island-hop plans.",
     likes: 682,
     dislikes: 544,
   },
@@ -1877,7 +1877,7 @@ export const countryFixtures = [
     capital: "Saint-Denis",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Proposed%20flag%20of%20R%C3%A9union%20%28VAR%29.svg",
-    factSnippet: "Static catalog profile for RE.",
+    factSnippet: "Reunion: Saint-Denis brings market-day color.",
     likes: 719,
     dislikes: 573,
   },
@@ -1887,7 +1887,7 @@ export const countryFixtures = [
     capital: "Bucharest",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Romania.svg",
-    factSnippet: "Static catalog profile for RO.",
+    factSnippet: "Romania: Bucharest brings mountain-map energy.",
     likes: 756,
     dislikes: 602,
   },
@@ -1897,7 +1897,7 @@ export const countryFixtures = [
     capital: "Belgrade",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Serbia.svg",
-    factSnippet: "Static catalog profile for RS.",
+    factSnippet: "Serbia: Belgrade brings snack-stop curiosity.",
     likes: 793,
     dislikes: 631,
   },
@@ -1907,7 +1907,7 @@ export const countryFixtures = [
     capital: "Moscow",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Russia.svg",
-    factSnippet: "Static catalog profile for RU.",
+    factSnippet: "Russia: Moscow brings capital-city cameos.",
     likes: 830,
     dislikes: 660,
   },
@@ -1917,7 +1917,7 @@ export const countryFixtures = [
     capital: "Kigali",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Rwanda.svg",
-    factSnippet: "Static catalog profile for RW.",
+    factSnippet: "Rwanda: Kigali brings rain-or-shine charm.",
     likes: 867,
     dislikes: 689,
   },
@@ -1927,7 +1927,7 @@ export const countryFixtures = [
     capital: "Riyadh",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Saudi%20Arabia.svg",
-    factSnippet: "Static catalog profile for SA.",
+    factSnippet: "Saudi Arabia: Riyadh brings postcard mischief.",
     likes: 904,
     dislikes: 718,
   },
@@ -1937,7 +1937,7 @@ export const countryFixtures = [
     capital: "Honiara",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20Solomon%20Islands.svg",
-    factSnippet: "Static catalog profile for SB.",
+    factSnippet: "Solomon Islands: Honiara brings snack-stop curiosity.",
     likes: 941,
     dislikes: 747,
   },
@@ -1947,7 +1947,7 @@ export const countryFixtures = [
     capital: "Victoria",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Seychelles.svg",
-    factSnippet: "Static catalog profile for SC.",
+    factSnippet: "Seychelles: Victoria brings island-hop plans.",
     likes: 978,
     dislikes: 76,
   },
@@ -1957,7 +1957,7 @@ export const countryFixtures = [
     capital: "Khartoum",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Sudan.svg",
-    factSnippet: "Static catalog profile for SD.",
+    factSnippet: "Sudan: Khartoum brings capital-city cameos.",
     likes: 115,
     dislikes: 105,
   },
@@ -1967,7 +1967,7 @@ export const countryFixtures = [
     capital: "Stockholm",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Sweden.svg",
-    factSnippet: "Static catalog profile for SE.",
+    factSnippet: "Sweden: Stockholm brings airport-layover dreams.",
     likes: 152,
     dislikes: 134,
   },
@@ -1977,7 +1977,7 @@ export const countryFixtures = [
     capital: "Singapore",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Singapore.svg",
-    factSnippet: "Static catalog profile for SG.",
+    factSnippet: "Singapore: Singapore brings passport-stamp drama.",
     likes: 189,
     dislikes: 163,
   },
@@ -1987,7 +1987,7 @@ export const countryFixtures = [
     capital: "Jamestown",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20United%20Kingdom%20%281-2%29.svg",
-    factSnippet: "Static catalog profile for SH.",
+    factSnippet: "Saint Helena: Jamestown brings flag-quiz flair.",
     likes: 226,
     dislikes: 192,
   },
@@ -1997,7 +1997,7 @@ export const countryFixtures = [
     capital: "Ljubljana",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Slovenia.svg",
-    factSnippet: "Static catalog profile for SI.",
+    factSnippet: "Slovenia: Ljubljana brings sunny cafe plans.",
     likes: 263,
     dislikes: 221,
   },
@@ -2007,7 +2007,7 @@ export const countryFixtures = [
     capital: "Unknown",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Norway.svg",
-    factSnippet: "Static catalog profile for SJ.",
+    factSnippet: "Svalbard: world-map tiny print with mountain-map energy.",
     likes: 300,
     dislikes: 250,
   },
@@ -2017,7 +2017,7 @@ export const countryFixtures = [
     capital: "Bratislava",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Slovakia.svg",
-    factSnippet: "Static catalog profile for SK.",
+    factSnippet: "Slovakia: Bratislava brings harbor breeze.",
     likes: 337,
     dislikes: 279,
   },
@@ -2027,7 +2027,7 @@ export const countryFixtures = [
     capital: "Freetown",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Sierra%20Leone.svg",
-    factSnippet: "Static catalog profile for SL.",
+    factSnippet: "Sierra Leone: Freetown brings market-day color.",
     likes: 374,
     dislikes: 308,
   },
@@ -2037,7 +2037,7 @@ export const countryFixtures = [
     capital: "San Marino",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20San%20Marino.svg",
-    factSnippet: "Static catalog profile for SM.",
+    factSnippet: "San Marino: San Marino brings postcard mischief.",
     likes: 411,
     dislikes: 337,
   },
@@ -2047,7 +2047,7 @@ export const countryFixtures = [
     capital: "Dakar",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Senegal.svg",
-    factSnippet: "Static catalog profile for SN.",
+    factSnippet: "Senegal: Dakar brings snack-stop curiosity.",
     likes: 448,
     dislikes: 366,
   },
@@ -2057,7 +2057,7 @@ export const countryFixtures = [
     capital: "Mogadishu",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Somalia.svg",
-    factSnippet: "Static catalog profile for SO.",
+    factSnippet: "Somalia: Mogadishu brings island-hop plans.",
     likes: 485,
     dislikes: 395,
   },
@@ -2067,7 +2067,7 @@ export const countryFixtures = [
     capital: "Paramaribo",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Suriname.svg",
-    factSnippet: "Static catalog profile for SR.",
+    factSnippet: "Suriname: Paramaribo brings rain-or-shine charm.",
     likes: 522,
     dislikes: 424,
   },
@@ -2077,7 +2077,7 @@ export const countryFixtures = [
     capital: "Juba",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20South%20Sudan.svg",
-    factSnippet: "Static catalog profile for SS.",
+    factSnippet: "South Sudan: Juba brings passport-stamp drama.",
     likes: 559,
     dislikes: 453,
   },
@@ -2087,7 +2087,7 @@ export const countryFixtures = [
     capital: "São Tomé",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20S%C3%A3o%20Tom%C3%A9%20and%20Pr%C3%ADncipe.svg",
-    factSnippet: "Static catalog profile for ST.",
+    factSnippet: "Sao Tome and Principe: São Tomé brings flag-quiz flair.",
     likes: 596,
     dislikes: 482,
   },
@@ -2097,7 +2097,7 @@ export const countryFixtures = [
     capital: "San Salvador",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20El%20Salvador.svg",
-    factSnippet: "Static catalog profile for SV.",
+    factSnippet: "El Salvador: San Salvador brings mountain-map energy.",
     likes: 633,
     dislikes: 511,
   },
@@ -2107,7 +2107,7 @@ export const countryFixtures = [
     capital: "Philipsburg",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Sint%20Maarten.svg",
-    factSnippet: "Static catalog profile for SX.",
+    factSnippet: "Sint Maarten: Philipsburg brings market-day color.",
     likes: 670,
     dislikes: 540,
   },
@@ -2117,7 +2117,7 @@ export const countryFixtures = [
     capital: "Damascus",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Syria%20%282025-%29.svg",
-    factSnippet: "Static catalog profile for SY.",
+    factSnippet: "Syria: Damascus brings postcard mischief.",
     likes: 707,
     dislikes: 569,
   },
@@ -2127,7 +2127,7 @@ export const countryFixtures = [
     capital: "Lobamba, Mbabane",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Eswatini.svg",
-    factSnippet: "Static catalog profile for SZ.",
+    factSnippet: "Eswatini: Lobamba brings snack-stop curiosity.",
     likes: 744,
     dislikes: 598,
   },
@@ -2137,7 +2137,7 @@ export const countryFixtures = [
     capital: "Cockburn Town",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20Turks%20and%20Caicos%20Islands.svg",
-    factSnippet: "Static catalog profile for TC.",
+    factSnippet: "Turks and Caicos: Cockburn Town brings flag-quiz flair.",
     likes: 781,
     dislikes: 627,
   },
@@ -2147,7 +2147,7 @@ export const countryFixtures = [
     capital: "N'Djamena",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Chad.svg",
-    factSnippet: "Static catalog profile for TD.",
+    factSnippet: "Chad: N'Djamena brings sunny cafe plans.",
     likes: 818,
     dislikes: 656,
   },
@@ -2157,7 +2157,7 @@ export const countryFixtures = [
     capital: "Port-aux-Français",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20French%20Southern%20and%20Antarctic%20Lands.svg",
-    factSnippet: "Static catalog profile for TF.",
+    factSnippet: "French Southern Lands: Port-aux-Français brings harbor breeze.",
     likes: 855,
     dislikes: 685,
   },
@@ -2167,7 +2167,7 @@ export const countryFixtures = [
     capital: "Lomé",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Togo%20%283-2%29.svg",
-    factSnippet: "Static catalog profile for TG.",
+    factSnippet: "Togo: Lomé brings market-day color.",
     likes: 892,
     dislikes: 714,
   },
@@ -2177,7 +2177,7 @@ export const countryFixtures = [
     capital: "Bangkok",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Thailand.svg",
-    factSnippet: "Static catalog profile for TH.",
+    factSnippet: "Thailand: Bangkok brings postcard mischief.",
     likes: 929,
     dislikes: 743,
   },
@@ -2187,7 +2187,7 @@ export const countryFixtures = [
     capital: "Dushanbe",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Tajikistan.svg",
-    factSnippet: "Static catalog profile for TJ.",
+    factSnippet: "Tajikistan: Dushanbe brings island-hop plans.",
     likes: 966,
     dislikes: 72,
   },
@@ -2197,7 +2197,7 @@ export const countryFixtures = [
     capital: "Unknown",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Tokelau.svg",
-    factSnippet: "Static catalog profile for TK.",
+    factSnippet: "Tokelau: world-map tiny print with capital-city cameos.",
     likes: 103,
     dislikes: 101,
   },
@@ -2207,7 +2207,7 @@ export const countryFixtures = [
     capital: "Dili",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20East%20Timor.svg",
-    factSnippet: "Static catalog profile for TL.",
+    factSnippet: "Timor-Leste: Dili brings airport-layover dreams.",
     likes: 140,
     dislikes: 130,
   },
@@ -2217,7 +2217,7 @@ export const countryFixtures = [
     capital: "Ashgabat",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Turkmenistan.svg",
-    factSnippet: "Static catalog profile for TM.",
+    factSnippet: "Turkmenistan: Ashgabat brings rain-or-shine charm.",
     likes: 177,
     dislikes: 159,
   },
@@ -2227,7 +2227,7 @@ export const countryFixtures = [
     capital: "Tunis",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Tunisia.svg",
-    factSnippet: "Static catalog profile for TN.",
+    factSnippet: "Tunisia: Tunis brings passport-stamp drama.",
     likes: 214,
     dislikes: 188,
   },
@@ -2237,7 +2237,7 @@ export const countryFixtures = [
     capital: "Nukuʻalofa",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Tonga.svg",
-    factSnippet: "Static catalog profile for TO.",
+    factSnippet: "Tonga: Nukuʻalofa brings flag-quiz flair.",
     likes: 251,
     dislikes: 217,
   },
@@ -2247,7 +2247,7 @@ export const countryFixtures = [
     capital: "Ankara",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Turkey.svg",
-    factSnippet: "Static catalog profile for TR.",
+    factSnippet: "Turkiye: Ankara brings harbor breeze.",
     likes: 288,
     dislikes: 246,
   },
@@ -2257,7 +2257,7 @@ export const countryFixtures = [
     capital: "Port of Spain",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Trinidad%20and%20Tobago.svg",
-    factSnippet: "Static catalog profile for TT.",
+    factSnippet: "Trinidad and Tobago: Port of Spain brings postcard mischief.",
     likes: 325,
     dislikes: 275,
   },
@@ -2267,7 +2267,7 @@ export const countryFixtures = [
     capital: "Funafuti",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Tuvalu.svg",
-    factSnippet: "Static catalog profile for TV.",
+    factSnippet: "Tuvalu: Funafuti brings island-hop plans.",
     likes: 362,
     dislikes: 304,
   },
@@ -2277,7 +2277,7 @@ export const countryFixtures = [
     capital: "Taipei",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20Republic%20of%20China.svg",
-    factSnippet: "Static catalog profile for TW.",
+    factSnippet: "Taiwan: Taipei brings capital-city cameos.",
     likes: 399,
     dislikes: 333,
   },
@@ -2287,7 +2287,7 @@ export const countryFixtures = [
     capital: "Dodoma",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Tanzania.svg",
-    factSnippet: "Static catalog profile for TZ.",
+    factSnippet: "Tanzania: Dodoma brings passport-stamp drama.",
     likes: 436,
     dislikes: 362,
   },
@@ -2297,7 +2297,7 @@ export const countryFixtures = [
     capital: "Kyiv",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Ukraine.svg",
-    factSnippet: "Static catalog profile for UA.",
+    factSnippet: "Ukraine: Kyiv brings harbor breeze.",
     likes: 473,
     dislikes: 391,
   },
@@ -2307,7 +2307,7 @@ export const countryFixtures = [
     capital: "Kampala",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Uganda.svg",
-    factSnippet: "Static catalog profile for UG.",
+    factSnippet: "Uganda: Kampala brings airport-layover dreams.",
     likes: 510,
     dislikes: 420,
   },
@@ -2317,7 +2317,7 @@ export const countryFixtures = [
     capital: "Unknown",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20United%20States.svg",
-    factSnippet: "Static catalog profile for UM.",
+    factSnippet: "U.S. Outlying Islands: world-map tiny print with harbor breeze.",
     likes: 547,
     dislikes: 449,
   },
@@ -2327,7 +2327,7 @@ export const countryFixtures = [
     capital: "Washington, D.C.",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20United%20States%20%28DDD-F-416E%20specifications%29.svg",
-    factSnippet: "Static catalog profile for US.",
+    factSnippet: "United States: Washington brings airport-layover dreams.",
     likes: 584,
     dislikes: 478,
   },
@@ -2337,7 +2337,7 @@ export const countryFixtures = [
     capital: "Montevideo",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Uruguay.svg",
-    factSnippet: "Static catalog profile for UY.",
+    factSnippet: "Uruguay: Montevideo brings harbor breeze.",
     likes: 621,
     dislikes: 507,
   },
@@ -2347,7 +2347,7 @@ export const countryFixtures = [
     capital: "Tashkent",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Uzbekistan.svg",
-    factSnippet: "Static catalog profile for UZ.",
+    factSnippet: "Uzbekistan: Tashkent brings market-day color.",
     likes: 658,
     dislikes: 536,
   },
@@ -2357,7 +2357,7 @@ export const countryFixtures = [
     capital: "Vatican City",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Vatican%20City%20%282023%E2%80%93present%29.svg",
-    factSnippet: "Static catalog profile for VA.",
+    factSnippet: "Vatican City: Vatican City brings capital-city cameos.",
     likes: 695,
     dislikes: 565,
   },
@@ -2367,7 +2367,7 @@ export const countryFixtures = [
     capital: "Kingstown",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Saint%20Vincent%20and%20the%20Grenadines.svg",
-    factSnippet: "Static catalog profile for VC.",
+    factSnippet: "Saint Vincent and the Grenadines: Kingstown brings rain-or-shine charm.",
     likes: 732,
     dislikes: 594,
   },
@@ -2377,7 +2377,7 @@ export const countryFixtures = [
     capital: "Caracas",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Venezuela.svg",
-    factSnippet: "Static catalog profile for VE.",
+    factSnippet: "Venezuela: Caracas brings flag-quiz flair.",
     likes: 769,
     dislikes: 623,
   },
@@ -2387,7 +2387,7 @@ export const countryFixtures = [
     capital: "Road Town",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20British%20Virgin%20Islands.svg",
-    factSnippet: "Static catalog profile for VG.",
+    factSnippet: "British Virgin Islands: Road Town brings mountain-map energy.",
     likes: 806,
     dislikes: 652,
   },
@@ -2397,7 +2397,7 @@ export const countryFixtures = [
     capital: "Charlotte Amalie",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20the%20United%20States%20Virgin%20Islands.svg",
-    factSnippet: "Static catalog profile for VI.",
+    factSnippet: "U.S. Virgin Islands: Charlotte Amalie brings market-day color.",
     likes: 843,
     dislikes: 681,
   },
@@ -2407,7 +2407,7 @@ export const countryFixtures = [
     capital: "Hanoi",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Vietnam.svg",
-    factSnippet: "Static catalog profile for VN.",
+    factSnippet: "Vietnam: Hanoi brings airport-layover dreams.",
     likes: 880,
     dislikes: 710,
   },
@@ -2417,7 +2417,7 @@ export const countryFixtures = [
     capital: "Port Vila",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Vanuatu.svg",
-    factSnippet: "Static catalog profile for VU.",
+    factSnippet: "Vanuatu: Port Vila brings market-day color.",
     likes: 917,
     dislikes: 739,
   },
@@ -2427,7 +2427,7 @@ export const countryFixtures = [
     capital: "Mata-Utu",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Wallis%20and%20Futuna.svg",
-    factSnippet: "Static catalog profile for WF.",
+    factSnippet: "Wallis and Futuna: Mata-Utu brings snack-stop curiosity.",
     likes: 954,
     dislikes: 68,
   },
@@ -2437,7 +2437,7 @@ export const countryFixtures = [
     capital: "Apia",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Samoa.svg",
-    factSnippet: "Static catalog profile for WS.",
+    factSnippet: "Samoa: Apia brings island-hop plans.",
     likes: 991,
     dislikes: 97,
   },
@@ -2447,7 +2447,7 @@ export const countryFixtures = [
     capital: "Aden, Sanaa",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Yemen.svg",
-    factSnippet: "Static catalog profile for YE.",
+    factSnippet: "Yemen: Aden brings harbor breeze.",
     likes: 128,
     dislikes: 126,
   },
@@ -2457,7 +2457,7 @@ export const countryFixtures = [
     capital: "Dzaoudzi, Mamoudzou",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Mayotte%20%28Local%29.svg",
-    factSnippet: "Static catalog profile for YT.",
+    factSnippet: "Mayotte: Dzaoudzi brings snack-stop curiosity.",
     likes: 165,
     dislikes: 155,
   },
@@ -2467,7 +2467,7 @@ export const countryFixtures = [
     capital: "Bloemfontein, Cape Town, Pretoria",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20South%20Africa.svg",
-    factSnippet: "Static catalog profile for ZA.",
+    factSnippet: "South Africa: Bloemfontein brings market-day color.",
     likes: 202,
     dislikes: 184,
   },
@@ -2477,7 +2477,7 @@ export const countryFixtures = [
     capital: "Lusaka",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Zambia.svg",
-    factSnippet: "Static catalog profile for ZM.",
+    factSnippet: "Zambia: Lusaka brings market-day color.",
     likes: 239,
     dislikes: 213,
   },
@@ -2487,7 +2487,7 @@ export const countryFixtures = [
     capital: "Harare",
     flagImageUrl:
       "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Zimbabwe.svg",
-    factSnippet: "Static catalog profile for ZW.",
+    factSnippet: "Zimbabwe: Harare brings mountain-map energy.",
     likes: 276,
     dislikes: 242,
   },

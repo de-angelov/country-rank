@@ -128,6 +128,7 @@ Runtime and integration variables currently supported by the app and scripts:
 | Variable | Required when | Used by | Safe local/default value |
 | --- | --- | --- | --- |
 | `REDIS_URL` | Browsing Redis-backed country pages, reading/writing votes, seeding, restore, and Redis backup commands. Optional for backup dry-run and local restore only because those runners default to local Redis. | App loaders/actions and Redis scripts | `redis://localhost:6379` |
+| `LOG_LEVEL` | Optional for every app runtime. Supported values are `fatal`, `error`, `warn`, `info`, `debug`, `trace`, and `silent`; invalid or missing values fall back to `info`. | Shared Pino application logger | `info` |
 | `APP_HOST_PORT` | Optional when starting the app service through Docker Compose and the host port must differ from `5173`. | `docker-compose.yml` app port mapping | `5173` |
 | `REDIS_HOST_PORT` | Optional when starting Redis through Docker Compose and the host port must differ from `6379`. | `docker-compose.yml` Redis port mapping and local Redis restore wrapper | `6379` |
 | `STRIPE_WEBHOOK_SECRET` | Handling Stripe webhook requests. | `/webhooks/stripe` signature verification | `whsec_replace_with_local_or_deployment_secret` |
@@ -152,6 +153,13 @@ Configuration by workflow:
 | Stripe webhook verification | `STRIPE_WEBHOOK_SECRET`; webhook vote application also needs `REDIS_URL`. |
 | Redis backup dry-run | No GitHub variables; set `REDIS_URL` when targeting anything other than local Redis. |
 | GitHub-backed Redis backup push | `REDIS_BACKUP_GITHUB_REPOSITORY` and `REDIS_BACKUP_GITHUB_TOKEN`; set `REDIS_URL` for the source Redis instance and override branch/path/retention only when needed. |
+
+The shared server logger emits newline-delimited JSON through Pino so platform
+stdout/stderr collectors can ingest structured app logs. It redacts configured
+sensitive fields only when those values are passed as structured object
+properties, such as headers, Stripe secrets, raw payloads, card fields, or
+payment method fields. Do not interpolate secrets into free-form log message
+strings because path-based redaction cannot reliably sanitize message text.
 
 Stripe integration status: the app currently validates paid vote checkout
 requests with `STRIPE_SECRET_KEY` present, verifies Stripe webhook signatures

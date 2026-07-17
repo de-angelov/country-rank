@@ -9,6 +9,7 @@
     "compose:dev:seed": "node scripts/compose-dev-seed.mjs",
     "compose:prod": "docker compose up app-prod redis",
     "dev": "react-router dev",
+    "generate:country-fixtures": "node scripts/generate-country-fixtures.mjs",
     "lint": "react-router typegen && eslint . --max-warnings=0",
     "redis:backup:sidecar": "node scripts/redis-backup-sidecar.mjs",
     "restore:redis": "node scripts/restore-redis.mjs",

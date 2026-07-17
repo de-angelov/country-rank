@@ -110,7 +110,7 @@ export function HomeCountriesContent({
           </p>
         </div>
 
-        <div className="grid gap-2">
+        <div className="country-results grid gap-2">
           <label className="font-heading text-sm" htmlFor="country-search">
             Search countries
           </label>
@@ -140,7 +140,6 @@ export function HomeCountriesContent({
 
       <div
         className="country-filter-transition grid gap-4"
-        id="country-results"
         ref={resultsRef}
       >
         {resultCount > 0 ? (

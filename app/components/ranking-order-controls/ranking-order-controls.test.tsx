@@ -1,9 +1,21 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { renderToString } from "react-dom/server";
 
 import {
+  RankingOrderControls,
   type RankingOrder,
   updateRankingOrderWithTransition,
 } from "./ranking-order-controls";
+
+const getButtonClassName = (html: string, ariaLabel: string) => {
+  const buttonTag = html.match(
+    new RegExp(`<button[^>]*aria-label="${ariaLabel}"[^>]*>`),
+  )?.[0];
+
+  expect(buttonTag).toBeDefined();
+
+  return buttonTag?.match(/class="([^"]*)"/)?.[1] ?? "";
+};
 
 describe("updateRankingOrderWithTransition", () => {
   afterEach(() => {
@@ -92,5 +104,24 @@ describe("updateRankingOrderWithTransition", () => {
 
     expect(startViewTransition).not.toHaveBeenCalled();
     expect(setRankingOrder).not.toHaveBeenCalled();
+  });
+
+  it("renders the selected order button with the yellow accent highlight", () => {
+    const html = renderToString(
+      <RankingOrderControls
+        currentOrder="highest-first"
+        highestFirstLabel="Highest first"
+        lowestFirstLabel="Lowest first"
+        onOrderChange={vi.fn()}
+      />,
+    );
+
+    const selectedClassName = getButtonClassName(html, "Highest first");
+    const idleClassName = getButtonClassName(html, "Lowest first");
+
+    expect(selectedClassName).toContain("bg-accent-highlight");
+    expect(selectedClassName).toContain("text-foreground");
+    expect(idleClassName).toContain("bg-secondary-background");
+    expect(idleClassName).not.toContain("bg-accent-highlight");
   });
 });

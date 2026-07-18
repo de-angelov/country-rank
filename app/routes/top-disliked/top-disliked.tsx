@@ -57,7 +57,11 @@ export function TopDislikedContent({
           highestFirstLabel="Highest dislikes first"
           lowestFirstLabel="Lowest dislikes first"
           onOrderChange={(nextRankingOrder) =>
-            updateRankingOrderWithTransition(nextRankingOrder, setRankingOrder)
+            updateRankingOrderWithTransition(
+              rankingOrder,
+              nextRankingOrder,
+              setRankingOrder,
+            )
           }
         />
       </div>

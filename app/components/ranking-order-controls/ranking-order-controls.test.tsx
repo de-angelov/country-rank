@@ -19,7 +19,11 @@ describe("updateRankingOrderWithTransition", () => {
       matchMedia: vi.fn(() => ({ matches: false })),
     });
 
-    updateRankingOrderWithTransition("lowest-first", setRankingOrder);
+    updateRankingOrderWithTransition(
+      "highest-first",
+      "lowest-first",
+      setRankingOrder,
+    );
 
     expect(setRankingOrder).toHaveBeenCalledWith("lowest-first");
   });
@@ -36,7 +40,11 @@ describe("updateRankingOrderWithTransition", () => {
       matchMedia: vi.fn(() => ({ matches: false })),
     });
 
-    updateRankingOrderWithTransition("lowest-first", setRankingOrder);
+    updateRankingOrderWithTransition(
+      "highest-first",
+      "lowest-first",
+      setRankingOrder,
+    );
 
     expect(startViewTransition).toHaveBeenCalledTimes(1);
     expect(setRankingOrder).toHaveBeenCalledWith("lowest-first");
@@ -54,9 +62,35 @@ describe("updateRankingOrderWithTransition", () => {
       matchMedia: vi.fn(() => ({ matches: true })),
     });
 
-    updateRankingOrderWithTransition("lowest-first", setRankingOrder);
+    updateRankingOrderWithTransition(
+      "highest-first",
+      "lowest-first",
+      setRankingOrder,
+    );
 
     expect(startViewTransition).not.toHaveBeenCalled();
     expect(setRankingOrder).toHaveBeenCalledWith("lowest-first");
+  });
+
+  it("ignores clicks for the current ranking order without updating or transitioning", () => {
+    const setRankingOrder =
+      vi.fn<(nextRankingOrder: RankingOrder) => void>();
+    const startViewTransition = vi.fn((updateCallback: () => void) => {
+      updateCallback();
+    });
+
+    vi.stubGlobal("document", { startViewTransition });
+    vi.stubGlobal("window", {
+      matchMedia: vi.fn(() => ({ matches: false })),
+    });
+
+    updateRankingOrderWithTransition(
+      "highest-first",
+      "highest-first",
+      setRankingOrder,
+    );
+
+    expect(startViewTransition).not.toHaveBeenCalled();
+    expect(setRankingOrder).not.toHaveBeenCalled();
   });
 });

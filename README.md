@@ -60,7 +60,7 @@ The `compose:dev` preset starts the Compose `app` and `redis` services. The
 `app` service runs `npm run dev -- --host 0.0.0.0`, connects to Redis with
 `REDIS_URL=redis://redis:6379` inside the Compose network, mounts the repository
 for live reload, and exposes the React Router dev server at
-`http://localhost:5173`. To use a different host port, set `APP_HOST_PORT`, for
+`http://localhost:3000`. To use a different host port, set `APP_HOST_PORT`, for
 example:
 
 ```sh
@@ -100,7 +100,7 @@ The `compose:prod` preset starts the Compose `app-prod` and `redis` services.
 The `app-prod` service runs `npm install`, `npm run build`, and then
 `npm run start` with `HOST=0.0.0.0` and `PORT=3000`. It uses the same
 `APP_HOST_PORT` host override as the dev preset, so the default URL is
-`http://localhost:5173` and an override such as
+`http://localhost:3000` and an override such as
 `APP_HOST_PORT=5174 npm run compose:prod` exposes the app at
 `http://localhost:5174`.
 
@@ -133,7 +133,7 @@ Runtime and integration variables currently supported by the app and scripts:
 | --- | --- | --- | --- |
 | `REDIS_URL` | Browsing Redis-backed country pages, reading/writing votes, seeding, restore, and Redis backup commands. Optional for backup dry-run and local restore only because those runners default to local Redis. | App loaders/actions and Redis scripts | `redis://localhost:6379` |
 | `LOG_LEVEL` | Optional for every app runtime. Supported values are `fatal`, `error`, `warn`, `info`, `debug`, `trace`, and `silent`; invalid or missing values fall back to `info`. | Shared Pino application logger | `info` |
-| `APP_HOST_PORT` | Optional when starting the app service through Docker Compose and the host port must differ from `5173`. | `docker-compose.yml` app port mapping | `5173` |
+| `APP_HOST_PORT` | Optional when starting the app service through Docker Compose and the host port must differ from `3000`. | `docker-compose.yml` app port mapping | `3000` |
 | `REDIS_HOST_PORT` | Optional when starting Redis through Docker Compose and the host port must differ from `6379`. | `docker-compose.yml` Redis port mapping and local Redis restore wrapper | `6379` |
 | `STRIPE_WEBHOOK_SECRET` | Handling Stripe webhook requests. | `/webhooks/stripe` signature verification | `whsec_replace_with_local_or_deployment_secret` |
 | `STRIPE_SECRET_KEY` | Local test-mode Stripe Checkout creation work. | Server-side checkout helpers | `sk_test_replace_with_local_test_secret` |

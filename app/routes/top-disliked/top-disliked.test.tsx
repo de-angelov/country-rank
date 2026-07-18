@@ -113,6 +113,7 @@ describe("TopDisliked", () => {
     );
     expect(html).toContain('title="Lowest dislikes first"');
     expect(html).toContain('aria-pressed="true"');
+    expect(html).toContain('class="ranking-list-transition"');
     expect(html).toContain('aria-label="Countries ranked by dislikes"');
     expect(html).toContain("India");
     expect(html).toContain("44");

@@ -1,4 +1,5 @@
 import { useId } from "react";
+import { flushSync } from "react-dom";
 import { ArrowDownWideNarrow, ArrowUpNarrowWide } from "lucide-react";
 
 import { Button } from "~/components/ui/button";
@@ -16,6 +17,39 @@ export function orderRankedCountries(
   order: RankingOrder,
 ) {
   return order === "highest-first" ? countries : [...countries].reverse();
+}
+
+type RankingViewTransitionDocument = Document & {
+  startViewTransition?: (updateCallback: () => void) => unknown;
+};
+
+function prefersReducedMotion() {
+  return (
+    typeof window !== "undefined" &&
+    typeof window.matchMedia === "function" &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  );
+}
+
+export function updateRankingOrderWithTransition(
+  nextOrder: RankingOrder,
+  setRankingOrder: (nextOrder: RankingOrder) => void,
+) {
+  const shouldReduceMotion = prefersReducedMotion();
+  const canStartViewTransition =
+    typeof document !== "undefined" &&
+    !shouldReduceMotion &&
+    (document as RankingViewTransitionDocument).startViewTransition !==
+      undefined;
+
+  if (!canStartViewTransition) {
+    setRankingOrder(nextOrder);
+    return;
+  }
+
+  (document as RankingViewTransitionDocument).startViewTransition?.(() => {
+    flushSync(() => setRankingOrder(nextOrder));
+  });
 }
 
 export function RankingOrderControls({

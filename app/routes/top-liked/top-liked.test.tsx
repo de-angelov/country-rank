@@ -107,6 +107,7 @@ describe("TopLiked", () => {
     );
     expect(html).toContain('title="Lowest likes first"');
     expect(html).toContain('aria-pressed="true"');
+    expect(html).toContain('class="ranking-list-transition"');
     expect(html).toContain('aria-label="Countries ranked by likes"');
     expect(html).toContain("United States");
     expect(html).toContain("25");

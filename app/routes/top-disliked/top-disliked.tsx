@@ -5,6 +5,7 @@ import {
   orderRankedCountries,
   RankingOrderControls,
   type RankingOrder,
+  updateRankingOrderWithTransition,
 } from "~/components/ranking-order-controls/ranking-order-controls";
 import { RankedCountriesList } from "~/components/ranked-countries-list/ranked-countries-list";
 import type { Country } from "~/countries";
@@ -55,16 +56,20 @@ export function TopDislikedContent({
           currentOrder={rankingOrder}
           highestFirstLabel="Highest dislikes first"
           lowestFirstLabel="Lowest dislikes first"
-          onOrderChange={setRankingOrder}
+          onOrderChange={(nextRankingOrder) =>
+            updateRankingOrderWithTransition(nextRankingOrder, setRankingOrder)
+          }
         />
       </div>
 
-      <RankedCountriesList
-        ariaLabel="Countries ranked by dislikes"
-        countries={orderedCountries}
-        rankNumberOrder={rankingOrder}
-        rankTone="dislike"
-      />
+      <div className="ranking-list-transition">
+        <RankedCountriesList
+          ariaLabel="Countries ranked by dislikes"
+          countries={orderedCountries}
+          rankNumberOrder={rankingOrder}
+          rankTone="dislike"
+        />
+      </div>
     </main>
   );
 }

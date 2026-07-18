@@ -5,8 +5,11 @@ import { describe, expect, it } from "vitest";
 import {
   AppShell,
   bannerTaglines,
+  createBannerTaglineState,
   selectBannerTagline,
   selectDifferentBannerTagline,
+  shuffleBannerTaglineState,
+  syncBannerTaglineToPathname,
 } from "./app-shell";
 
 const renderAppShell = (pathname = "/") =>
@@ -82,14 +85,14 @@ describe("AppShell", () => {
     const dislikedTagline = selectBannerTagline("/top-disliked");
 
     expect(new Set([homeTagline, likedTagline, dislikedTagline]).size).toBe(3);
-    expect(renderAppShell("/")).toMatch(
-      new RegExp(`aria-label="Banner tagline">${homeTagline}</p>`),
+    expect(renderAppShell("/")).toContain(
+      `aria-label="Banner tagline" data-animation-replay-key="0">${homeTagline}</p>`,
     );
-    expect(renderAppShell("/top-liked")).toMatch(
-      new RegExp(`aria-label="Banner tagline">${likedTagline}</p>`),
+    expect(renderAppShell("/top-liked")).toContain(
+      `aria-label="Banner tagline" data-animation-replay-key="0">${likedTagline}</p>`,
     );
-    expect(renderAppShell("/top-disliked")).toMatch(
-      new RegExp(`aria-label="Banner tagline">${dislikedTagline}</p>`),
+    expect(renderAppShell("/top-disliked")).toContain(
+      `aria-label="Banner tagline" data-animation-replay-key="0">${dislikedTagline}</p>`,
     );
   });
 
@@ -98,11 +101,11 @@ describe("AppShell", () => {
     const nextRender = renderAppShell("/top-liked");
     const tagline = selectBannerTagline("/top-liked");
 
-    expect(firstRender).toMatch(
-      new RegExp(`aria-label="Banner tagline">${tagline}</p>`),
+    expect(firstRender).toContain(
+      `aria-label="Banner tagline" data-animation-replay-key="0">${tagline}</p>`,
     );
-    expect(nextRender).toMatch(
-      new RegExp(`aria-label="Banner tagline">${tagline}</p>`),
+    expect(nextRender).toContain(
+      `aria-label="Banner tagline" data-animation-replay-key="0">${tagline}</p>`,
     );
     expect(firstRender).toBe(nextRender);
   });
@@ -111,10 +114,8 @@ describe("AppShell", () => {
     const pathname = "/top-disliked";
     const html = renderAppShell(pathname);
 
-    expect(html).toMatch(
-      new RegExp(
-        `aria-label="Banner tagline">${selectBannerTagline(pathname)}</p>`,
-      ),
+    expect(html).toContain(
+      `aria-label="Banner tagline" data-animation-replay-key="0">${selectBannerTagline(pathname)}</p>`,
     );
     expect(html).toMatch(
       /<button data-slot="button" class="(?=[^"]*bg-accent-highlight)[^"]*" type="button">country-rank\.online<\/button>/,
@@ -142,5 +143,45 @@ describe("AppShell", () => {
     expect(selectDifferentBannerTagline(currentTagline, () => 1)).toBe(
       bannerTaglines[bannerTaglines.length - 1],
     );
+  });
+
+  it("starts the banner tagline animation replay key at zero", () => {
+    expect(createBannerTaglineState("/top-liked")).toEqual({
+      animationReplayKey: 0,
+      tagline: selectBannerTagline("/top-liked"),
+    });
+    expect(renderAppShell("/top-liked")).toContain(
+      'aria-label="Banner tagline" data-animation-replay-key="0"',
+    );
+  });
+
+  it("increments the animation replay key only after a successful shuffle", () => {
+    const initialState = createBannerTaglineState("/");
+    const shuffledState = shuffleBannerTaglineState(initialState, () => 0);
+    const nextShuffledState = shuffleBannerTaglineState(
+      shuffledState,
+      () => 0.99,
+    );
+
+    expect(shuffledState.animationReplayKey).toBe(1);
+    expect(shuffledState.tagline).not.toBe(initialState.tagline);
+    expect(nextShuffledState.animationReplayKey).toBe(2);
+    expect(nextShuffledState.tagline).not.toBe(shuffledState.tagline);
+  });
+
+  it("syncs pathname taglines without replaying the shuffle animation", () => {
+    const shuffledState = shuffleBannerTaglineState(
+      createBannerTaglineState("/"),
+      () => 0,
+    );
+    const routeSyncedState = syncBannerTaglineToPathname(
+      shuffledState,
+      "/top-liked",
+    );
+
+    expect(routeSyncedState).toEqual({
+      animationReplayKey: shuffledState.animationReplayKey,
+      tagline: selectBannerTagline("/top-liked"),
+    });
   });
 });

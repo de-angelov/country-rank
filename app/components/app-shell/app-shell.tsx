@@ -90,15 +90,61 @@ export function selectDifferentBannerTagline(
   return availableTaglines[selectedIndex];
 }
 
+type BannerTaglineState = {
+  animationReplayKey: number;
+  tagline: string;
+};
+
+export function createBannerTaglineState(pathname: string): BannerTaglineState {
+  return {
+    animationReplayKey: 0,
+    tagline: selectBannerTagline(pathname),
+  };
+}
+
+export function syncBannerTaglineToPathname(
+  currentState: BannerTaglineState,
+  pathname: string,
+): BannerTaglineState {
+  const tagline = selectBannerTagline(pathname);
+
+  if (currentState.tagline === tagline) {
+    return currentState;
+  }
+
+  return {
+    animationReplayKey: currentState.animationReplayKey,
+    tagline,
+  };
+}
+
+export function shuffleBannerTaglineState(
+  currentState: BannerTaglineState,
+  random = Math.random,
+): BannerTaglineState {
+  const tagline = selectDifferentBannerTagline(currentState.tagline, random);
+
+  if (currentState.tagline === tagline) {
+    return currentState;
+  }
+
+  return {
+    animationReplayKey: currentState.animationReplayKey + 1,
+    tagline,
+  };
+}
+
 export function AppShell({ children }: { children: ReactNode }) {
   const locationContext = useContext(UNSAFE_LocationContext);
   const pathname = locationContext?.location.pathname ?? "/";
-  const [bannerTagline, setBannerTagline] = useState(() =>
-    selectBannerTagline(pathname),
+  const [bannerTaglineState, setBannerTaglineState] = useState(() =>
+    createBannerTaglineState(pathname),
   );
 
   useEffect(() => {
-    setBannerTagline(selectBannerTagline(pathname));
+    setBannerTaglineState((currentState) =>
+      syncBannerTaglineToPathname(currentState, pathname),
+    );
   }, [pathname]);
 
   return (
@@ -130,16 +176,21 @@ export function AppShell({ children }: { children: ReactNode }) {
             />
           </picture>
 
-          <p className={moduleStyles.bannerTagline} aria-label="Banner tagline">
-            {bannerTagline}
+          <p
+            key={bannerTaglineState.animationReplayKey}
+            className={moduleStyles.bannerTagline}
+            aria-label="Banner tagline"
+            data-animation-replay-key={bannerTaglineState.animationReplayKey}
+          >
+            {bannerTaglineState.tagline}
           </p>
         </div>
         <div className={styles.ribbon}>
           <Button
             className={styles.brandButton}
             onClick={() => {
-              setBannerTagline((currentTagline) =>
-                selectDifferentBannerTagline(currentTagline),
+              setBannerTaglineState((currentState) =>
+                shuffleBannerTaglineState(currentState),
               );
             }}
             type="button"

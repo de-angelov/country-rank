@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="480">
+<rect fill="#007E3A" stroke="#D21034" stroke-width="120" width="600" height="360" x="60" y="60"/>
+<circle fill="#FFF" cx="390" cy="240" r="80"/>
+<circle fill="#007E3A" cx="420" cy="240" r="80"/>
+<style data-country-ranking-outline="true">
+path, rect, circle, ellipse, polygon, polyline, line, text, use {
+  paint-order: stroke fill markers;
+  stroke: #000 !important;
+  stroke-width: var(--country-ranking-flag-outline-width, 2px) !important;
+  stroke-linecap: round !important;
+  stroke-linejoin: round !important;
+  vector-effect: non-scaling-stroke !important;
+}
+</style>
+</svg>

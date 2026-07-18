@@ -1,7 +1,7 @@
 import { renderToString } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
-import { CountryCard } from "./country-card";
+import { CountryCard, getCountryCardFlagImageUrl } from "./country-card";
 
 const country = {
   code: "JP",
@@ -26,6 +26,8 @@ describe("CountryCard", () => {
       "Vending machines, bullet trains, and stationery with main-character energy.",
     );
     expect(html).toContain("Japan flag");
+    expect(html).toContain('src="/flags/outlined/JP.svg"');
+    expect(html).not.toContain('src="https://example.com/japan.svg"');
     expect(html).toContain('width="320"');
     expect(html).toContain('height="240"');
     expect(html).toContain("aspect-[4/3] min-h-24");
@@ -79,5 +81,15 @@ describe("CountryCard", () => {
     );
     expect(html).toContain('aria-valuenow="50"');
     expect(html).toContain("transform:translateX(-50%)");
+  });
+
+  it("falls back to the country flag URL when no outlined asset exists", () => {
+    expect(
+      getCountryCardFlagImageUrl({
+        ...country,
+        code: "ZZ",
+        flagImageUrl: "https://example.com/fallback.svg",
+      }),
+    ).toBe("https://example.com/fallback.svg");
   });
 });

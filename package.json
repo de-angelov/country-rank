@@ -11,6 +11,7 @@
     "dev": "react-router dev",
     "generate:banner-assets": "node scripts/generate-banner-assets.mjs",
     "generate:country-fixtures": "node scripts/generate-country-fixtures.mjs",
+    "generate:outlined-country-flags": "node scripts/generate-outlined-country-flags.mjs",
     "download:country-flags": "node scripts/download-country-flags.mjs",
     "lint": "react-router typegen && eslint . --max-warnings=0",
     "redis:backup:sidecar": "node scripts/redis-backup-sidecar.mjs",

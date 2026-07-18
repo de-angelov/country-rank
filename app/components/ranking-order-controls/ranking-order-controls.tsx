@@ -32,9 +32,14 @@ function prefersReducedMotion() {
 }
 
 export function updateRankingOrderWithTransition(
+  currentOrder: RankingOrder,
   nextOrder: RankingOrder,
   setRankingOrder: (nextOrder: RankingOrder) => void,
 ) {
+  if (nextOrder === currentOrder) {
+    return;
+  }
+
   const shouldReduceMotion = prefersReducedMotion();
   const canStartViewTransition =
     typeof document !== "undefined" &&

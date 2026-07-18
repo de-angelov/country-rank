@@ -7,7 +7,7 @@ Country Ranking is a TypeScript React Router framework-mode app for browsing cou
 ### App Structure
 
 - `app/root.tsx` defines the shared React Router document layout, metadata outlet, script wiring, and root error boundary.
-- `app/routes.ts` registers framework-mode routes. The current route table contains the home index route at `app/routes/home.tsx` and the vote submission resource route at `app/routes/votes.ts`.
+- `app/routes.ts` registers framework-mode routes. The current route table contains browsing routes, paid checkout status routes, and the Stripe webhook route.
 - Route-local CSS Modules, such as `app/routes/home.module.css`, are used only for narrow layout gaps.
 
 ### Frontend Responsibilities
@@ -32,11 +32,10 @@ Country Ranking is a TypeScript React Router framework-mode app for browsing cou
 
 ### Server Route And Vote Flow
 
-- `app/routes/votes.ts` is the same-app backend action for vote submissions.
-- The action accepts JSON or form data with `countryCode` and `voteType`.
-- `app/votes/request.server.ts` validates the submitted country code against the fixture list and accepts only `like` or `dislike` vote types.
-- Valid vote requests call `incrementCountryVoteTotal` from `app/votes/storage.server.ts` and return the updated totals.
-- Validation, Redis configuration, connection, and command failures are represented as typed `neverthrow` result errors before being converted to JSON responses.
+- Public clients create paid checkout sessions through the checkout route. There is no public `/votes` mutation route.
+- `app/votes/request.server.ts` validates submitted country vote intent against the fixture list and accepts only `like` or `dislike` vote types.
+- Verified Stripe webhook fulfillment applies paid votes through `app/votes/paid-application.server.ts`, which calls `incrementCountryVoteTotal` from `app/votes/storage.server.ts`.
+- Validation, Redis configuration, connection, and command failures are represented as typed `neverthrow` result errors before being converted to route responses.
 
 ### Domain And Data
 
@@ -421,7 +420,7 @@ environment is intentionally non-production.
 ### Request And Data Flow
 
 - Browsing: React Router renders the index route from `app/routes/home.tsx`. Country browsing UI loads metadata from `country:catalog` and joins it with aggregate Redis vote totals.
-- Voting: a client submits `countryCode` and `voteType` to `/votes`; the route validates the payload, increments the matching Redis hash field, reads the updated totals, and returns a JSON success or typed error response.
+- Voting: a client submits `countryCode` and `voteType` to the paid checkout flow. Checkout creation records intent only; the verified Stripe webhook fulfillment path validates paid vote metadata, increments the matching Redis hash field, reads the updated totals, and records fulfillment.
 
 ### Styling Foundation
 
@@ -433,4 +432,4 @@ environment is intentionally non-production.
 
 ### Pending Paid Vote Work
 
-Stripe checkout, pricing, checkout mode, webhook metadata, and paid-vote contract details are intentionally out of scope for this architecture note. Future paid-vote work should reuse the existing country code, vote type, vote route, and Redis vote helper contracts rather than redefining them.
+Stripe checkout, pricing, checkout mode, webhook metadata, and paid-vote contract details are intentionally out of scope for this architecture note. Future paid-vote work should reuse the existing country code, vote type, validation, and Redis vote helper contracts rather than redefining them.

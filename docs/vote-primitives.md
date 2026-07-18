@@ -15,13 +15,15 @@ checkout mode, metadata names, and webhook behavior are recorded separately in
   `like` or `dislike`.
 - Redis stores vote totals in plural fields: `likes` and `dislikes`.
 
-## Vote route contract
+## Public vote route
 
-The vote endpoint is the React Router action at `POST /votes`, implemented in
-`app/routes/votes.ts`.
+The app does not expose a public `/votes` mutation route. Clients must not be
+able to increment country vote totals directly. Vote totals change only through
+verified Stripe webhook fulfillment after a paid checkout session completes.
 
-The route accepts either JSON requests with `content-type: application/json` or
-form submissions. Both payload formats use the same field names:
+## Vote intent payload
+
+Paid checkout and webhook fulfillment use the same vote intent field names:
 
 ```json
 {
@@ -30,24 +32,8 @@ form submissions. Both payload formats use the same field names:
 }
 ```
 
-Successful responses have HTTP status `200` and this shape:
-
-```json
-{
-  "ok": true,
-  "data": {
-    "countryCode": "JP",
-    "voteType": "like",
-    "totals": {
-      "likes": 8,
-      "dislikes": 4
-    }
-  }
-}
-```
-
-Validation failures return HTTP status `400` with the typed
-`invalid_vote_request` error from `app/votes/request.server.ts`:
+Validation failures use the typed `invalid_vote_request` error from
+`app/votes/request.server.ts`:
 
 ```json
 {
@@ -63,7 +49,7 @@ Validation failures return HTTP status `400` with the typed
 }
 ```
 
-Redis country-code validation failures also return HTTP status `400`:
+Redis country-code validation failures use this storage error shape:
 
 ```json
 {
@@ -76,9 +62,10 @@ Redis country-code validation failures also return HTTP status `400`:
 }
 ```
 
-Redis configuration, connection, and command failures return HTTP status `503`.
-The route strips `cause` from connection and command errors before responding.
-Missing Redis configuration includes the missing environment variable name:
+Redis configuration, connection, and command failures use storage error values.
+Route response adapters strip `cause` from connection and command errors before
+responding. Missing Redis configuration includes the missing environment
+variable name:
 
 ```json
 {

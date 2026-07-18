@@ -13,7 +13,7 @@ services:
     environment:
       REDIS_URL: redis://redis:6379
     ports:
-      - "127.0.0.1:${APP_HOST_PORT:-5173}:5173"
+      - "127.0.0.1:${APP_HOST_PORT:-3000}:5173"
     volumes:
       - .:/workspace
       - app-node-modules:/workspace/node_modules
@@ -34,7 +34,7 @@ services:
       PORT: "3000"
       REDIS_URL: redis://redis:6379
     ports:
-      - "127.0.0.1:${APP_HOST_PORT:-5173}:3000"
+      - "127.0.0.1:${APP_HOST_PORT:-3000}:3000"
     volumes:
       - .:/workspace
       - app-prod-node-modules:/workspace/node_modules

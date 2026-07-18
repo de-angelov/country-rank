@@ -8,6 +8,40 @@ const createPortAvailabilityChecker = (availablePorts) =>
   );
 
 describe("runComposeDev", () => {
+  it("prints the default app URL on localhost port 3000", async () => {
+    const commandRunner = vi.fn((_command, _args, options) => {
+      options.onStart();
+      return Promise.resolve(0);
+    });
+    const logger = {
+      log: vi.fn(),
+    };
+
+    await expect(
+      runComposeDev({
+        env: { PATH: "/bin" },
+        commandRunner,
+        isPortAvailable: createPortAvailabilityChecker(new Set([6379])),
+        logger,
+      }),
+    ).resolves.toBe(0);
+
+    expect(commandRunner).toHaveBeenCalledWith(
+      "docker",
+      ["compose", "up", "app", "redis"],
+      {
+        env: {
+          PATH: "/bin",
+          REDIS_HOST_PORT: "6379",
+        },
+        onStart: expect.any(Function),
+      },
+    );
+    expect(logger.log).toHaveBeenCalledWith(
+      "Compose dev app: http://localhost:3000",
+    );
+  });
+
   it("passes the selected Redis host port to Compose and prints host URLs", async () => {
     const commandRunner = vi.fn((_command, _args, options) => {
       options.onStart();

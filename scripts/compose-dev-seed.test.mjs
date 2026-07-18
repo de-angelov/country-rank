@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 
 import {
+  resolveAppUrl,
   resolveRedisEndpoint,
   runComposeDevSeed,
 } from "./compose-dev-seed.mjs";
@@ -56,6 +57,18 @@ describe("resolveRedisEndpoint", () => {
       }),
     ).rejects.toThrow(
       "REDIS_HOST_PORT=6380 is already in use on 127.0.0.1. Choose another free port and rerun npm run compose:dev:seed.",
+    );
+  });
+});
+
+describe("resolveAppUrl", () => {
+  it("uses localhost port 3000 by default", () => {
+    expect(resolveAppUrl({})).toBe("http://localhost:3000");
+  });
+
+  it("uses an explicit app host port override", () => {
+    expect(resolveAppUrl({ APP_HOST_PORT: "5174" })).toBe(
+      "http://localhost:5174",
     );
   });
 });

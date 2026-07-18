@@ -39,7 +39,7 @@ export const runComposeDev = async ({
     logger.log(`Compose dev Redis: ${redisUrl}`);
   };
 
-  return commandRunner("docker", ["compose", "up", "app", "redis"], {
+  return commandRunner("docker", ["compose", "up", "app-dev", "redis"], {
     env: childEnv,
     onStart: printEndpoints,
   });

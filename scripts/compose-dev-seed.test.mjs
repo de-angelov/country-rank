@@ -125,7 +125,7 @@ describe("runComposeDevSeed", () => {
     expect(commandRunner).toHaveBeenNthCalledWith(
       1,
       "docker",
-      ["compose", "up", "-d", "app", "redis"],
+      ["compose", "up", "-d", "app-dev", "redis"],
       {
         env: {
           APP_HOST_PORT: "3001",
@@ -177,7 +177,7 @@ describe("runComposeDevSeed", () => {
     expect(commandRunner).toHaveBeenNthCalledWith(
       1,
       "docker",
-      ["compose", "up", "-d", "app", "redis"],
+      ["compose", "up", "-d", "app-dev", "redis"],
       {
         env: {
           APP_HOST_PORT: "3001",

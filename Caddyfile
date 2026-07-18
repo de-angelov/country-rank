@@ -1,0 +1,11 @@
+{$SITE_DOMAIN:localhost} {
+	encode gzip zstd
+
+	@immutableAssets path /assets/* /images/banner/*
+	header @immutableAssets Cache-Control "public, max-age=31536000, immutable"
+
+	@staticAssets path /flags/* /favicon.ico /robots.txt
+	header @staticAssets Cache-Control "public, max-age=604800"
+
+	reverse_proxy app-prod:3000
+}

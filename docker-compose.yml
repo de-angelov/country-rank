@@ -1,5 +1,6 @@
 services:
-  app:
+  # Development app server with Vite/React Router hot reload. Use via `npm run compose:dev`.
+  app-dev:
     image: node:20-alpine
     working_dir: /workspace
     command:
@@ -18,7 +19,8 @@ services:
       - .:/workspace
       - app-node-modules:/workspace/node_modules
 
-  app-prod:
+  # Production app server. It is private to the Compose network; Caddy is public.
+  app-server:
     image: node:20-alpine
     working_dir: /workspace
     command:
@@ -33,12 +35,26 @@ services:
       HOST: "0.0.0.0"
       PORT: "3000"
       REDIS_URL: redis://redis:6379
-    ports:
-      - "127.0.0.1:${APP_HOST_PORT:-3000}:3000"
+    expose:
+      - "3000"
     volumes:
       - .:/workspace
       - app-prod-node-modules:/workspace/node_modules
 
+  # Public HTTP/HTTPS reverse proxy. Use this as the production web entrypoint.
+  web-proxy:
+    image: caddy:2-alpine
+    depends_on:
+      - app-server
+    ports:
+      - "${HTTP_HOST_PORT:-80}:80"
+      - "${HTTPS_HOST_PORT:-443}:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+
+  # Redis database for country catalog metadata and aggregate vote totals.
   redis:
     image: redis:7-alpine
     command: ["redis-server", "--appendonly", "yes"]
@@ -47,6 +63,7 @@ services:
     volumes:
       - redis-data:/data
 
+  # Scheduled Redis backup worker. Runs only with the `backup` Compose profile.
   redis-backup:
     image: node:20-alpine
     profiles: ["backup"]
@@ -82,4 +99,6 @@ services:
 volumes:
   app-node-modules:
   app-prod-node-modules:
+  caddy-config:
+  caddy-data:
   redis-data:

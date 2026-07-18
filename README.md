@@ -65,11 +65,11 @@ Common Compose scripts are grouped by environment:
 | --- | --- |
 | `npm run compose:dev` | Start the local dev app and Redis in attached mode. |
 | `npm run compose:dev:seed` | Start the local dev app and Redis in detached mode, then seed Redis. |
-| `npm run compose:prod` | Start the production-style app, Redis, and backup sidecar in detached mode. |
+| `npm run compose:prod` | Start `web-proxy`, `app-server`, `redis`, and `redis-backup` in detached mode. |
 | `npm run compose:prod:update` | Pull the latest code, stop the prod stack without deleting volumes, and restart it. |
 | `npm run compose:prod:down` | Stop the prod stack without deleting Redis data volumes. |
 | `npm run compose:prod:ps` | Show prod stack container status. |
-| `npm run compose:prod:logs` | Follow prod app, Redis, and backup sidecar logs. |
+| `npm run compose:prod:logs` | Follow `web-proxy`, `app-server`, `redis`, and `redis-backup` logs. |
 
 Run the web app and Redis together with:
 
@@ -77,8 +77,8 @@ Run the web app and Redis together with:
 npm run compose:dev
 ```
 
-The `compose:dev` preset starts the Compose `app` and `redis` services. The
-`app` service runs `npm run dev -- --host 0.0.0.0`, connects to Redis with
+The `compose:dev` preset starts the Compose `app-dev` and `redis` services. The
+`app-dev` service runs `npm run dev -- --host 0.0.0.0`, connects to Redis with
 `REDIS_URL=redis://redis:6379` inside the Compose network, mounts the repository
 for live reload, and exposes the React Router dev server at
 `http://localhost:3000`. To use a different host port, set `APP_HOST_PORT`, for
@@ -97,7 +97,7 @@ run:
 npm run compose:dev:seed
 ```
 
-The `compose:dev:seed` preset starts the Compose `app` and `redis` services in
+The `compose:dev:seed` preset starts the Compose `app-dev` and `redis` services in
 the background, then runs the `redis:seed` command against the
 host-mapped Compose Redis instance. The seed writes the `country:catalog` JSON
 document with metadata-only country records, refreshes `country:votes:likes`,
@@ -117,17 +117,47 @@ For production-style local execution through Compose, run:
 npm run compose:prod
 ```
 
-The `compose:prod` preset starts the Compose `app-prod`, `redis`, and
-`redis-backup` services in detached mode with the `backup` profile enabled. The
-`app-prod` service runs `npm install`, `npm run build`, and then `npm run start`
-with `HOST=0.0.0.0` and `PORT=3000`. It uses the same `APP_HOST_PORT` host
-override as the dev preset, so the default URL is `http://localhost:3000` and
-an override such as `APP_HOST_PORT=3001 npm run compose:prod` exposes the app at
-`http://localhost:3001`.
+The `compose:prod` preset starts the Compose `web-proxy`, `app-server`,
+`redis`, and `redis-backup` services in detached mode with the `backup` profile
+enabled. `app-server` runs `npm install`, `npm run build`, and then `npm run start` with
+`HOST=0.0.0.0` and `PORT=3000`, but it is only exposed inside the Compose
+network. Caddy is the public entrypoint, publishes `HTTP_HOST_PORT` and
+`HTTPS_HOST_PORT`, proxies traffic to `app-server:3000`, handles HTTPS
+certificates for `SITE_DOMAIN`, compresses responses, and sets cache headers
+for static assets.
+
+For local prod-style testing with the default local `.env`, open
+`http://localhost:8080`. For a real VM, set `SITE_DOMAIN=country-rank.online`,
+`HTTP_HOST_PORT=80`, and `HTTPS_HOST_PORT=443`, then open
+`https://country-rank.online`.
 
 Use `compose:dev` while changing app code and `compose:prod` when checking the
 production build/start path locally. Direct host commands remain available:
 `npm run dev`, `npm run build`, and `npm run start`.
+
+### Production Static Delivery
+
+The production stack uses Caddy as the public web server through the
+`web-proxy` service. Caddy proxies dynamic SSR and data requests to
+`app-server:3000`, compresses responses, and applies
+cache headers for static paths:
+
+| Path | Cache policy |
+| --- | --- |
+| `/assets/*` | One year, immutable. React Router/Vite build assets are content-hashed. |
+| `/images/banner/*` | One year, immutable. Banner variants include versioned filenames. |
+| `/flags/*` | Seven days. Flag asset filenames are stable by country code. |
+
+A CDN is optional. For a single Linode VM, Caddy alone is enough to run the
+site. For better global latency and edge caching, put Cloudflare or another CDN
+in front of the VM:
+
+```text
+Browser -> CDN -> web-proxy/Caddy -> app-server -> Redis
+```
+
+Keep Caddy even with a CDN; it remains the origin reverse proxy, owns automatic
+HTTPS on the VM, and provides sane cache headers for the CDN to respect.
 
 For Redis-only development or manual reset workflows, keep using the explicit
 standalone seed command:
@@ -156,6 +186,9 @@ Runtime and integration variables currently supported by the app and scripts:
 | `LOG_LEVEL` | Optional for every app runtime. Supported values are `fatal`, `error`, `warn`, `info`, `debug`, `trace`, and `silent`; invalid or missing values fall back to `info`. | Shared Pino application logger | `info` |
 | `APP_HOST_PORT` | Optional when starting the app service through Docker Compose and the host port must differ from `3000`. | `docker-compose.yml` app port mapping | `3000` |
 | `REDIS_HOST_PORT` | Optional when starting Redis through Docker Compose and the host port must differ from `4000`. | `docker-compose.yml` Redis port mapping and local Redis restore wrapper | `4000` |
+| `SITE_DOMAIN` | Production Caddy entrypoint. Must point DNS at the VM for automatic HTTPS. | `Caddyfile` | `country-rank.online` |
+| `HTTP_HOST_PORT` | Production Caddy HTTP listener. Required for Let's Encrypt HTTP challenge unless using another ACME challenge. | `docker-compose.yml` Caddy port mapping | `80` |
+| `HTTPS_HOST_PORT` | Production Caddy HTTPS listener. | `docker-compose.yml` Caddy port mapping | `443` |
 | `STRIPE_WEBHOOK_SECRET` | Handling Stripe webhook requests. | `/webhooks/stripe` signature verification | `whsec_replace_with_local_or_deployment_secret` |
 | `STRIPE_SECRET_KEY` | Local test-mode Stripe Checkout creation work. | Server-side checkout helpers | `sk_test_replace_with_local_test_secret` |
 | `REDIS_BACKUP_SIDECAR_ENABLED` | Optional when running the Compose `backup` profile. Must be truthy to run backups from the sidecar. | Redis backup sidecar | `false` |

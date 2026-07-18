@@ -28,7 +28,7 @@ describe("runComposeDev", () => {
 
     expect(commandRunner).toHaveBeenCalledWith(
       "docker",
-      ["compose", "up", "app", "redis"],
+      ["compose", "up", "app-dev", "redis"],
       {
         env: {
           PATH: "/bin",
@@ -62,7 +62,7 @@ describe("runComposeDev", () => {
 
     expect(commandRunner).toHaveBeenCalledWith(
       "docker",
-      ["compose", "up", "app", "redis"],
+      ["compose", "up", "app-dev", "redis"],
       {
         env: {
           APP_HOST_PORT: "3001",
@@ -101,7 +101,7 @@ describe("runComposeDev", () => {
 
     expect(commandRunner).toHaveBeenCalledWith(
       "docker",
-      ["compose", "up", "app", "redis"],
+      ["compose", "up", "app-dev", "redis"],
       {
         env: {
           APP_HOST_PORT: "3001",
@@ -140,7 +140,7 @@ describe("runComposeDev", () => {
 
     expect(commandRunner).toHaveBeenCalledWith(
       "docker",
-      ["compose", "up", "app", "redis"],
+      ["compose", "up", "app-dev", "redis"],
       {
         env: {
           APP_HOST_PORT: "3000",

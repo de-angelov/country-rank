@@ -15,6 +15,11 @@ Country Ranking is a TypeScript React Router framework-mode app for browsing cou
 - UI routes live in `app/routes/`. The current home route is a minimal landing shell for country rankings and voting flows.
 - Country records are modeled in `app/countries/country.ts` and exported through `app/countries/index.ts`.
 - Placeholder country data lives in `app/countries/fixtures.ts`; it includes country codes, names, capitals, remote flag image URLs, and starter like/dislike totals for ranking UI work.
+- Country flag assets are generated under `public/flags/` from the
+  `flagImageUrl` values already present in `app/countries/fixtures.ts`.
+  Regenerate them with `npm run download:country-flags`; the script preserves
+  the downloaded source format, names files by ISO alpha-2 code, and writes the
+  `public/flag-assets.json` manifest with local public paths for runtime use.
 - App shell banner variants live under `public/images/banner/` and are
   generated from `public/images/country-ranking-banner-v7.png` in 960, 1600,
   and 2400 pixel widths as AVIF, WebP, and PNG fallback files. Regenerate them

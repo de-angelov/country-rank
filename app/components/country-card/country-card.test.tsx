@@ -31,9 +31,11 @@ describe("CountryCard", () => {
     expect(html).toContain('width="320"');
     expect(html).toContain('height="240"');
     expect(html).toContain(
-      'class="aspect-[4/3] min-h-24 bg-background sm:min-h-0"',
+      'class="aspect-[4/3] min-h-24 sm:min-h-0"',
     );
-    expect(html).toContain("bg-background");
+    expect(html).not.toContain(
+      'class="aspect-[4/3] min-h-24 bg-background',
+    );
     expect(html).not.toContain(
       'class="aspect-[4/3] min-h-24 overflow-hidden',
     );
@@ -43,11 +45,14 @@ describe("CountryCard", () => {
     expect(html).not.toContain(
       'class="aspect-[4/3] min-h-24 border-2 border-border',
     );
+    expect(html).not.toContain(
+      'class="aspect-[4/3] min-h-24 shadow-shadow',
+    );
     expect(html).toContain("object-contain");
     expect(html).not.toContain("object-cover");
     expect(html).toContain("p-1");
-    expect(html).toContain("drop-shadow(2px_0_0_var(--border))");
-    expect(html).toContain("drop-shadow(2px_2px_0_var(--border))");
+    expect(html).not.toContain("[filter:");
+    expect(html).not.toContain("drop-shadow");
     expect(html).not.toContain("drop-shadow(2px_0_0_#000)");
     expect(html).not.toContain("drop-shadow(1.5px_1.5px_0_#000)");
     expect(html).not.toContain("/flags/outlined/");

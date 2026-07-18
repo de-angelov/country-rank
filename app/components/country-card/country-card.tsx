@@ -30,9 +30,8 @@ const localFlagPaths = flagAssets.flags as Record<string, string>;
 const styles = {
   article: "grid gap-4 bg-secondary-background p-4",
   header: "grid gap-4 sm:grid-cols-[minmax(7rem,10rem)_1fr] sm:items-center",
-  flagFrame: "aspect-[4/3] min-h-24 bg-background sm:min-h-0",
-  flagImage:
-    "h-full w-full object-contain p-1 [filter:drop-shadow(2px_0_0_var(--border))_drop-shadow(-2px_0_0_var(--border))_drop-shadow(0_2px_0_var(--border))_drop-shadow(0_-2px_0_var(--border))_drop-shadow(2px_2px_0_var(--border))_drop-shadow(-2px_2px_0_var(--border))_drop-shadow(2px_-2px_0_var(--border))_drop-shadow(-2px_-2px_0_var(--border))]",
+  flagFrame: "aspect-[4/3] min-h-24 sm:min-h-0",
+  flagImage: "h-full w-full object-contain p-1",
   textBlock: "min-w-0",
   title: "truncate text-xl font-heading",
   capital: "mt-1 text-sm",

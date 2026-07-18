@@ -2,7 +2,12 @@ import { renderToString } from "react-dom/server";
 import { MemoryRouter } from "react-router";
 import { describe, expect, it } from "vitest";
 
-import { AppShell, bannerTaglines, selectBannerTagline } from "./app-shell";
+import {
+  AppShell,
+  bannerTaglines,
+  selectBannerTagline,
+  selectDifferentBannerTagline,
+} from "./app-shell";
 
 const renderAppShell = (pathname = "/") =>
   renderToString(
@@ -44,10 +49,11 @@ describe("AppShell", () => {
     expect(html).toContain('alt="The Internet Judges Earth"');
     expect(html).toContain('aria-label="Banner tagline"');
     expect(html).toMatch(
-      /<a class="[^"]*border-2[^"]*bg-main[^"]*font-heading[^"]*shadow-shadow[^"]*" href="\/">country-rank\.online<\/a>/,
+      /<button data-slot="button" class="(?=[^"]*border-2)(?=[^"]*bg-accent-highlight)(?=[^"]*font-heading)(?=[^"]*shadow-shadow)[^"]*" type="button">country-rank\.online<\/button>/,
     );
     expect(html).toContain(selectBannerTagline("/"));
-    expect(html).toContain('href="/"');
+    expect(html).toMatch(/<a href="\/"[^>]*>Countries<\/a>/);
+    expect(html).not.toMatch(/<a[^>]*>country-rank\.online<\/a>/);
     expect(html).toContain("Countries");
     expect(html).toContain('href="/top-liked"');
     expect(html).toContain("Top Liked");
@@ -99,5 +105,42 @@ describe("AppShell", () => {
       new RegExp(`aria-label="Banner tagline">${tagline}</p>`),
     );
     expect(firstRender).toBe(nextRender);
+  });
+
+  it("renders the deterministic initial tagline without a random shuffle", () => {
+    const pathname = "/top-disliked";
+    const html = renderAppShell(pathname);
+
+    expect(html).toMatch(
+      new RegExp(
+        `aria-label="Banner tagline">${selectBannerTagline(pathname)}</p>`,
+      ),
+    );
+    expect(html).toMatch(
+      /<button data-slot="button" class="(?=[^"]*bg-accent-highlight)[^"]*" type="button">country-rank\.online<\/button>/,
+    );
+  });
+
+  it("selects a different random banner tagline when alternatives exist", () => {
+    for (const currentTagline of bannerTaglines) {
+      const nextTagline = selectDifferentBannerTagline(currentTagline, () => 0);
+
+      expect(bannerTaglines).toContain(nextTagline);
+      expect(nextTagline).not.toBe(currentTagline);
+    }
+  });
+
+  it("uses the supplied random value to keep repeated shuffles variable", () => {
+    const currentTagline = bannerTaglines[0];
+
+    expect(selectDifferentBannerTagline(currentTagline, () => 0)).toBe(
+      bannerTaglines[1],
+    );
+    expect(selectDifferentBannerTagline(currentTagline, () => 0.99)).toBe(
+      bannerTaglines[bannerTaglines.length - 1],
+    );
+    expect(selectDifferentBannerTagline(currentTagline, () => 1)).toBe(
+      bannerTaglines[bannerTaglines.length - 1],
+    );
   });
 });

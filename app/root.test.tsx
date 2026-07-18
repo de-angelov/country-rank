@@ -1,11 +1,34 @@
 import { renderToString } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
-import { RootErrorPage } from "./root";
+import { fontMetricStableClassName, links, RootErrorPage } from "./root";
 
 const visibleText = (html: string) => html.replaceAll("<!-- -->", "");
 
 describe("root error boundary", () => {
+  it("uses the global font metric stabilization class for document text", () => {
+    expect(fontMetricStableClassName).toBe("font-metric-stable");
+  });
+
+  it("preloads the primary Geist subsets used by initial page text", () => {
+    expect(links()).toEqual([
+      expect.objectContaining({
+        rel: "preload",
+        href: expect.stringContaining("geist-latin-wght-normal.woff2"),
+        as: "font",
+        type: "font/woff2",
+        crossOrigin: "anonymous",
+      }),
+      expect.objectContaining({
+        rel: "preload",
+        href: expect.stringContaining("geist-latin-ext-wght-normal.woff2"),
+        as: "font",
+        type: "font/woff2",
+        crossOrigin: "anonymous",
+      }),
+    ]);
+  });
+
   it("renders friendly generic error copy", () => {
     const html = renderToString(
       <RootErrorPage error={new Error("Redis connection failed")} />,

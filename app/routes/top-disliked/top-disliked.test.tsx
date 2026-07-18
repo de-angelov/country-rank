@@ -99,7 +99,7 @@ describe("TopDisliked", () => {
     );
 
     expect(html).toContain("Top Disliked Countries");
-    expect(html).toContain("[font-size-adjust:0.54]");
+    expect(html).not.toContain("[font-size-adjust:");
     expect(html).toContain(
       "md:grid-cols-[1fr_minmax(18rem,24rem)] md:items-end",
     );

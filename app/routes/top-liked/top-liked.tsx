@@ -41,7 +41,7 @@ export function TopLikedContent({
   );
 
   return (
-    <main className="mx-auto grid w-full max-w-6xl gap-4 px-4 pb-6 pt-4 [font-size-adjust:0.54] sm:px-6 sm:pt-5 lg:px-8">
+    <main className="mx-auto grid w-full max-w-6xl gap-4 px-4 pb-6 pt-4 sm:px-6 sm:pt-5 lg:px-8">
       <div className="grid gap-3 md:grid-cols-[1fr_minmax(18rem,24rem)] md:items-end md:gap-4">
         <header className="grid gap-1">
           <h1 className="text-2xl font-heading sm:text-3xl">

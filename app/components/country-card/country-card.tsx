@@ -29,7 +29,7 @@ const styles = {
   header: "grid gap-4 sm:grid-cols-[minmax(7rem,10rem)_1fr] sm:items-center",
   flagFrame:
     "aspect-[4/3] min-h-24 overflow-hidden rounded-base border-2 border-border bg-background sm:min-h-0",
-  flagImage: "h-full w-full object-cover",
+  flagImage: "h-full w-full object-contain",
   textBlock: "min-w-0",
   title: "truncate text-xl font-heading",
   capital: "mt-1 text-sm",

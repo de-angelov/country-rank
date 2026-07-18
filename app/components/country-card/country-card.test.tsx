@@ -29,6 +29,9 @@ describe("CountryCard", () => {
     expect(html).toContain('width="320"');
     expect(html).toContain('height="240"');
     expect(html).toContain("aspect-[4/3] min-h-24");
+    expect(html).toContain("bg-background");
+    expect(html).toContain("object-contain");
+    expect(html).not.toContain("object-cover");
     expect(html).toContain("1,234 likes");
     expect(html).toContain("56 dislikes");
     expect(html).toContain(

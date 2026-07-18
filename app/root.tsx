@@ -14,14 +14,13 @@ import { Badge } from "./components/ui/badge";
 import { Button } from "./components/ui/button";
 import { Card } from "./components/ui/card";
 import "./app.css";
-import geistLatinExtWoff2 from "@fontsource-variable/geist/files/geist-latin-ext-wght-normal.woff2?url";
 import geistLatinWoff2 from "@fontsource-variable/geist/files/geist-latin-wght-normal.woff2?url";
 
-const geistFontPreloads = [geistLatinWoff2, geistLatinExtWoff2] as const;
+export const initialTextGeistFontPreloads = [geistLatinWoff2] as const;
 export const fontMetricStableClassName = "font-metric-stable";
 
 export const links: LinksFunction = () =>
-  geistFontPreloads.map((href) => ({
+  initialTextGeistFontPreloads.map((href) => ({
     rel: "preload",
     href,
     as: "font",

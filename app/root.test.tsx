@@ -1,16 +1,27 @@
 import { renderToString } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
-import { fontMetricStableClassName, links, RootErrorPage } from "./root";
+import { countryFixtures } from "./countries";
+import {
+  fontMetricStableClassName,
+  initialTextGeistFontPreloads,
+  links,
+  RootErrorPage,
+} from "./root";
 
 const visibleText = (html: string) => html.replaceAll("<!-- -->", "");
+const geistLatinSubsetMaxCodePoint = 0x00ff;
 
 describe("root error boundary", () => {
   it("uses the global font metric stabilization class for document text", () => {
     expect(fontMetricStableClassName).toBe("font-metric-stable");
   });
 
-  it("preloads the primary Geist subsets used by initial page text", () => {
+  it("preloads the Geist subset used by initial page text", () => {
+    expect(initialTextGeistFontPreloads).toEqual([
+      expect.stringContaining("geist-latin-wght-normal.woff2"),
+    ]);
+
     expect(links()).toEqual([
       expect.objectContaining({
         rel: "preload",
@@ -19,14 +30,28 @@ describe("root error boundary", () => {
         type: "font/woff2",
         crossOrigin: "anonymous",
       }),
-      expect.objectContaining({
-        rel: "preload",
-        href: expect.stringContaining("geist-latin-ext-wght-normal.woff2"),
-        as: "font",
-        type: "font/woff2",
-        crossOrigin: "anonymous",
-      }),
     ]);
+  });
+
+  it("does not preload Geist subsets that are lazy font-face fallbacks", () => {
+    const preloadHrefs = links().map((link) => link.href);
+
+    expect(preloadHrefs).not.toContainEqual(expect.stringContaining("latin-ext"));
+    expect(preloadHrefs).not.toContainEqual(expect.stringContaining("cyrillic"));
+    expect(preloadHrefs).not.toContainEqual(expect.stringContaining("vietnamese"));
+  });
+
+  it("keeps first-render country names within the preloaded Geist Latin subset", () => {
+    const unsupportedCountryCharacters = countryFixtures.flatMap((country) =>
+      [...country.name]
+        .filter(
+          (character) =>
+            character.codePointAt(0)! > geistLatinSubsetMaxCodePoint,
+        )
+        .map((character) => `${country.name}: ${character}`),
+    );
+
+    expect(unsupportedCountryCharacters).toEqual([]);
   });
 
   it("renders friendly generic error copy", () => {

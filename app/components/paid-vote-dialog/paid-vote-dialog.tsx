@@ -137,7 +137,7 @@ const styles = {
   checkoutError:
     "rounded-base border-2 border-border bg-vote-dislike px-3 py-2 text-sm font-bold text-main-foreground",
   checkoutFooter: "mt-3",
-  payButton: "min-w-32",
+  payButton: "min-w-32 bg-accent-highlight text-foreground",
   payButtonIcon: "size-4",
 } as const;
 

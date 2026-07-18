@@ -21,6 +21,14 @@ const checkoutIntent = {
   voteType: "like" as const,
 };
 
+const getSubmitButtonClassName = (html: string) => {
+  const buttonTag = html.match(/<button[^>]*type="submit"[^>]*>/)?.[0];
+
+  expect(buttonTag).toBeDefined();
+
+  return buttonTag?.match(/class="([^"]*)"/)?.[1] ?? "";
+};
+
 describe("PaidVoteDialog", () => {
   it("renders an applied paid vote with country, vote type, and updated totals", () => {
     const html = renderToString(
@@ -143,6 +151,19 @@ describe("PaidVoteDialog", () => {
     expect(text).toContain("Pay $1");
     expect(html).toContain('data-slot="dialog-footer"');
     expect(html).toContain("mt-3");
+  });
+
+  it("renders the checkout submit action with the yellow accent highlight", () => {
+    const html = renderToString(
+      <Dialog open>
+        <PaidVoteDialogBody intent={checkoutIntent} />
+      </Dialog>,
+    );
+
+    const payButtonClassName = getSubmitButtonClassName(html);
+
+    expect(payButtonClassName).toContain("bg-accent-highlight");
+    expect(payButtonClassName).toContain("text-foreground");
   });
 
   it("requests checkout and returns the checkout URL", async () => {

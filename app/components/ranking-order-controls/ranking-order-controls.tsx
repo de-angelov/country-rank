@@ -4,8 +4,11 @@ import { ArrowDownWideNarrow, ArrowUpNarrowWide } from "lucide-react";
 
 import { Button } from "~/components/ui/button";
 import type { Country } from "~/countries";
+import { cn } from "~/lib/utils";
 
 export type RankingOrder = "highest-first" | "lowest-first";
+
+const selectedOrderButtonClassName = "bg-accent-highlight text-foreground";
 
 type RankingOrderOption = Readonly<{
   order: RankingOrder;
@@ -95,7 +98,10 @@ export function RankingOrderControls({
             <Button
               aria-label={option.label}
               aria-pressed={isSelected}
-              className="size-10 shadow-shadow"
+              className={cn(
+                "size-10 shadow-shadow",
+                isSelected && selectedOrderButtonClassName,
+              )}
               key={option.order}
               onClick={() => onOrderChange(option.order)}
               size="icon"

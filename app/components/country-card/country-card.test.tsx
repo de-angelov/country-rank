@@ -31,7 +31,7 @@ describe("CountryCard", () => {
     expect(html).toContain('width="320"');
     expect(html).toContain('height="240"');
     expect(html).toContain(
-      'class="aspect-[4/3] min-h-24 sm:min-h-0"',
+      'class="flex aspect-[4/3] min-h-24 items-center justify-center sm:min-h-0"',
     );
     expect(html).not.toContain(
       'class="aspect-[4/3] min-h-24 bg-background',
@@ -50,7 +50,14 @@ describe("CountryCard", () => {
     );
     expect(html).toContain("object-contain");
     expect(html).not.toContain("object-cover");
-    expect(html).toContain("p-1");
+    expect(html).toContain(
+      'class="inline-flex max-h-full max-w-full rounded-base border-2 border-border"',
+    );
+    expect(html).toContain(
+      'class="block h-auto max-h-full max-w-full object-contain"',
+    );
+    expect(html).not.toContain("border-2 border-border object-contain");
+    expect(html).not.toContain("object-contain p-1");
     expect(html).not.toContain("[filter:");
     expect(html).not.toContain("drop-shadow");
     expect(html).not.toContain("drop-shadow(2px_0_0_#000)");

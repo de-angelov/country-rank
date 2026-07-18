@@ -30,8 +30,11 @@ const localFlagPaths = flagAssets.flags as Record<string, string>;
 const styles = {
   article: "grid gap-4 bg-secondary-background p-4",
   header: "grid gap-4 sm:grid-cols-[minmax(7rem,10rem)_1fr] sm:items-center",
-  flagFrame: "aspect-[4/3] min-h-24 sm:min-h-0",
-  flagImage: "h-full w-full object-contain p-1",
+  flagFrame:
+    "flex aspect-[4/3] min-h-24 items-center justify-center sm:min-h-0",
+  flagOutline:
+    "inline-flex max-h-full max-w-full rounded-base border-2 border-border",
+  flagImage: "block h-auto max-h-full max-w-full object-contain",
   textBlock: "min-w-0",
   title: "truncate text-xl font-heading",
   capital: "mt-1 text-sm",
@@ -120,14 +123,16 @@ export function CountryCard({
         <article className={cn(styles.article, className)}>
           <div className={styles.header}>
             <div className={styles.flagFrame}>
-              <img
-                src={getCountryCardFlagImageUrl(country)}
-                alt={`${country.name} flag`}
-                className={styles.flagImage}
-                width="320"
-                height="240"
-                loading="lazy"
-              />
+              <div className={styles.flagOutline}>
+                <img
+                  src={getCountryCardFlagImageUrl(country)}
+                  alt={`${country.name} flag`}
+                  className={styles.flagImage}
+                  width="320"
+                  height="240"
+                  loading="lazy"
+                />
+              </div>
             </div>
 
             <div className={styles.textBlock}>

@@ -20,11 +20,13 @@ Country Ranking is a TypeScript React Router framework-mode app for browsing cou
   Regenerate them with `npm run download:country-flags`; the script preserves
   the downloaded source format, names files by ISO alpha-2 code, and writes the
   `public/flag-assets.json` manifest with local public paths for runtime use.
-- Country-card flags render the local manifest asset directly and apply a
-  layered CSS `drop-shadow(...)` treatment to the image. The shadow follows the
-  rendered alpha silhouette for transparent or non-rectangular artwork without
-  adding SVG strokes to internal stripes, emblems, or diagonal boundaries. For
-  normal rectangular flags, the visible artwork silhouette is the flag rectangle.
+- Stroked country flag variants are generated under `public/flags/stroked/`
+  with `npm run stroke:country-flags`. The script appends one non-scaling black
+  SVG viewport rectangle after the original flag artwork and updates
+  `public/flag-assets.json` only after every manifest flag has a stroked
+  variant. Country cards use `strokedFlags` only when that generated mapping
+  covers the full local flag catalog; otherwise they fall back to the original
+  local flag paths, then to the country record's remote `flagImageUrl`.
 - App shell banner variants live under `public/images/banner/` and are
   generated from `public/images/country-ranking-banner-v7.png` in 960, 1600,
   and 2400 pixel widths as AVIF, WebP, and PNG fallback files. Regenerate them

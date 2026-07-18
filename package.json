@@ -12,6 +12,7 @@
     "generate:banner-assets": "node scripts/generate-banner-assets.mjs",
     "generate:country-fixtures": "node scripts/generate-country-fixtures.mjs",
     "download:country-flags": "node scripts/download-country-flags.mjs",
+    "stroke:country-flags": "node scripts/stroke-country-flags.mjs",
     "lint": "react-router typegen && eslint . --max-warnings=0",
     "redis:backup:sidecar": "node scripts/redis-backup-sidecar.mjs",
     "restore:redis:local": "node scripts/local-redis-restore.mjs",

@@ -26,7 +26,8 @@ describe("CountryCard", () => {
       "Vending machines, bullet trains, and stationery with main-character energy.",
     );
     expect(html).toContain("Japan flag");
-    expect(html).toContain('src="/flags/JP.svg"');
+    expect(html).toContain('src="/flags/stroked/JP.svg"');
+    expect(html).not.toContain('src="/flags/JP.svg"');
     expect(html).not.toContain('src="https://example.com/japan.svg"');
     expect(html).toContain('width="320"');
     expect(html).toContain('height="240"');

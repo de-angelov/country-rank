@@ -25,7 +25,17 @@ const voteIconSymbolIds = {
   dislike: "country-card-thumbs-down",
   like: "country-card-thumbs-up",
 } as const satisfies Record<VoteType, string>;
-const localFlagPaths = flagAssets.flags as Record<string, string>;
+const flagAssetManifest = flagAssets as {
+  flags: Record<string, string>;
+  strokedFlags?: Record<string, string>;
+};
+const localFlagPaths = flagAssetManifest.flags;
+const localStrokedFlagPaths =
+  flagAssetManifest.strokedFlags &&
+  Object.keys(flagAssetManifest.strokedFlags).length ===
+    Object.keys(localFlagPaths).length
+    ? flagAssetManifest.strokedFlags
+    : {};
 
 const styles = {
   article: "grid gap-4 bg-secondary-background p-4",
@@ -94,7 +104,11 @@ function CountryCardVoteIcon({ voteType }: { voteType: VoteType }) {
 }
 
 export function getCountryCardFlagImageUrl(country: Country) {
-  return localFlagPaths[country.code] ?? country.flagImageUrl;
+  return (
+    localStrokedFlagPaths[country.code] ??
+    localFlagPaths[country.code] ??
+    country.flagImageUrl
+  );
 }
 
 export function CountryCard({

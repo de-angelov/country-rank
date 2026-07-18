@@ -61,8 +61,8 @@ const sleep = (ms, { signal }) =>
 
 const runBackup = ({ dryRun, signal }) =>
   new Promise((resolve, reject) => {
-    const mode = dryRun ? "--dry-run" : "--push";
-    const child = spawn("npm", ["run", "backup:redis", "--", mode], {
+    const scriptName = dryRun ? "redis:backup:dry-run" : "redis:backup:push";
+    const child = spawn("npm", ["run", scriptName], {
       env: process.env,
       stdio: "inherit",
     });

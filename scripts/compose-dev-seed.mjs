@@ -181,7 +181,7 @@ export const seedRedisVotes = async ({
   for (let attempt = 1; attempt <= seedAttempts; attempt += 1) {
     const exitCode = await commandRunner(
       "npm",
-      ["run", "seed:redis:votes"],
+      ["run", "redis:seed"],
       {
         env: {
           ...env,

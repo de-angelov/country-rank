@@ -54,10 +54,22 @@ Country Ranking is a TypeScript React Router framework-mode app for browsing cou
 - Start the local Redis dependency with `docker compose up -d redis`.
 - The development Compose service exposes Redis at `redis://localhost:4000`.
 - Copy `.env.example` to `.env` or otherwise set `REDIS_URL=redis://localhost:4000` before running app flows that read or write vote totals.
-- Seed the local country catalog and dummy vote totals from the current country fixtures with `REDIS_URL=redis://localhost:4000 npm run seed:redis:votes`.
+- Seed the local country catalog and dummy vote totals from the current country fixtures with `REDIS_URL=redis://localhost:4000 npm run redis:seed`.
 - Redis data is persisted in the `redis-data` Docker volume across container restarts.
 
 ### Full App Docker Compose Development
+
+Common Compose scripts are grouped by environment:
+
+| Script | Use |
+| --- | --- |
+| `npm run compose:dev` | Start the local dev app and Redis in attached mode. |
+| `npm run compose:dev:seed` | Start the local dev app and Redis in detached mode, then seed Redis. |
+| `npm run compose:prod` | Start the production-style app, Redis, and backup sidecar in detached mode. |
+| `npm run compose:prod:update` | Pull the latest code, stop the prod stack without deleting volumes, and restart it. |
+| `npm run compose:prod:down` | Stop the prod stack without deleting Redis data volumes. |
+| `npm run compose:prod:ps` | Show prod stack container status. |
+| `npm run compose:prod:logs` | Follow prod app, Redis, and backup sidecar logs. |
 
 Run the web app and Redis together with:
 
@@ -86,7 +98,7 @@ npm run compose:dev:seed
 ```
 
 The `compose:dev:seed` preset starts the Compose `app` and `redis` services in
-the background, then runs the existing `seed:redis:votes` command against the
+the background, then runs the `redis:seed` command against the
 host-mapped Compose Redis instance. The seed writes the `country:catalog` JSON
 document with metadata-only country records, refreshes `country:votes:likes`,
 and refreshes `country:votes:dislikes`. It honors the same port overrides as
@@ -105,12 +117,12 @@ For production-style local execution through Compose, run:
 npm run compose:prod
 ```
 
-The `compose:prod` preset starts the Compose `app-prod` and `redis` services.
-The `app-prod` service runs `npm install`, `npm run build`, and then
-`npm run start` with `HOST=0.0.0.0` and `PORT=3000`. It uses the same
-`APP_HOST_PORT` host override as the dev preset, so the default URL is
-`http://localhost:3000` and an override such as
-`APP_HOST_PORT=3001 npm run compose:prod` exposes the app at
+The `compose:prod` preset starts the Compose `app-prod`, `redis`, and
+`redis-backup` services in detached mode with the `backup` profile enabled. The
+`app-prod` service runs `npm install`, `npm run build`, and then `npm run start`
+with `HOST=0.0.0.0` and `PORT=3000`. It uses the same `APP_HOST_PORT` host
+override as the dev preset, so the default URL is `http://localhost:3000` and
+an override such as `APP_HOST_PORT=3001 npm run compose:prod` exposes the app at
 `http://localhost:3001`.
 
 Use `compose:dev` while changing app code and `compose:prod` when checking the
@@ -122,7 +134,7 @@ standalone seed command:
 
 ```sh
 docker compose up -d redis
-REDIS_URL=redis://localhost:4000 npm run seed:redis:votes
+REDIS_URL=redis://localhost:4000 npm run redis:seed
 ```
 
 Redis-only development still uses `docker compose up -d redis` and does not
@@ -148,13 +160,13 @@ Runtime and integration variables currently supported by the app and scripts:
 | `STRIPE_SECRET_KEY` | Local test-mode Stripe Checkout creation work. | Server-side checkout helpers | `sk_test_replace_with_local_test_secret` |
 | `REDIS_BACKUP_SIDECAR_ENABLED` | Optional when running the Compose `backup` profile. Must be truthy to run backups from the sidecar. | Redis backup sidecar | `false` |
 | `REDIS_BACKUP_CADENCE_SECONDS` | Optional when the backup sidecar loops instead of running once. | Redis backup sidecar | `86400` |
-| `REDIS_BACKUP_DRY_RUN` | Optional when running the backup sidecar. Set to `false` only for GitHub-backed push mode. | Redis backup sidecar | `true` |
+| `REDIS_BACKUP_DRY_RUN` | Optional when running the backup sidecar. Set to `false` only for Git-backed push mode. | Redis backup sidecar | `true` |
 | `REDIS_BACKUP_SIDECAR_RUN_ONCE` | Optional when running the backup sidecar. | Redis backup sidecar | `false` |
-| `REDIS_BACKUP_GITHUB_REPOSITORY` | GitHub-backed backup push mode, including sidecar push mode. | Redis backup runner and sidecar | Empty placeholder |
-| `REDIS_BACKUP_GITHUB_TOKEN` | GitHub-backed backup push mode, including sidecar push mode. | Redis backup runner and sidecar | Empty placeholder |
-| `REDIS_BACKUP_BRANCH` | Optional for GitHub-backed backup push mode. | Redis backup runner and sidecar | `main` |
-| `REDIS_BACKUP_PATH` | Optional for GitHub-backed backup push mode. | Redis backup runner and sidecar | `redis` |
-| `REDIS_BACKUP_RETENTION_COUNT` | Optional for GitHub-backed backup push mode. | Redis backup runner and sidecar | `30` |
+| `REDIS_BACKUP_GIT_REPOSITORY` | Git-backed backup push mode. Supports full Git URLs or GitHub `owner/repo` shorthand. Use an SSH URL when the sidecar uses the mounted deploy key. | Redis backup runner and sidecar | `git@github.com:de-angelov/country-ranking.online-backups.git` |
+| `REDIS_BACKUP_SSH_KEY_PATH` | Git-over-SSH backup sidecar push mode. Host path to the private deploy key mounted read-only into `redis-backup`. | Docker Compose `redis-backup` service | `/home/deploy/.ssh/country_rank_backup_key` |
+| `REDIS_BACKUP_BRANCH` | Optional for Git-backed backup push mode. | Redis backup runner and sidecar | `main` |
+| `REDIS_BACKUP_PATH` | Optional for Git-backed backup push mode. | Redis backup runner and sidecar | `redis` |
+| `REDIS_BACKUP_RETENTION_COUNT` | Optional for Git-backed backup push mode. | Redis backup runner and sidecar | `30` |
 
 Configuration by workflow:
 
@@ -165,7 +177,7 @@ Configuration by workflow:
 | Stripe checkout request validation | `STRIPE_SECRET_KEY`; use only a Stripe test-mode `sk_test_...` secret for local checkout work. |
 | Stripe webhook verification | `STRIPE_WEBHOOK_SECRET`; webhook vote application also needs `REDIS_URL`. |
 | Redis backup dry-run | No GitHub variables; set `REDIS_URL` when targeting anything other than local Redis. |
-| GitHub-backed Redis backup push | `REDIS_BACKUP_GITHUB_REPOSITORY` and `REDIS_BACKUP_GITHUB_TOKEN`; set `REDIS_URL` for the source Redis instance and override branch/path/retention only when needed. |
+| Git-backed Redis backup push | `REDIS_BACKUP_GIT_REPOSITORY` and existing Git credentials with write access; for the Compose sidecar, set `REDIS_BACKUP_SSH_KEY_PATH` to a host deploy key with write access. Set `REDIS_URL` for the source Redis instance and override branch/path/retention only when needed. |
 
 The shared server logger emits newline-delimited JSON through Pino so platform
 stdout/stderr collectors can ingest structured app logs. It redacts configured
@@ -183,10 +195,22 @@ session creation is not implemented yet. Use only Stripe test-mode
 
 ### Redis Backup Runner
 
-The Redis backup runner is available through `npm run backup:redis`. It exports
+Redis maintenance scripts are grouped under `redis:*`:
+
+| Script | Use |
+| --- | --- |
+| `npm run redis:seed` | Seed local/demo Redis country catalog and vote totals. |
+| `npm run redis:backup:dry-run` | Export a local backup artifact under `tmp/redis-backups`. |
+| `npm run redis:backup:push` | Export and push a backup artifact to the configured Git repository. |
+| `npm run redis:restore` | Restore a selected artifact into `REDIS_URL`. |
+| `npm run redis:restore:local` | Restore a selected artifact into the local Compose Redis port. |
+| `npm run redis:backup:sidecar` | Internal sidecar loop used by the Compose backup service. |
+
+The Redis backup runner is available through `npm run redis:backup:dry-run` and
+`npm run redis:backup:push`. It exports
 `country:catalog`, `country:votes:likes`, and `country:votes:dislikes` to a
-timestamped JSON artifact. Real backup credentials must be supplied through
-environment variables and must never be committed to the repository.
+timestamped JSON artifact. Push mode writes to the configured Git repository
+using the Git credentials available to the runtime.
 
 Backup artifacts are JSON files named with the backup timestamp, for example
 `2026-07-16T12-00-00-000Z-country-votes.json`. Each schema v2 artifact records
@@ -198,8 +222,7 @@ Environment variables read by the runner:
 | Variable | Required | Used for | Default |
 | --- | --- | --- | --- |
 | `REDIS_URL` | Optional | Redis connection URL for dry-run and push modes. | `redis://localhost:4000` |
-| `REDIS_BACKUP_GITHUB_REPOSITORY` | Required for `--push` only | Backup repository destination as `owner/repo` or an `https://github.com/...` URL. | None |
-| `REDIS_BACKUP_GITHUB_TOKEN` | Required for `--push` only | GitHub token used to clone and push to the backup repository. | None |
+| `REDIS_BACKUP_GIT_REPOSITORY` | Required for `--push` only | Backup Git repository destination. Supports full Git URLs or GitHub `owner/repo` shorthand. | None |
 | `REDIS_BACKUP_BRANCH` | Optional | Branch to clone and push in the backup repository. | `main` |
 | `REDIS_BACKUP_PATH` | Optional | Relative directory inside the backup repository where artifacts are stored. | `redis` |
 | `REDIS_BACKUP_RETENTION_COUNT` | Optional | Number of newest backup artifacts to keep during push mode. | `30` |
@@ -208,54 +231,57 @@ Create a local backup artifact from the current Redis state with dry-run mode.
 This does not require GitHub backup credentials:
 
 1. Start local Redis with `docker compose up -d redis`.
-2. Seed demo vote totals if needed with `REDIS_URL=redis://localhost:4000 npm run seed:redis:votes`.
-3. Run `REDIS_URL=redis://localhost:4000 npm run backup:redis -- --dry-run`.
+2. Seed demo vote totals if needed with `REDIS_URL=redis://localhost:4000 npm run redis:seed`.
+3. Run `REDIS_URL=redis://localhost:4000 npm run redis:backup:dry-run`.
 4. Confirm the command prints `Created Redis backup artifact:` and `Exported Redis country catalog and ... country vote total(s).`.
 5. Inspect the generated JSON file under `tmp/redis-backups/`.
 
-Push a backup artifact to GitHub-backed storage by running the same script with
-`--push` in an environment that provides the backup repository and token:
+Push a backup artifact to Git-backed storage by running the same script with
+`--push` in an environment whose Git configuration can write to the configured
+backup repository:
 
 ```sh
 REDIS_URL=redis://localhost:4000 \
-REDIS_BACKUP_GITHUB_REPOSITORY=owner/repo \
-REDIS_BACKUP_GITHUB_TOKEN=github-token-with-repository-write-access \
-npm run backup:redis -- --push
+REDIS_BACKUP_GIT_REPOSITORY=git@github.com:de-angelov/country-ranking.online-backups.git \
+npm run redis:backup:push
 ```
 
-The token must come from the deployment environment, local shell, or a secret
-store injected as an environment variable. Do not place GitHub tokens, Redis
-URLs, or generated backup artifacts in tracked source files. The backup
-repository may be private; the token only needs enough access to clone the
-configured branch and push commits containing files under `REDIS_BACKUP_PATH`.
+Do not place GitHub credentials, Redis URLs, or generated backup artifacts in
+tracked source files. The configured Git account needs enough access to clone
+the backup repository branch and push commits containing files under
+`REDIS_BACKUP_PATH`.
 
 For a new deployment, configure these prerequisites before relying on Redis vote
 backups:
 
 1. Provision the deployment Redis instance and expose its connection string as
    `REDIS_URL`.
-2. Create or choose a GitHub repository and branch for backup artifacts.
-3. Supply `REDIS_BACKUP_GITHUB_REPOSITORY` and `REDIS_BACKUP_GITHUB_TOKEN` as
-   environment variables in the job or runtime that executes `npm run backup:redis -- --push`.
-4. Optionally set `REDIS_BACKUP_BRANCH`, `REDIS_BACKUP_PATH`, and
+2. Set `REDIS_BACKUP_GIT_REPOSITORY` to the backup repository destination and
+   ensure the runtime Git account can clone and push to it.
+3. For the Docker Compose sidecar, create a dedicated SSH deploy key on the VM,
+   add its public key to the backup repository with write access, and set
+   `REDIS_BACKUP_SSH_KEY_PATH` to the host private-key path.
+4. Use the `main` backup branch unless `REDIS_BACKUP_BRANCH` is explicitly
+   changed.
+5. Optionally set `REDIS_BACKUP_BRANCH`, `REDIS_BACKUP_PATH`, and
    `REDIS_BACKUP_RETENTION_COUNT` to match the backup repository layout and
    retention policy.
-5. Run a one-off `--dry-run` against the deployment Redis URL to confirm Redis
+6. Run a one-off `--dry-run` against the deployment Redis URL to confirm Redis
    connectivity without using GitHub credentials.
-6. Run `--push` once and confirm a timestamped `*-country-votes.json` artifact
+7. Run `--push` once and confirm a timestamped `*-country-votes.json` artifact
    appears in the configured backup repository path.
 
 Backup artifacts are the recovery path for Redis country data. The dummy seed
 script remains a fallback for demo and local reset scenarios only:
 
 ```sh
-REDIS_URL=redis://localhost:4000 npm run seed:redis:votes
+REDIS_URL=redis://localhost:4000 npm run redis:seed
 ```
 
 The seed script reloads fixture country metadata and vote totals into Redis. It
 is not a production restore path and should not be used as evidence that a
 GitHub backup artifact can be recovered into a live deployment. Use
-`npm run restore:redis` or `npm run restore:redis:local` with a backup artifact
+`npm run redis:restore` or `npm run redis:restore:local` with a backup artifact
 when validating backup recovery.
 
 ### Redis Backup Sidecar
@@ -266,7 +292,7 @@ backup runner on a cadence. Normal local development does not start the sidecar:
 default because `REDIS_BACKUP_SIDECAR_ENABLED` defaults to `false`.
 
 The sidecar runs `npm run redis:backup:sidecar`, which starts
-`npm run backup:redis` with either `--dry-run` or `--push`. The runner variables
+`npm run redis:backup:dry-run` or `npm run redis:backup:push`. The runner variables
 documented in [Redis Backup Runner](#redis-backup-runner) pass through the
 sidecar environment; keep the runner section as the source of truth for backup
 repository, branch, path, retention, and credential behavior.
@@ -280,8 +306,8 @@ Docker Compose environment variables used by the sidecar:
 | `REDIS_BACKUP_CADENCE_SECONDS` | Optional | Delay between backup runs when the sidecar is enabled and not running once. Must be a positive integer. | `86400` |
 | `REDIS_BACKUP_DRY_RUN` | Optional | Runs the backup runner with `--dry-run` when truthy, or `--push` when false. | `true` |
 | `REDIS_BACKUP_SIDECAR_RUN_ONCE` | Optional | Runs one backup and exits when truthy; otherwise repeats after each cadence delay. | `false` |
-| `REDIS_BACKUP_GITHUB_REPOSITORY` | Required only when `REDIS_BACKUP_DRY_RUN=false` | Passed to the backup runner for GitHub-backed push mode. | Empty |
-| `REDIS_BACKUP_GITHUB_TOKEN` | Required only when `REDIS_BACKUP_DRY_RUN=false` | Passed to the backup runner for GitHub-backed push mode. | Empty |
+| `REDIS_BACKUP_GIT_REPOSITORY` | Required when `REDIS_BACKUP_DRY_RUN=false` | Passed to the backup runner as the backup Git repository destination. | Empty |
+| `REDIS_BACKUP_SSH_KEY_PATH` | Required for sidecar Git-over-SSH push mode | Host private key mounted read-only at `/run/secrets/backup_ssh_key`. | `/dev/null` |
 | `REDIS_BACKUP_BRANCH` | Optional | Passed to the backup runner as the backup repository branch. | `main` |
 | `REDIS_BACKUP_PATH` | Optional | Passed to the backup runner as the relative artifact directory in the backup repository. | `redis` |
 | `REDIS_BACKUP_RETENTION_COUNT` | Optional | Passed to the backup runner as the number of newest artifacts to keep in push mode. | `30` |
@@ -291,7 +317,7 @@ credentials:
 
 ```sh
 docker compose up -d redis
-REDIS_URL=redis://localhost:4000 npm run seed:redis:votes
+REDIS_URL=redis://localhost:4000 npm run redis:seed
 REDIS_BACKUP_SIDECAR_ENABLED=true \
 REDIS_BACKUP_DRY_RUN=true \
 REDIS_BACKUP_SIDECAR_RUN_ONCE=true \
@@ -302,19 +328,36 @@ The sidecar should print `Created Redis backup artifact:` and
 `Exported Redis country catalog and ... country vote total(s).`, then exit successfully. Inspect the
 generated JSON file under `tmp/redis-backups/`.
 
+For sidecar push mode on a VM, create a deploy key and configure the backup repo
+before setting `REDIS_BACKUP_DRY_RUN=false`:
+
+```sh
+ssh-keygen -t ed25519 -f ~/.ssh/country_rank_backup_key -C "country-rank-backups"
+cat ~/.ssh/country_rank_backup_key.pub
+```
+
+Add the public key to the backup repository as a deploy key with write access,
+then set:
+
+```sh
+REDIS_BACKUP_DRY_RUN=false
+REDIS_BACKUP_GIT_REPOSITORY=git@github.com:de-angelov/country-ranking.online-backups.git
+REDIS_BACKUP_SSH_KEY_PATH=/home/<vm-user>/.ssh/country_rank_backup_key
+```
+
 For regular local app work, leave the `backup` profile off and keep
 `REDIS_BACKUP_SIDECAR_ENABLED` unset or set to `false`. If the profile is
 started accidentally while the sidecar remains disabled, the service exits after
 printing that `REDIS_BACKUP_SIDECAR_ENABLED` is not enabled.
 
-Supply secrets only through environment variables from the shell, runtime, or
-secret manager. Do not commit GitHub tokens, Redis URLs, `.env` files containing
-secrets, or generated backup artifacts.
+Supply Git credentials through the server or container runtime, not through
+tracked files. Do not commit GitHub credentials, Redis URLs, `.env` files
+containing secrets, or generated backup artifacts.
 
 ### Local Redis Restore
 
 The local Redis restore wrapper is available through
-`npm run restore:redis:local`. It restores an existing optimized backup artifact
+`npm run redis:restore:local`. It restores an existing optimized backup artifact
 into the Redis service already running through Docker Compose. Optimized schema
 v2 artifacts contain the metadata-only `country:catalog` JSON document and the
 aggregate `country:votes:likes` and `country:votes:dislikes` hashes created by
@@ -326,7 +369,7 @@ Run the local restore flow with:
 
 ```sh
 docker compose up -d redis
-npm run restore:redis:local -- ./path/to/2026-07-16T12-00-00-000Z-country-votes.json
+npm run redis:restore:local -- ./path/to/2026-07-16T12-00-00-000Z-country-votes.json
 docker compose exec redis redis-cli EXISTS country:catalog country:votes:likes country:votes:dislikes
 docker compose exec redis redis-cli STRLEN country:catalog
 docker compose exec redis redis-cli HLEN country:votes:likes
@@ -343,27 +386,27 @@ and restore:
 
 ```sh
 REDIS_HOST_PORT=4001 docker compose up -d redis
-REDIS_HOST_PORT=4001 npm run restore:redis:local -- ./path/to/2026-07-16T12-00-00-000Z-country-votes.json
+REDIS_HOST_PORT=4001 npm run redis:restore:local -- ./path/to/2026-07-16T12-00-00-000Z-country-votes.json
 ```
 
 The local wrapper is a restore command, not a seed reset. It reads a selected
 optimized backup artifact and replaces the country catalog plus the aggregate
 like and dislike vote hashes represented by that artifact. `npm run
-seed:redis:votes` reloads fixture/demo data and should only be used as an
+redis:seed` reloads fixture/demo data and should only be used as an
 explicit local reset fallback when that is the intended behavior.
 
 ### Redis Restore Runner
 
-The Redis restore runner is available through `npm run restore:redis`. It reads
+The Redis restore runner is available through `npm run redis:restore`. It reads
 one backup artifact created by the [Redis backup runner](#redis-backup-runner),
 validates the artifact shape, writes the `country:catalog` JSON document, and
 replaces the `country:votes:likes` and `country:votes:dislikes` hashes.
 
 The restore runner expects the backup artifact to already be present on the
-machine where the command runs. When the artifact is stored in a GitHub-backed
-backup repository, retrieve it with repository access supplied by the shell,
-deployment job, or secret manager environment. Do not commit GitHub tokens,
-Redis URLs, downloaded artifacts, or temporary restore files to this repository.
+machine where the command runs. When the artifact is stored in the Git-backed
+backup repository, retrieve it with repository access supplied by the shell or
+deployment job. Do not commit GitHub credentials, Redis URLs, downloaded
+artifacts, or temporary restore files to this repository.
 
 Environment variables read by the restore command:
 
@@ -375,7 +418,7 @@ Run a restore against a target Redis instance with:
 
 ```sh
 REDIS_URL=redis://target-redis-host:6379 \
-npm run restore:redis -- ./path/to/2026-07-16T12-00-00-000Z-country-votes.json
+npm run redis:restore -- ./path/to/2026-07-16T12-00-00-000Z-country-votes.json
 ```
 
 The command prints `Restored country:catalog and 2 Redis country vote hash(es).`
@@ -389,11 +432,10 @@ an option:
 1. Provision the new Redis instance and expose its connection string to the
    restore environment as `REDIS_URL`.
 2. Follow the [backup prerequisites](#redis-backup-runner) to identify the
-   GitHub backup repository, branch, path, and artifact naming convention.
+   backup repository, branch, path, and artifact naming convention.
 3. Retrieve the selected `*-country-votes.json` artifact from the backup
-   repository using GitHub credentials supplied through environment variables or
-   the deployment platform's secret injection.
-4. Run `npm run restore:redis -- <artifact-path>` with `REDIS_URL` pointing at
+   repository using the runtime's GitHub credentials.
+4. Run `npm run redis:restore -- <artifact-path>` with `REDIS_URL` pointing at
    the new Redis instance.
 5. Start the app against that same `REDIS_URL` and verify the country pages show
    the restored vote totals.
@@ -402,9 +444,9 @@ Use Docker Compose Redis for a local backup-and-restore round trip:
 
 ```sh
 docker compose up -d redis
-REDIS_URL=redis://localhost:4000 npm run seed:redis:votes
-REDIS_URL=redis://localhost:4000 npm run backup:redis -- --dry-run
-npm run restore:redis:local -- tmp/redis-backups/<generated-backup-file>.json
+REDIS_URL=redis://localhost:4000 npm run redis:seed
+REDIS_URL=redis://localhost:4000 npm run redis:backup:dry-run
+npm run redis:restore:local -- tmp/redis-backups/<generated-backup-file>.json
 docker compose exec redis redis-cli EXISTS country:catalog country:votes:likes country:votes:dislikes
 docker compose exec redis redis-cli STRLEN country:catalog
 docker compose exec redis redis-cli HLEN country:votes:likes
@@ -412,8 +454,8 @@ docker compose exec redis redis-cli HLEN country:votes:dislikes
 ```
 
 The dummy seed command in this local example is only there to create demo data
-before the dry-run backup. For deployment recovery, restore from a GitHub-backed
-backup artifact first. Use `npm run seed:redis:votes` only as an explicit
+before the dry-run backup. For deployment recovery, restore from a Git-backed
+backup artifact first. Use `npm run redis:seed` only as an explicit
 demo/local reset fallback when no production backup artifact exists or the
 environment is intentionally non-production.
 

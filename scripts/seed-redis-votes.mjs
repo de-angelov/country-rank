@@ -10,7 +10,7 @@ const redisUrlEnvVar = "REDIS_URL";
 const fixtureUrl = new URL("../app/countries/fixtures.ts", import.meta.url);
 
 const usage = `Usage:
-  REDIS_URL=redis://localhost:4000 npm run seed:redis:votes
+  REDIS_URL=redis://localhost:4000 npm run redis:seed
 
 Environment:
   REDIS_URL    Redis connection URL.

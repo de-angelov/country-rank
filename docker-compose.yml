@@ -51,22 +51,33 @@ services:
     image: node:20-alpine
     profiles: ["backup"]
     working_dir: /workspace
-    command: ["npm", "run", "redis:backup:sidecar"]
+    command:
+      [
+        "sh",
+        "-c",
+        "apk add --no-cache git openssh-client && npm install && npm run redis:backup:sidecar",
+      ]
     depends_on:
       - redis
     environment:
       REDIS_URL: redis://redis:6379
+      GIT_SSH_COMMAND: ssh -i /run/secrets/backup_ssh_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new -o UserKnownHostsFile=/tmp/known_hosts
       REDIS_BACKUP_SIDECAR_ENABLED: ${REDIS_BACKUP_SIDECAR_ENABLED:-false}
       REDIS_BACKUP_CADENCE_SECONDS: ${REDIS_BACKUP_CADENCE_SECONDS:-86400}
       REDIS_BACKUP_DRY_RUN: ${REDIS_BACKUP_DRY_RUN:-true}
       REDIS_BACKUP_SIDECAR_RUN_ONCE: ${REDIS_BACKUP_SIDECAR_RUN_ONCE:-false}
-      REDIS_BACKUP_GITHUB_REPOSITORY: ${REDIS_BACKUP_GITHUB_REPOSITORY:-}
-      REDIS_BACKUP_GITHUB_TOKEN: ${REDIS_BACKUP_GITHUB_TOKEN:-}
+      REDIS_BACKUP_GIT_REPOSITORY: ${REDIS_BACKUP_GIT_REPOSITORY:-}
       REDIS_BACKUP_BRANCH: ${REDIS_BACKUP_BRANCH:-main}
       REDIS_BACKUP_PATH: ${REDIS_BACKUP_PATH:-redis}
       REDIS_BACKUP_RETENTION_COUNT: ${REDIS_BACKUP_RETENTION_COUNT:-30}
     volumes:
       - .:/workspace
+      - type: bind
+        source: ${REDIS_BACKUP_SSH_KEY_PATH:-/dev/null}
+        target: /run/secrets/backup_ssh_key
+        read_only: true
+        bind:
+          create_host_path: false
 
 volumes:
   app-node-modules:

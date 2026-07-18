@@ -24,21 +24,19 @@ const timestampPattern = /^\d{4}-\d{2}-\d{2}T\d{2}-\d{2}-\d{2}-\d{3}Z-country-vo
 
 const envNames = {
   redisUrl: "REDIS_URL",
-  repository: "REDIS_BACKUP_GITHUB_REPOSITORY",
-  token: "REDIS_BACKUP_GITHUB_TOKEN",
+  repository: "REDIS_BACKUP_GIT_REPOSITORY",
   branch: "REDIS_BACKUP_BRANCH",
   backupPath: "REDIS_BACKUP_PATH",
   retentionCount: "REDIS_BACKUP_RETENTION_COUNT",
 };
 
 const usage = `Usage:
-  npm run backup:redis -- --dry-run
-  npm run backup:redis -- --push
+  npm run redis:backup:dry-run
+  npm run redis:backup:push
 
 Environment:
   REDIS_URL                         Redis connection URL. Default: redis://localhost:4000
-  REDIS_BACKUP_GITHUB_REPOSITORY    GitHub HTTPS URL or owner/repo destination for push mode.
-  REDIS_BACKUP_GITHUB_TOKEN         GitHub token for push mode.
+  REDIS_BACKUP_GIT_REPOSITORY       Git repository URL or GitHub owner/repo destination for push mode.
   REDIS_BACKUP_BRANCH               Backup repository branch. Default: main
   REDIS_BACKUP_PATH                 Directory in backup repository. Default: redis
   REDIS_BACKUP_RETENTION_COUNT      Number of newest backups to keep in push mode. Default: 30
@@ -152,17 +150,11 @@ const writeBackupArtifact = async ({ artifactDirectory, backup, fileName }) => {
 };
 
 const normalizeRepositoryUrl = (repository) => {
-  if (repository.startsWith("https://github.com/")) {
-    return repository.endsWith(".git") ? repository : `${repository}.git`;
-  }
-
   if (/^[A-Za-z0-9_.-]+\/[A-Za-z0-9_.-]+$/.test(repository)) {
     return `https://github.com/${repository}.git`;
   }
 
-  throw new Error(
-    `${envNames.repository} must be an https://github.com/... URL or owner/repo.`,
-  );
+  return repository;
 };
 
 const normalizeBackupPath = (backupPath) => {
@@ -193,27 +185,6 @@ const runGit = (args, options = {}) => {
   return result.stdout.trim();
 };
 
-const gitAuthEnv = (token) => ({
-  ...process.env,
-  GIT_ASKPASS: "echo",
-  GIT_TERMINAL_PROMPT: "0",
-  GITHUB_TOKEN: token,
-});
-
-const runAuthenticatedGit = ({ args, token, cwd }) =>
-  runGit(
-    [
-      "-c",
-      `http.https://github.com/.extraheader=AUTHORIZATION: Bearer ${token}`,
-      ...args,
-    ],
-    {
-      cwd,
-      env: gitAuthEnv(token),
-      displayArgs: args,
-    },
-  );
-
 const applyRetention = async ({ backupDirectory, retentionCount }) => {
   const entries = await readdir(backupDirectory, { withFileTypes: true });
   const backupFileNames = entries
@@ -233,7 +204,6 @@ const applyRetention = async ({ backupDirectory, retentionCount }) => {
 
 const pushBackup = async ({ env, sourceArtifactPath, fileName }) => {
   const repository = requireEnv(env, envNames.repository);
-  const token = requireEnv(env, envNames.token);
   const branch = env[envNames.branch]?.trim() || "main";
   const backupPath = normalizeBackupPath(
     env[envNames.backupPath]?.trim() || "redis",
@@ -245,17 +215,14 @@ const pushBackup = async ({ env, sourceArtifactPath, fileName }) => {
   );
 
   try {
-    runAuthenticatedGit({
-      args: [
-        "clone",
-        "--branch",
-        branch,
-        "--single-branch",
-        repositoryUrl,
-        checkoutDirectory,
-      ],
-      token,
-    });
+    runGit([
+      "clone",
+      "--branch",
+      branch,
+      "--single-branch",
+      repositoryUrl,
+      checkoutDirectory,
+    ]);
 
     const targetDirectory = path.join(checkoutDirectory, backupPath);
     await mkdir(targetDirectory, { recursive: true });
@@ -292,11 +259,7 @@ const pushBackup = async ({ env, sourceArtifactPath, fileName }) => {
       ],
       { cwd: checkoutDirectory },
     );
-    runAuthenticatedGit({
-      args: ["push", "origin", `HEAD:${branch}`],
-      token,
-      cwd: checkoutDirectory,
-    });
+    runGit(["push", "origin", `HEAD:${branch}`], { cwd: checkoutDirectory });
 
     return { pushed: true, expired };
   } finally {

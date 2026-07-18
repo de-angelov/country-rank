@@ -8,14 +8,14 @@ const defaultRedisHostPort = 4000;
 const maxRedisHostPort = 65_535;
 
 const usage = `Usage:
-  npm run restore:redis:local -- <backup-artifact.json>
+  npm run redis:restore:local -- <backup-artifact.json>
 
 Environment:
   REDIS_URL         Optional explicit local Redis connection URL.
   REDIS_HOST_PORT  Optional Docker Compose Redis host port. Defaults to 4000.
 
 Behavior:
-  Calls npm run restore:redis with REDIS_URL set for local Docker Compose Redis.
+  Calls npm run redis:restore with REDIS_URL set for local Docker Compose Redis.
 `;
 
 const parseRedisHostPort = (value) => {
@@ -62,7 +62,7 @@ export const runLocalRedisRestore = async ({
   const redisUrl = resolveLocalRedisUrl(env);
   logger.log(`Restoring Redis vote totals into ${redisUrl}.`);
 
-  return commandRunner("npm", ["run", "restore:redis", "--", ...argv], {
+  return commandRunner("npm", ["run", "redis:restore", "--", ...argv], {
     env: {
       ...env,
       REDIS_URL: redisUrl,

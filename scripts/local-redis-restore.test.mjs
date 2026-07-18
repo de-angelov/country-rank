@@ -52,7 +52,7 @@ describe("runLocalRedisRestore", () => {
       "npm",
       [
         "run",
-        "restore:redis",
+        "redis:restore",
         "--",
         "tmp/redis-backups/example-country-votes.json",
       ],

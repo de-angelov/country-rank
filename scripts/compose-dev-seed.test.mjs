@@ -137,7 +137,7 @@ describe("runComposeDevSeed", () => {
     expect(commandRunner).toHaveBeenNthCalledWith(
       2,
       "npm",
-      ["run", "seed:redis:votes"],
+      ["run", "redis:seed"],
       {
         env: {
           APP_HOST_PORT: "3001",
@@ -189,7 +189,7 @@ describe("runComposeDevSeed", () => {
     expect(commandRunner).toHaveBeenNthCalledWith(
       2,
       "npm",
-      ["run", "seed:redis:votes"],
+      ["run", "redis:seed"],
       {
         env: {
           APP_HOST_PORT: "3001",

@@ -26,7 +26,7 @@ describe("CountryCard", () => {
       "Vending machines, bullet trains, and stationery with main-character energy.",
     );
     expect(html).toContain("Japan flag");
-    expect(html).toContain('src="/flags/outlined/JP.svg"');
+    expect(html).toContain('src="/flags/JP.svg"');
     expect(html).not.toContain('src="https://example.com/japan.svg"');
     expect(html).toContain('width="320"');
     expect(html).toContain('height="240"');
@@ -34,6 +34,9 @@ describe("CountryCard", () => {
     expect(html).toContain("bg-background");
     expect(html).toContain("object-contain");
     expect(html).not.toContain("object-cover");
+    expect(html).toContain("p-1");
+    expect(html).toContain("drop-shadow(2px_0_0_#000)");
+    expect(html).not.toContain("/flags/outlined/");
     expect(html).toContain("1,234 likes");
     expect(html).toContain("56 dislikes");
     expect(html).toContain(
@@ -83,7 +86,7 @@ describe("CountryCard", () => {
     expect(html).toContain("transform:translateX(-50%)");
   });
 
-  it("falls back to the country flag URL when no outlined asset exists", () => {
+  it("falls back to the country flag URL when no local asset exists", () => {
     expect(
       getCountryCardFlagImageUrl({
         ...country,

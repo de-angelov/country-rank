@@ -12,7 +12,7 @@ import { Button } from "~/components/ui/button";
 import { Card } from "~/components/ui/card";
 import { Progress } from "~/components/ui/progress";
 
-import outlinedFlagAssets from "../../../public/outlined-flag-assets.json";
+import flagAssets from "../../../public/flag-assets.json";
 
 export type CountryCardProps = Readonly<{
   country: Country;
@@ -25,14 +25,15 @@ const voteIconSymbolIds = {
   dislike: "country-card-thumbs-down",
   like: "country-card-thumbs-up",
 } as const satisfies Record<VoteType, string>;
-const outlinedFlagPaths = outlinedFlagAssets.flags as Record<string, string>;
+const localFlagPaths = flagAssets.flags as Record<string, string>;
 
 const styles = {
   article: "grid gap-4 bg-secondary-background p-4",
   header: "grid gap-4 sm:grid-cols-[minmax(7rem,10rem)_1fr] sm:items-center",
   flagFrame:
     "aspect-[4/3] min-h-24 overflow-hidden rounded-base border-2 border-border bg-background sm:min-h-0",
-  flagImage: "h-full w-full object-contain",
+  flagImage:
+    "h-full w-full object-contain p-1 [filter:drop-shadow(2px_0_0_#000)_drop-shadow(-2px_0_0_#000)_drop-shadow(0_2px_0_#000)_drop-shadow(0_-2px_0_#000)_drop-shadow(1.5px_1.5px_0_#000)_drop-shadow(-1.5px_1.5px_0_#000)_drop-shadow(1.5px_-1.5px_0_#000)_drop-shadow(-1.5px_-1.5px_0_#000)]",
   textBlock: "min-w-0",
   title: "truncate text-xl font-heading",
   capital: "mt-1 text-sm",
@@ -95,7 +96,7 @@ function CountryCardVoteIcon({ voteType }: { voteType: VoteType }) {
 }
 
 export function getCountryCardFlagImageUrl(country: Country) {
-  return outlinedFlagPaths[country.code] ?? country.flagImageUrl;
+  return localFlagPaths[country.code] ?? country.flagImageUrl;
 }
 
 export function CountryCard({

@@ -1,7 +1,9 @@
 import { describe, expect, it, vi } from "vitest";
 
 import {
+  parseDotEnvContent,
   resolveAppUrl,
+  resolveComposeEnv,
   resolveRedisEndpoint,
   runComposeDevSeed,
 } from "./compose-dev-seed.mjs";
@@ -73,6 +75,37 @@ describe("resolveAppUrl", () => {
   });
 });
 
+describe("Compose env resolution", () => {
+  it("parses simple Compose .env content", () => {
+    expect(
+      parseDotEnvContent(`
+# comment
+APP_HOST_PORT=5174
+REDIS_HOST_PORT="6380"
+IGNORED_LINE
+EMPTY=
+`),
+    ).toEqual({
+      APP_HOST_PORT: "5174",
+      REDIS_HOST_PORT: "6380",
+      EMPTY: "",
+    });
+  });
+
+  it("uses shell env over Compose .env values", () => {
+    expect(
+      resolveComposeEnv({
+        env: { APP_HOST_PORT: "3000", PATH: "/bin" },
+        dotEnv: { APP_HOST_PORT: "5174", REDIS_HOST_PORT: "6380" },
+      }),
+    ).toEqual({
+      APP_HOST_PORT: "3000",
+      PATH: "/bin",
+      REDIS_HOST_PORT: "6380",
+    });
+  });
+});
+
 describe("runComposeDevSeed", () => {
   it("starts Compose with an optional host Redis port and seeds through the host-mapped Redis endpoint", async () => {
     const commandRunner = vi.fn(() => Promise.resolve(0));
@@ -122,6 +155,52 @@ describe("runComposeDevSeed", () => {
     );
     expect(logger.log).toHaveBeenCalledWith(
       "Seeding Redis vote totals at redis://localhost:6380.",
+    );
+  });
+
+  it("uses Compose .env values when starting and seeding", async () => {
+    const commandRunner = vi.fn(() => Promise.resolve(0));
+    const logger = {
+      log: vi.fn(),
+    };
+
+    await expect(
+      runComposeDevSeed({
+        env: { PATH: "/bin" },
+        dotEnv: { APP_HOST_PORT: "5174", REDIS_HOST_PORT: "6380" },
+        commandRunner,
+        isPortAvailable: createPortAvailabilityChecker(new Set([6380])),
+        logger,
+      }),
+    ).resolves.toBe(0);
+
+    expect(commandRunner).toHaveBeenNthCalledWith(
+      1,
+      "docker",
+      ["compose", "up", "-d", "app", "redis"],
+      {
+        env: {
+          APP_HOST_PORT: "5174",
+          PATH: "/bin",
+          REDIS_HOST_PORT: "6380",
+        },
+      },
+    );
+    expect(commandRunner).toHaveBeenNthCalledWith(
+      2,
+      "npm",
+      ["run", "seed:redis:votes"],
+      {
+        env: {
+          APP_HOST_PORT: "5174",
+          PATH: "/bin",
+          REDIS_HOST_PORT: "6380",
+          REDIS_URL: "redis://localhost:6380",
+        },
+      },
+    );
+    expect(logger.log).toHaveBeenCalledWith(
+      "Compose dev app: http://localhost:5174",
     );
   });
 });

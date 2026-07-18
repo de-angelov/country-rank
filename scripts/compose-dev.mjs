@@ -6,25 +6,28 @@ import {
   isLocalPortAvailable,
   resolveRedisEndpoint,
   resolveAppUrl,
+  resolveComposeEnv,
   runCommand,
 } from "./compose-dev-seed.mjs";
 
 export const runComposeDev = async ({
   env = process.env,
+  dotEnv,
   commandRunner = runCommand,
   isPortAvailable = isLocalPortAvailable,
   logger = console,
 } = {}) => {
+  const composeEnv = resolveComposeEnv({ env, dotEnv });
   const { redisHostPort, redisUrl } = await resolveRedisEndpoint({
-    env,
+    env: composeEnv,
     isPortAvailable,
     commandName: "npm run compose:dev",
   });
   const childEnv = {
-    ...env,
+    ...composeEnv,
     REDIS_HOST_PORT: `${redisHostPort}`,
   };
-  const appUrl = resolveAppUrl(env);
+  const appUrl = resolveAppUrl(composeEnv);
   let didPrintEndpoints = false;
   const printEndpoints = () => {
     if (didPrintEndpoints) {

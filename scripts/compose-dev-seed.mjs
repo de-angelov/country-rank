@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 /* global console, process, setTimeout */
 import { spawn } from "node:child_process";
+import { existsSync, readFileSync } from "node:fs";
 import net from "node:net";
 import { fileURLToPath } from "node:url";
 
@@ -12,6 +13,53 @@ const seedAttempts = 10;
 const seedRetryDelayMs = 1_000;
 
 const toRedisUrl = (redisHostPort) => `redis://localhost:${redisHostPort}`;
+
+export const parseDotEnvContent = (content) =>
+  content
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter((line) => line && !line.startsWith("#"))
+    .reduce((values, line) => {
+      const separatorIndex = line.indexOf("=");
+
+      if (separatorIndex === -1) {
+        return values;
+      }
+
+      const key = line.slice(0, separatorIndex).trim();
+      const rawValue = line.slice(separatorIndex + 1).trim();
+
+      if (!key) {
+        return values;
+      }
+
+      const value =
+        (rawValue.startsWith('"') && rawValue.endsWith('"')) ||
+        (rawValue.startsWith("'") && rawValue.endsWith("'"))
+          ? rawValue.slice(1, -1)
+          : rawValue;
+
+      return {
+        ...values,
+        [key]: value,
+      };
+    }, {});
+
+export const readComposeDotEnv = ({ filePath = ".env" } = {}) => {
+  if (!existsSync(filePath)) {
+    return {};
+  }
+
+  return parseDotEnvContent(readFileSync(filePath, "utf8"));
+};
+
+export const resolveComposeEnv = ({
+  env = process.env,
+  dotEnv = env === process.env ? readComposeDotEnv() : {},
+} = {}) => ({
+  ...dotEnv,
+  ...env,
+});
 
 export const resolveAppUrl = (env = process.env) => {
   const appHostPort = env.APP_HOST_PORT?.trim() || defaultAppHostPort;
@@ -159,19 +207,21 @@ export const seedRedisVotes = async ({
 
 export const runComposeDevSeed = async ({
   env = process.env,
+  dotEnv,
   commandRunner = runCommand,
   isPortAvailable = isLocalPortAvailable,
   logger = console,
 } = {}) => {
+  const composeEnv = resolveComposeEnv({ env, dotEnv });
   const { redisHostPort, redisUrl } = await resolveRedisEndpoint({
-    env,
+    env: composeEnv,
     isPortAvailable,
   });
   const childEnv = {
-    ...env,
+    ...composeEnv,
     REDIS_HOST_PORT: `${redisHostPort}`,
   };
-  const appUrl = resolveAppUrl(env);
+  const appUrl = resolveAppUrl(composeEnv);
 
   const composeExitCode = await commandRunner(
     "docker",

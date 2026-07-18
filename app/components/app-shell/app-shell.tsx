@@ -1,14 +1,14 @@
 import { useContext, useEffect, useState, type ReactNode } from "react";
-import { UNSAFE_LocationContext } from "react-router";
+import { Link, UNSAFE_LocationContext } from "react-router";
 
 import { Button } from "~/components/ui/button";
 
 import moduleStyles from "./app-shell.module.css";
 
 const navigationLinks = [
-  { href: "/", label: "Countries" },
-  { href: "/top-liked", label: "Top Liked" },
-  { href: "/top-disliked", label: "Top Disliked" },
+  { to: "/", label: "Countries" },
+  { to: "/top-liked", label: "Top Liked" },
+  { to: "/top-disliked", label: "Top Disliked" },
 ] as const;
 
 const bannerImage = {
@@ -205,10 +205,10 @@ export function AppShell({ children }: { children: ReactNode }) {
               <Button
                 asChild
                 className={styles.navButton}
-                key={link.href}
+                key={link.to}
                 variant="neutral"
               >
-                <a href={link.href}>{link.label}</a>
+                <Link to={link.to}>{link.label}</Link>
               </Button>
             ))}
           </nav>

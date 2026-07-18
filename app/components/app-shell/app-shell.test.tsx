@@ -55,7 +55,9 @@ describe("AppShell", () => {
       /<button data-slot="button" class="(?=[^"]*border-2)(?=[^"]*bg-accent-highlight)(?=[^"]*font-heading)(?=[^"]*shadow-shadow)[^"]*" type="button">country-rank\.online<\/button>/,
     );
     expect(html).toContain(selectBannerTagline("/"));
-    expect(html).toMatch(/<a href="\/"[^>]*>Countries<\/a>/);
+    expect(html).toMatch(
+      /<a data-slot="button"[^>]*href="\/"[^>]*data-discover="true"[^>]*>Countries<\/a>/,
+    );
     expect(html).not.toMatch(/<a[^>]*>country-rank\.online<\/a>/);
     expect(html).toContain("Countries");
     expect(html).toContain('href="/top-liked"');
@@ -65,6 +67,21 @@ describe("AppShell", () => {
     expect(html).not.toContain('aria-label="Reserved meme media placeholder"');
     expect(html).not.toContain("Meme media placeholder");
     expect(html).toContain("Page content");
+  });
+
+  it("renders primary navigation as React Router internal links", () => {
+    const html = renderAppShell("/top-liked");
+
+    expect(html).toMatch(
+      /<a data-slot="button"[^>]*href="\/"[^>]*data-discover="true"[^>]*>Countries<\/a>/,
+    );
+    expect(html).toMatch(
+      /<a data-slot="button"[^>]*href="\/top-liked"[^>]*data-discover="true"[^>]*>Top Liked<\/a>/,
+    );
+    expect(html).toMatch(
+      /<a data-slot="button"[^>]*href="\/top-disliked"[^>]*data-discover="true"[^>]*>Top Disliked<\/a>/,
+    );
+    expect(html.match(/data-discover="true"/g)).toHaveLength(3);
   });
 
   it("keeps banner tagline options in one editable list", () => {

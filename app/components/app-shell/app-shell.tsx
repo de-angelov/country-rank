@@ -1,4 +1,4 @@
-import { useContext, type ReactNode } from "react";
+import { useContext, useEffect, useState, type ReactNode } from "react";
 import { UNSAFE_LocationContext } from "react-router";
 
 import { Button } from "~/components/ui/button";
@@ -43,8 +43,8 @@ const styles = {
   bannerImage: "mx-auto block h-full max-h-full w-auto max-w-full object-contain",
   ribbon:
     "mx-auto flex w-full max-w-6xl items-center justify-between gap-3 px-4 py-2 max-md:flex-col max-md:items-stretch max-md:gap-2 sm:px-6 lg:px-8",
-  brandLink:
-    "inline-flex shrink-0 items-center justify-center whitespace-nowrap rounded-base border-2 border-border bg-main px-2.5 py-1 text-sm font-heading leading-none text-main-foreground no-underline shadow-shadow max-md:w-full max-md:min-w-0 max-md:text-center sm:text-base",
+  brandButton:
+    "h-auto shrink-0 bg-accent-highlight px-2.5 py-1 text-sm font-heading leading-none text-foreground max-md:w-full max-md:min-w-0 max-md:text-center sm:text-base",
   nav: "flex flex-1 flex-wrap items-center justify-end gap-2 max-md:justify-stretch",
   navButton: "h-9 min-w-28 px-3 max-md:min-w-0 max-md:flex-1 max-md:basis-28",
   content: "mx-auto w-full max-w-6xl",
@@ -70,11 +70,36 @@ export function selectBannerTagline(pathname: string) {
   return bannerTaglines[hash % bannerTaglines.length];
 }
 
+export function selectDifferentBannerTagline(
+  currentTagline: string,
+  random = Math.random,
+) {
+  const availableTaglines = bannerTaglines.filter(
+    (tagline) => tagline !== currentTagline,
+  );
+
+  if (availableTaglines.length === 0) {
+    return currentTagline;
+  }
+
+  const selectedIndex = Math.min(
+    Math.floor(random() * availableTaglines.length),
+    availableTaglines.length - 1,
+  );
+
+  return availableTaglines[selectedIndex];
+}
+
 export function AppShell({ children }: { children: ReactNode }) {
   const locationContext = useContext(UNSAFE_LocationContext);
-  const bannerTagline = selectBannerTagline(
-    locationContext?.location.pathname ?? "/",
+  const pathname = locationContext?.location.pathname ?? "/";
+  const [bannerTagline, setBannerTagline] = useState(() =>
+    selectBannerTagline(pathname),
   );
+
+  useEffect(() => {
+    setBannerTagline(selectBannerTagline(pathname));
+  }, [pathname]);
 
   return (
     <div className={styles.root}>
@@ -110,12 +135,17 @@ export function AppShell({ children }: { children: ReactNode }) {
           </p>
         </div>
         <div className={styles.ribbon}>
-          <a
-            className={styles.brandLink}
-            href="/"
+          <Button
+            className={styles.brandButton}
+            onClick={() => {
+              setBannerTagline((currentTagline) =>
+                selectDifferentBannerTagline(currentTagline),
+              );
+            }}
+            type="button"
           >
             country-rank.online
-          </a>
+          </Button>
           <nav
             className={styles.nav}
             aria-label="Primary navigation"

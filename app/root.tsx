@@ -6,6 +6,7 @@ import {
   Scripts,
   ScrollRestoration,
 } from "react-router";
+import type { LinksFunction } from "react-router";
 
 import type { Route } from "./+types/root";
 import { AppShell } from "./components/app-shell/app-shell";
@@ -13,6 +14,20 @@ import { Badge } from "./components/ui/badge";
 import { Button } from "./components/ui/button";
 import { Card } from "./components/ui/card";
 import "./app.css";
+import geistLatinExtWoff2 from "@fontsource-variable/geist/files/geist-latin-ext-wght-normal.woff2?url";
+import geistLatinWoff2 from "@fontsource-variable/geist/files/geist-latin-wght-normal.woff2?url";
+
+const geistFontPreloads = [geistLatinWoff2, geistLatinExtWoff2] as const;
+export const fontMetricStableClassName = "font-metric-stable";
+
+export const links: LinksFunction = () =>
+  geistFontPreloads.map((href) => ({
+    rel: "preload",
+    href,
+    as: "font",
+    type: "font/woff2",
+    crossOrigin: "anonymous",
+  }));
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -23,7 +38,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
       </head>
-      <body>
+      <body className={fontMetricStableClassName}>
         {children}
         <ScrollRestoration />
         <Scripts />

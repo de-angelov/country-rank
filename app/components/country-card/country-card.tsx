@@ -12,6 +12,8 @@ import { Button } from "~/components/ui/button";
 import { Card } from "~/components/ui/card";
 import { Progress } from "~/components/ui/progress";
 
+import outlinedFlagAssets from "../../../public/outlined-flag-assets.json";
+
 export type CountryCardProps = Readonly<{
   country: Country;
   className?: string;
@@ -23,6 +25,7 @@ const voteIconSymbolIds = {
   dislike: "country-card-thumbs-down",
   like: "country-card-thumbs-up",
 } as const satisfies Record<VoteType, string>;
+const outlinedFlagPaths = outlinedFlagAssets.flags as Record<string, string>;
 
 const styles = {
   article: "grid gap-4 bg-secondary-background p-4",
@@ -91,6 +94,10 @@ function CountryCardVoteIcon({ voteType }: { voteType: VoteType }) {
   );
 }
 
+export function getCountryCardFlagImageUrl(country: Country) {
+  return outlinedFlagPaths[country.code] ?? country.flagImageUrl;
+}
+
 export function CountryCard({
   country,
   className,
@@ -115,7 +122,7 @@ export function CountryCard({
           <div className={styles.header}>
             <div className={styles.flagFrame}>
               <img
-                src={country.flagImageUrl}
+                src={getCountryCardFlagImageUrl(country)}
                 alt={`${country.name} flag`}
                 className={styles.flagImage}
                 width="320"

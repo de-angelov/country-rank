@@ -20,6 +20,12 @@ Country Ranking is a TypeScript React Router framework-mode app for browsing cou
   Regenerate them with `npm run download:country-flags`; the script preserves
   the downloaded source format, names files by ISO alpha-2 code, and writes the
   `public/flag-assets.json` manifest with local public paths for runtime use.
+- Outlined country-card flag variants are generated under
+  `public/flags/outlined/` with `npm run generate:outlined-country-flags`.
+  SVG assets receive native stroke/paint-order styling on visible flag shapes;
+  non-SVG inputs fail generation so the country-card catalog does not silently
+  mix outlined and fallback treatments. The generated manifest is written to
+  `public/outlined-flag-assets.json`.
 - App shell banner variants live under `public/images/banner/` and are
   generated from `public/images/country-ranking-banner-v7.png` in 960, 1600,
   and 2400 pixel widths as AVIF, WebP, and PNG fallback files. Regenerate them

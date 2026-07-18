@@ -5,7 +5,7 @@ import { existsSync, readFileSync } from "node:fs";
 import net from "node:net";
 import { fileURLToPath } from "node:url";
 
-const defaultRedisHostPort = 6379;
+const defaultRedisHostPort = 4000;
 const defaultAppHostPort = "3000";
 const maxRedisHostPort = 65_535;
 const redisHost = "127.0.0.1";

@@ -15,7 +15,7 @@ export const countryVoteLikesKey = "country:votes:likes";
 export const countryVoteDislikesKey = "country:votes:dislikes";
 
 const usage = `Usage:
-  REDIS_URL=redis://localhost:6379 npm run restore:redis -- <backup-artifact.json>
+  REDIS_URL=redis://localhost:4000 npm run restore:redis -- <backup-artifact.json>
 
 Environment:
   REDIS_URL    Redis connection URL.

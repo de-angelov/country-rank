@@ -157,7 +157,7 @@ describe("restoreCountryData", () => {
     await expect(
       restoreCountryData({
         backup: validateBackupArtifact(validArtifact),
-        redisUrl: "redis://localhost:6379",
+        redisUrl: "redis://localhost:4000",
         clientFactory: () => client,
       }),
     ).resolves.toEqual({
@@ -195,7 +195,7 @@ describe("restoreCountryData", () => {
     await expect(
       restoreCountryData({
         backup: validateBackupArtifact(validArtifact),
-        redisUrl: "redis://localhost:6379",
+        redisUrl: "redis://localhost:4000",
         clientFactory: () => client,
       }),
     ).rejects.toThrow("Failed to restore Redis country data.");
@@ -224,7 +224,7 @@ describe("runRestore", () => {
     await expect(
       runRestore({
         argv: [artifactPath],
-        env: { REDIS_URL: "redis://localhost:6379" },
+        env: { REDIS_URL: "redis://localhost:4000" },
         clientFactory,
       }),
     ).rejects.toThrow(

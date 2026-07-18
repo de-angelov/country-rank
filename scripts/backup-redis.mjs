@@ -36,7 +36,7 @@ const usage = `Usage:
   npm run backup:redis -- --push
 
 Environment:
-  REDIS_URL                         Redis connection URL. Default: redis://localhost:6379
+  REDIS_URL                         Redis connection URL. Default: redis://localhost:4000
   REDIS_BACKUP_GITHUB_REPOSITORY    GitHub HTTPS URL or owner/repo destination for push mode.
   REDIS_BACKUP_GITHUB_TOKEN         GitHub token for push mode.
   REDIS_BACKUP_BRANCH               Backup repository branch. Default: main
@@ -315,7 +315,7 @@ const main = async () => {
   const createdAt = new Date().toISOString();
   const fileName = toBackupFileName(new Date(createdAt));
   const redisUrl =
-    process.env[envNames.redisUrl]?.trim() || "redis://localhost:6379";
+    process.env[envNames.redisUrl]?.trim() || "redis://localhost:4000";
   const artifactDirectory =
     mode === "dry-run"
       ? path.resolve("tmp", "redis-backups")

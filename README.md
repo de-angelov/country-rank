@@ -52,9 +52,9 @@ Country Ranking is a TypeScript React Router framework-mode app for browsing cou
 ### Development Redis
 
 - Start the local Redis dependency with `docker compose up -d redis`.
-- The development Compose service exposes Redis at `redis://localhost:6379`.
-- Copy `.env.example` to `.env` or otherwise set `REDIS_URL=redis://localhost:6379` before running app flows that read or write vote totals.
-- Seed the local country catalog and dummy vote totals from the current country fixtures with `REDIS_URL=redis://localhost:6379 npm run seed:redis:votes`.
+- The development Compose service exposes Redis at `redis://localhost:4000`.
+- Copy `.env.example` to `.env` or otherwise set `REDIS_URL=redis://localhost:4000` before running app flows that read or write vote totals.
+- Seed the local country catalog and dummy vote totals from the current country fixtures with `REDIS_URL=redis://localhost:4000 npm run seed:redis:votes`.
 - Redis data is persisted in the `redis-data` Docker volume across container restarts.
 
 ### Full App Docker Compose Development
@@ -73,7 +73,7 @@ for live reload, and exposes the React Router dev server at
 example:
 
 ```sh
-APP_HOST_PORT=5174 npm run compose:dev
+APP_HOST_PORT=3001 npm run compose:dev
 ```
 
 Open `http://localhost:${APP_HOST_PORT}` when `APP_HOST_PORT` is set.
@@ -93,10 +93,10 @@ and refreshes `country:votes:dislikes`. It honors the same port overrides as
 Compose. For example:
 
 ```sh
-APP_HOST_PORT=5174 REDIS_HOST_PORT=6380 npm run compose:dev:seed
+APP_HOST_PORT=3001 REDIS_HOST_PORT=4001 npm run compose:dev:seed
 ```
 
-Open `http://localhost:5174` after the command reports that Redis country
+Open `http://localhost:3001` after the command reports that Redis country
 catalog data was seeded.
 
 For production-style local execution through Compose, run:
@@ -110,8 +110,8 @@ The `app-prod` service runs `npm install`, `npm run build`, and then
 `npm run start` with `HOST=0.0.0.0` and `PORT=3000`. It uses the same
 `APP_HOST_PORT` host override as the dev preset, so the default URL is
 `http://localhost:3000` and an override such as
-`APP_HOST_PORT=5174 npm run compose:prod` exposes the app at
-`http://localhost:5174`.
+`APP_HOST_PORT=3001 npm run compose:prod` exposes the app at
+`http://localhost:3001`.
 
 Use `compose:dev` while changing app code and `compose:prod` when checking the
 production build/start path locally. Direct host commands remain available:
@@ -122,7 +122,7 @@ standalone seed command:
 
 ```sh
 docker compose up -d redis
-REDIS_URL=redis://localhost:6379 npm run seed:redis:votes
+REDIS_URL=redis://localhost:4000 npm run seed:redis:votes
 ```
 
 Redis-only development still uses `docker compose up -d redis` and does not
@@ -140,10 +140,10 @@ Runtime and integration variables currently supported by the app and scripts:
 
 | Variable | Required when | Used by | Safe local/default value |
 | --- | --- | --- | --- |
-| `REDIS_URL` | Browsing Redis-backed country pages, reading/writing votes, seeding, restore, and Redis backup commands. Optional for backup dry-run and local restore only because those runners default to local Redis. | App loaders/actions and Redis scripts | `redis://localhost:6379` |
+| `REDIS_URL` | Browsing Redis-backed country pages, reading/writing votes, seeding, restore, and Redis backup commands. Optional for backup dry-run and local restore only because those runners default to local Redis. | App loaders/actions and Redis scripts | `redis://localhost:4000` |
 | `LOG_LEVEL` | Optional for every app runtime. Supported values are `fatal`, `error`, `warn`, `info`, `debug`, `trace`, and `silent`; invalid or missing values fall back to `info`. | Shared Pino application logger | `info` |
 | `APP_HOST_PORT` | Optional when starting the app service through Docker Compose and the host port must differ from `3000`. | `docker-compose.yml` app port mapping | `3000` |
-| `REDIS_HOST_PORT` | Optional when starting Redis through Docker Compose and the host port must differ from `6379`. | `docker-compose.yml` Redis port mapping and local Redis restore wrapper | `6379` |
+| `REDIS_HOST_PORT` | Optional when starting Redis through Docker Compose and the host port must differ from `4000`. | `docker-compose.yml` Redis port mapping and local Redis restore wrapper | `4000` |
 | `STRIPE_WEBHOOK_SECRET` | Handling Stripe webhook requests. | `/webhooks/stripe` signature verification | `whsec_replace_with_local_or_deployment_secret` |
 | `STRIPE_SECRET_KEY` | Local test-mode Stripe Checkout creation work. | Server-side checkout helpers | `sk_test_replace_with_local_test_secret` |
 | `REDIS_BACKUP_SIDECAR_ENABLED` | Optional when running the Compose `backup` profile. Must be truthy to run backups from the sidecar. | Redis backup sidecar | `false` |
@@ -197,7 +197,7 @@ Environment variables read by the runner:
 
 | Variable | Required | Used for | Default |
 | --- | --- | --- | --- |
-| `REDIS_URL` | Optional | Redis connection URL for dry-run and push modes. | `redis://localhost:6379` |
+| `REDIS_URL` | Optional | Redis connection URL for dry-run and push modes. | `redis://localhost:4000` |
 | `REDIS_BACKUP_GITHUB_REPOSITORY` | Required for `--push` only | Backup repository destination as `owner/repo` or an `https://github.com/...` URL. | None |
 | `REDIS_BACKUP_GITHUB_TOKEN` | Required for `--push` only | GitHub token used to clone and push to the backup repository. | None |
 | `REDIS_BACKUP_BRANCH` | Optional | Branch to clone and push in the backup repository. | `main` |
@@ -208,8 +208,8 @@ Create a local backup artifact from the current Redis state with dry-run mode.
 This does not require GitHub backup credentials:
 
 1. Start local Redis with `docker compose up -d redis`.
-2. Seed demo vote totals if needed with `REDIS_URL=redis://localhost:6379 npm run seed:redis:votes`.
-3. Run `REDIS_URL=redis://localhost:6379 npm run backup:redis -- --dry-run`.
+2. Seed demo vote totals if needed with `REDIS_URL=redis://localhost:4000 npm run seed:redis:votes`.
+3. Run `REDIS_URL=redis://localhost:4000 npm run backup:redis -- --dry-run`.
 4. Confirm the command prints `Created Redis backup artifact:` and `Exported Redis country catalog and ... country vote total(s).`.
 5. Inspect the generated JSON file under `tmp/redis-backups/`.
 
@@ -217,7 +217,7 @@ Push a backup artifact to GitHub-backed storage by running the same script with
 `--push` in an environment that provides the backup repository and token:
 
 ```sh
-REDIS_URL=redis://localhost:6379 \
+REDIS_URL=redis://localhost:4000 \
 REDIS_BACKUP_GITHUB_REPOSITORY=owner/repo \
 REDIS_BACKUP_GITHUB_TOKEN=github-token-with-repository-write-access \
 npm run backup:redis -- --push
@@ -249,7 +249,7 @@ Backup artifacts are the recovery path for Redis country data. The dummy seed
 script remains a fallback for demo and local reset scenarios only:
 
 ```sh
-REDIS_URL=redis://localhost:6379 npm run seed:redis:votes
+REDIS_URL=redis://localhost:4000 npm run seed:redis:votes
 ```
 
 The seed script reloads fixture country metadata and vote totals into Redis. It
@@ -291,7 +291,7 @@ credentials:
 
 ```sh
 docker compose up -d redis
-REDIS_URL=redis://localhost:6379 npm run seed:redis:votes
+REDIS_URL=redis://localhost:4000 npm run seed:redis:votes
 REDIS_BACKUP_SIDECAR_ENABLED=true \
 REDIS_BACKUP_DRY_RUN=true \
 REDIS_BACKUP_SIDECAR_RUN_ONCE=true \
@@ -318,7 +318,7 @@ The local Redis restore wrapper is available through
 into the Redis service already running through Docker Compose. Optimized schema
 v2 artifacts contain the metadata-only `country:catalog` JSON document and the
 aggregate `country:votes:likes` and `country:votes:dislikes` hashes created by
-the backup runner. The wrapper defaults to `redis://localhost:6379`, honors an
+the backup runner. The wrapper defaults to `redis://localhost:4000`, honors an
 explicit `REDIS_URL`, and can target a non-default Compose host port through
 `REDIS_HOST_PORT`.
 
@@ -342,8 +342,8 @@ When Redis is exposed on a non-default host port, use the same port for Compose
 and restore:
 
 ```sh
-REDIS_HOST_PORT=6380 docker compose up -d redis
-REDIS_HOST_PORT=6380 npm run restore:redis:local -- ./path/to/2026-07-16T12-00-00-000Z-country-votes.json
+REDIS_HOST_PORT=4001 docker compose up -d redis
+REDIS_HOST_PORT=4001 npm run restore:redis:local -- ./path/to/2026-07-16T12-00-00-000Z-country-votes.json
 ```
 
 The local wrapper is a restore command, not a seed reset. It reads a selected
@@ -402,8 +402,8 @@ Use Docker Compose Redis for a local backup-and-restore round trip:
 
 ```sh
 docker compose up -d redis
-REDIS_URL=redis://localhost:6379 npm run seed:redis:votes
-REDIS_URL=redis://localhost:6379 npm run backup:redis -- --dry-run
+REDIS_URL=redis://localhost:4000 npm run seed:redis:votes
+REDIS_URL=redis://localhost:4000 npm run backup:redis -- --dry-run
 npm run restore:redis:local -- tmp/redis-backups/<generated-backup-file>.json
 docker compose exec redis redis-cli EXISTS country:catalog country:votes:likes country:votes:dislikes
 docker compose exec redis redis-cli STRLEN country:catalog

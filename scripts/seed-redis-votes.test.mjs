@@ -70,14 +70,14 @@ describe("runSeedRedisVotes", () => {
     );
 
     await runSeedRedisVotes({
-      env: { REDIS_URL: "redis://localhost:6379" },
+      env: { REDIS_URL: "redis://localhost:4000" },
       logger,
       countryFixtureLoader: () => Promise.resolve(sampleCountryFixtures),
       clientFactory,
     });
 
     expect(clientFactory).toHaveBeenCalledWith({
-      url: "redis://localhost:6379",
+      url: "redis://localhost:4000",
     });
     expect(client.set).toHaveBeenCalledWith(
       countryCatalogKey,
@@ -127,7 +127,7 @@ describe("runSeedRedisVotes", () => {
       .sort();
 
     await runSeedRedisVotes({
-      env: { REDIS_URL: "redis://localhost:6379" },
+      env: { REDIS_URL: "redis://localhost:4000" },
       logger: {
         log: vi.fn(),
       },
@@ -168,7 +168,7 @@ describe("runSeedRedisVotes", () => {
 
     await expect(
       runSeedRedisVotes({
-        env: { REDIS_URL: "redis://localhost:6379" },
+        env: { REDIS_URL: "redis://localhost:4000" },
         countryFixtureLoader: () =>
           Promise.resolve([
             {

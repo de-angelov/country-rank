@@ -4,7 +4,7 @@ import { fileURLToPath } from "node:url";
 
 import { runCommand } from "./compose-dev-seed.mjs";
 
-const defaultRedisHostPort = 6379;
+const defaultRedisHostPort = 4000;
 const maxRedisHostPort = 65_535;
 
 const usage = `Usage:
@@ -12,7 +12,7 @@ const usage = `Usage:
 
 Environment:
   REDIS_URL         Optional explicit local Redis connection URL.
-  REDIS_HOST_PORT  Optional Docker Compose Redis host port. Defaults to 6379.
+  REDIS_HOST_PORT  Optional Docker Compose Redis host port. Defaults to 4000.
 
 Behavior:
   Calls npm run restore:redis with REDIS_URL set for local Docker Compose Redis.

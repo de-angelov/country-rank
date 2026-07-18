@@ -7,21 +7,21 @@ import {
 
 describe("resolveLocalRedisUrl", () => {
   it("defaults to the local Compose Redis port", () => {
-    expect(resolveLocalRedisUrl({})).toBe("redis://localhost:6379");
+    expect(resolveLocalRedisUrl({})).toBe("redis://localhost:4000");
   });
 
   it("uses REDIS_URL when it is provided", () => {
     expect(
       resolveLocalRedisUrl({
-        REDIS_HOST_PORT: "6380",
+        REDIS_HOST_PORT: "4001",
         REDIS_URL: " redis://localhost:6381 ",
       }),
     ).toBe("redis://localhost:6381");
   });
 
   it("builds a local Redis URL from REDIS_HOST_PORT", () => {
-    expect(resolveLocalRedisUrl({ REDIS_HOST_PORT: "6380" })).toBe(
-      "redis://localhost:6380",
+    expect(resolveLocalRedisUrl({ REDIS_HOST_PORT: "4001" })).toBe(
+      "redis://localhost:4001",
     );
   });
 
@@ -42,7 +42,7 @@ describe("runLocalRedisRestore", () => {
     await expect(
       runLocalRedisRestore({
         argv: ["tmp/redis-backups/example-country-votes.json"],
-        env: { REDIS_HOST_PORT: "6380", PATH: "/bin" },
+        env: { REDIS_HOST_PORT: "4001", PATH: "/bin" },
         commandRunner,
         logger,
       }),
@@ -58,14 +58,14 @@ describe("runLocalRedisRestore", () => {
       ],
       {
         env: {
-          REDIS_HOST_PORT: "6380",
+          REDIS_HOST_PORT: "4001",
           PATH: "/bin",
-          REDIS_URL: "redis://localhost:6380",
+          REDIS_URL: "redis://localhost:4001",
         },
       },
     );
     expect(logger.log).toHaveBeenCalledWith(
-      "Restoring Redis vote totals into redis://localhost:6380.",
+      "Restoring Redis vote totals into redis://localhost:4001.",
     );
   });
 });

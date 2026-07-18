@@ -21,7 +21,7 @@ describe("runComposeDev", () => {
       runComposeDev({
         env: { PATH: "/bin" },
         commandRunner,
-        isPortAvailable: createPortAvailabilityChecker(new Set([6379])),
+        isPortAvailable: createPortAvailabilityChecker(new Set([4000])),
         logger,
       }),
     ).resolves.toBe(0);
@@ -32,7 +32,7 @@ describe("runComposeDev", () => {
       {
         env: {
           PATH: "/bin",
-          REDIS_HOST_PORT: "6379",
+          REDIS_HOST_PORT: "4000",
         },
         onStart: expect.any(Function),
       },
@@ -53,9 +53,9 @@ describe("runComposeDev", () => {
 
     await expect(
       runComposeDev({
-        env: { APP_HOST_PORT: "5174", PATH: "/bin" },
+        env: { APP_HOST_PORT: "3001", PATH: "/bin" },
         commandRunner,
-        isPortAvailable: createPortAvailabilityChecker(new Set([6380])),
+        isPortAvailable: createPortAvailabilityChecker(new Set([4001])),
         logger,
       }),
     ).resolves.toBe(0);
@@ -65,18 +65,18 @@ describe("runComposeDev", () => {
       ["compose", "up", "app", "redis"],
       {
         env: {
-          APP_HOST_PORT: "5174",
+          APP_HOST_PORT: "3001",
           PATH: "/bin",
-          REDIS_HOST_PORT: "6380",
+          REDIS_HOST_PORT: "4001",
         },
         onStart: expect.any(Function),
       },
     );
     expect(logger.log).toHaveBeenCalledWith(
-      "Compose dev app: http://localhost:5174",
+      "Compose dev app: http://localhost:3001",
     );
     expect(logger.log).toHaveBeenCalledWith(
-      "Compose dev Redis: redis://localhost:6380",
+      "Compose dev Redis: redis://localhost:4001",
     );
   });
 
@@ -92,9 +92,9 @@ describe("runComposeDev", () => {
     await expect(
       runComposeDev({
         env: { PATH: "/bin" },
-        dotEnv: { APP_HOST_PORT: "5174", REDIS_HOST_PORT: "6380" },
+        dotEnv: { APP_HOST_PORT: "3001", REDIS_HOST_PORT: "4001" },
         commandRunner,
-        isPortAvailable: createPortAvailabilityChecker(new Set([6380])),
+        isPortAvailable: createPortAvailabilityChecker(new Set([4001])),
         logger,
       }),
     ).resolves.toBe(0);
@@ -104,18 +104,18 @@ describe("runComposeDev", () => {
       ["compose", "up", "app", "redis"],
       {
         env: {
-          APP_HOST_PORT: "5174",
+          APP_HOST_PORT: "3001",
           PATH: "/bin",
-          REDIS_HOST_PORT: "6380",
+          REDIS_HOST_PORT: "4001",
         },
         onStart: expect.any(Function),
       },
     );
     expect(logger.log).toHaveBeenCalledWith(
-      "Compose dev app: http://localhost:5174",
+      "Compose dev app: http://localhost:3001",
     );
     expect(logger.log).toHaveBeenCalledWith(
-      "Compose dev Redis: redis://localhost:6380",
+      "Compose dev Redis: redis://localhost:4001",
     );
   });
 
@@ -131,9 +131,9 @@ describe("runComposeDev", () => {
     await expect(
       runComposeDev({
         env: { APP_HOST_PORT: "3000", PATH: "/bin" },
-        dotEnv: { APP_HOST_PORT: "5174" },
+        dotEnv: { APP_HOST_PORT: "3001" },
         commandRunner,
-        isPortAvailable: createPortAvailabilityChecker(new Set([6379])),
+        isPortAvailable: createPortAvailabilityChecker(new Set([4000])),
         logger,
       }),
     ).resolves.toBe(0);
@@ -145,7 +145,7 @@ describe("runComposeDev", () => {
         env: {
           APP_HOST_PORT: "3000",
           PATH: "/bin",
-          REDIS_HOST_PORT: "6379",
+          REDIS_HOST_PORT: "4000",
         },
         onStart: expect.any(Function),
       },
@@ -158,12 +158,12 @@ describe("runComposeDev", () => {
   it("fails clearly when an explicit Redis host port is busy", async () => {
     await expect(
       runComposeDev({
-        env: { REDIS_HOST_PORT: "6380" },
+        env: { REDIS_HOST_PORT: "4001" },
         commandRunner: vi.fn(),
         isPortAvailable: createPortAvailabilityChecker(new Set()),
       }),
     ).rejects.toThrow(
-      "REDIS_HOST_PORT=6380 is already in use on 127.0.0.1. Choose another free port and rerun npm run compose:dev.",
+      "REDIS_HOST_PORT=4001 is already in use on 127.0.0.1. Choose another free port and rerun npm run compose:dev.",
     );
   });
 });

@@ -44,7 +44,7 @@ describe("buildBackup", () => {
 
     await expect(
       buildBackup({
-        redisUrl: "redis://localhost:6379",
+        redisUrl: "redis://localhost:4000",
         createdAt: "2026-07-16T13:00:00.000Z",
         clientFactory: () => client,
       }),
@@ -91,7 +91,7 @@ describe("buildBackup", () => {
 
     await expect(
       buildBackup({
-        redisUrl: "redis://localhost:6379",
+        redisUrl: "redis://localhost:4000",
         createdAt: "2026-07-16T13:00:00.000Z",
         clientFactory: () => client,
       }),

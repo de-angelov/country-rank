@@ -144,30 +144,42 @@
     view-transition-name: country-filter-results;
     contain: layout;
   }
+
+  .ranking-list-transition {
+    view-transition-name: ranked-list-results;
+    contain: layout;
+  }
 }
 
 ::view-transition-old(country-filter-results),
-::view-transition-new(country-filter-results) {
+::view-transition-new(country-filter-results),
+::view-transition-old(ranked-list-results),
+::view-transition-new(ranked-list-results) {
   animation-duration: 180ms;
   animation-timing-function: cubic-bezier(0.2, 0, 0, 1);
   mix-blend-mode: normal;
 }
 
-::view-transition-old(country-filter-results) {
+::view-transition-old(country-filter-results),
+::view-transition-old(ranked-list-results) {
   animation-name: countryFilterOut;
 }
 
-::view-transition-new(country-filter-results) {
+::view-transition-new(country-filter-results),
+::view-transition-new(ranked-list-results) {
   animation-name: countryFilterIn;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .country-filter-transition {
+  .country-filter-transition,
+  .ranking-list-transition {
     view-transition-name: none;
   }
 
   ::view-transition-old(country-filter-results),
-  ::view-transition-new(country-filter-results) {
+  ::view-transition-new(country-filter-results),
+  ::view-transition-old(ranked-list-results),
+  ::view-transition-new(ranked-list-results) {
     animation: none;
   }
 }

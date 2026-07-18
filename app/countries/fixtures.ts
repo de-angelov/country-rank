@@ -656,7 +656,7 @@ export const countryFixtures = [
     name: "Western Sahara*",
     capital: "Unknown",
     flagImageUrl:
-      "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Western%20Sahara*.svg",
+      "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Western%20Sahara.svg",
     factSnippet: "Set in the Africa region with a compact administrative center, it connects Arabic-language public life, Moroccan dirham-based commerce, and regional and global links.",
     likes: 705,
     dislikes: 535,

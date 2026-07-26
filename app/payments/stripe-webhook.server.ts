@@ -1,4 +1,5 @@
 import { err, ok, type Result } from "neverthrow";
+import { pipe } from "remeda";
 import Stripe from "stripe";
 
 import { parseServerEnv } from "~/config/server-env.server";
@@ -39,6 +40,11 @@ export type VerifiedStripeWebhookEvent = Readonly<{
   metadata: Readonly<Record<string, string>> | null;
 }>;
 
+export type StripeWebhookSignatureVerifier = (
+  payload: string,
+  signature: string | null,
+) => Result<VerifiedStripeWebhookEvent, StripeWebhookVerificationError>;
+
 export const stripePaidVoteSuccessEventType = "checkout.session.completed";
 const stripeCheckoutSessionIdPattern = /^cs_(test|live)_[A-Za-z0-9_]+$/;
 
@@ -75,19 +81,42 @@ export const getDefaultStripeWebhookConfig = (): Result<
 export const verifyStripeWebhookSignature = (
   payload: string,
   signature: string | null,
-): Result<VerifiedStripeWebhookEvent, StripeWebhookVerificationError> => {
-  const configResult = getDefaultStripeWebhookConfig();
-
-  if (configResult.isErr()) {
-    return err(configResult.error);
-  }
-
-  return verifyStripeWebhookSignatureWithConfig(
+): Result<VerifiedStripeWebhookEvent, StripeWebhookVerificationError> =>
+  verifyStripeWebhookSignatureWithConfigResult(
     payload,
     signature,
-    configResult.value,
+    getDefaultStripeWebhookConfig(),
   );
-};
+
+export const createDefaultStripeWebhookSignatureVerifier =
+  (): StripeWebhookSignatureVerifier =>
+  (payload, signature) =>
+    verifyStripeWebhookSignatureWithConfigResult(
+      payload,
+      signature,
+      getDefaultStripeWebhookConfig(),
+    );
+
+export const createStripeWebhookSignatureVerifierFromEnv = (
+  env: NodeJS.ProcessEnv,
+): StripeWebhookSignatureVerifier =>
+  (payload, signature) =>
+    verifyStripeWebhookSignatureWithConfigResult(
+      payload,
+      signature,
+      getStripeWebhookConfigFromEnv(env),
+    );
+
+const verifyStripeWebhookSignatureWithConfigResult = (
+  payload: string,
+  signature: string | null,
+  configResult: Result<StripeWebhookConfig, StripeWebhookVerificationError>,
+) =>
+  pipe(configResult, (result) =>
+    result.andThen((config) =>
+      verifyStripeWebhookSignatureWithConfig(payload, signature, config),
+    ),
+  );
 
 export const verifyStripeWebhookSignatureWithConfig = (
   payload: string,

@@ -2,6 +2,8 @@ import Stripe from "stripe";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
+  createDefaultStripeWebhookSignatureVerifier,
+  createStripeWebhookSignatureVerifierFromEnv,
   getDefaultStripeWebhookConfig,
   getStripeWebhookConfigFromEnv,
   verifyStripeWebhookSignature,
@@ -245,6 +247,40 @@ describe("verifyStripeWebhookSignature", () => {
     vi.stubEnv("STRIPE_WEBHOOK_SECRET", webhookSecret);
 
     const result = verifyStripeWebhookSignature(payload, signedHeader);
+
+    expect(result.isOk()).toBe(true);
+    expect(result._unsafeUnwrap()).toMatchObject({
+      id: "evt_test_signature_shell",
+      type: "checkout.session.completed",
+    });
+  });
+});
+
+describe("createDefaultStripeWebhookSignatureVerifier", () => {
+  it("creates a verifier for the default shared server config path", () => {
+    vi.stubEnv("REDIS_URL", validSharedServerEnv.REDIS_URL);
+    vi.stubEnv(
+      "STRIPE_SECRET_KEY",
+      validSharedServerEnv.STRIPE_SECRET_KEY,
+    );
+    vi.stubEnv("STRIPE_WEBHOOK_SECRET", webhookSecret);
+
+    const verifyWebhookSignature = createDefaultStripeWebhookSignatureVerifier();
+
+    const result = verifyWebhookSignature(payload, signedHeader);
+
+    expect(result.isOk()).toBe(true);
+    expect(result._unsafeUnwrap()).toMatchObject({
+      id: "evt_test_signature_shell",
+      type: "checkout.session.completed",
+    });
+  });
+
+  it("creates an injected-env verifier without mutating process.env", () => {
+    const verifyWebhookSignature =
+      createStripeWebhookSignatureVerifierFromEnv(envWithStripeWebhookSecret);
+
+    const result = verifyWebhookSignature(payload, signedHeader);
 
     expect(result.isOk()).toBe(true);
     expect(result._unsafeUnwrap()).toMatchObject({

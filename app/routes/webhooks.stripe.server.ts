@@ -4,12 +4,12 @@ import {
   type StripePaidVoteMetadataError,
 } from "~/payments/paid-vote-metadata.server";
 import {
-  getStripeWebhookConfigFromEnv,
+  createDefaultStripeWebhookSignatureVerifier,
+  createStripeWebhookSignatureVerifierFromEnv,
   stripePaidVoteSuccessEventType,
+  type StripeWebhookSignatureVerifier,
   type StripeWebhookVerificationError,
   type VerifiedStripeWebhookEvent,
-  verifyStripeWebhookSignature,
-  verifyStripeWebhookSignatureWithConfig,
 } from "~/payments/stripe-webhook.server";
 import {
   applyPaidVote,
@@ -28,6 +28,7 @@ type StripeWebhookHandlerOptions = Readonly<{
   applyPaidVote?: ApplyPaidVote;
   env?: NodeJS.ProcessEnv;
   logger?: ApplicationLogger;
+  verifyStripeWebhookSignature?: StripeWebhookSignatureVerifier;
 }>;
 
 export const createStripeWebhookHandler = (
@@ -35,15 +36,16 @@ export const createStripeWebhookHandler = (
 ) => {
   const applyVerifiedPaidVote = options.applyPaidVote ?? applyPaidVote;
   const paymentLogger = options.logger ?? logger;
+  const verifyWebhookSignature =
+    options.verifyStripeWebhookSignature ??
+    resolveStripeWebhookSignatureVerifier(options.env);
 
   return async (request: Request) => {
     const payload = await request.text();
-    const signature = request.headers.get(stripeSignatureHeader);
-    const result = options.env
-      ? getStripeWebhookConfigFromEnv(options.env).andThen((config) =>
-          verifyStripeWebhookSignatureWithConfig(payload, signature, config),
-        )
-      : verifyStripeWebhookSignature(payload, signature);
+    const result = verifyWebhookSignature(
+      payload,
+      request.headers.get(stripeSignatureHeader),
+    );
 
     if (result.isErr()) {
       paymentLogger.error(
@@ -164,6 +166,12 @@ export const createStripeWebhookHandler = (
 };
 
 export const handleStripeWebhook = createStripeWebhookHandler();
+
+function resolveStripeWebhookSignatureVerifier(env?: NodeJS.ProcessEnv) {
+  return env
+    ? createStripeWebhookSignatureVerifierFromEnv(env)
+    : createDefaultStripeWebhookSignatureVerifier();
+}
 
 const toStripeWebhookResponseStatus = (
   error: StripeWebhookVerificationError,

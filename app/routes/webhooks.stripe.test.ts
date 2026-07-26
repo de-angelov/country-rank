@@ -4,9 +4,16 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import type { ApplicationLogger } from "~/lib/logger.server";
 import { createStripeWebhookHandler } from "./webhooks.stripe.server";
-import { action } from "./webhooks.stripe";
 
 const webhookSecret = "whsec_route_test_secret";
+const envWithStripeWebhookSecret = {
+  STRIPE_WEBHOOK_SECRET: webhookSecret,
+};
+const validSharedServerEnv = {
+  REDIS_URL: "redis://localhost:6379",
+  STRIPE_SECRET_KEY: "sk_test_validSecret123",
+  STRIPE_WEBHOOK_SECRET: "whsec_validSecret123",
+};
 const verifiedCheckoutPayload = JSON.stringify({
   id: "evt_route_signature_shell",
   object: "event",
@@ -56,13 +63,48 @@ describe("Stripe webhook route", () => {
   });
 
   it("returns a typed configuration error when the webhook secret is missing", async () => {
+    vi.stubEnv("REDIS_URL", validSharedServerEnv.REDIS_URL);
+    vi.stubEnv(
+      "STRIPE_SECRET_KEY",
+      validSharedServerEnv.STRIPE_SECRET_KEY,
+    );
     vi.stubEnv("STRIPE_WEBHOOK_SECRET", "");
-
-    const response = await action({
-      request: createRequest(verifiedCheckoutPayload, "t=1,v1=invalid"),
-      params: {},
-      context: {},
+    const handleStripeWebhook = createStripeWebhookHandler({
+      logger: createMockLogger(),
     });
+
+    const response = await handleStripeWebhook(
+      createRequest(verifiedCheckoutPayload, "t=1,v1=invalid"),
+    );
+
+    expect(response.status).toBe(500);
+    expect(await readJson(response)).toEqual({
+      ok: false,
+      error: {
+        code: "missing_stripe_webhook_config",
+        message: "STRIPE_WEBHOOK_SECRET must be set to verify Stripe webhooks.",
+        envVar: "STRIPE_WEBHOOK_SECRET",
+      },
+    });
+  });
+
+  it("uses shared server config validation for the default webhook path", async () => {
+    vi.stubEnv("REDIS_URL", "https://localhost:6379");
+    vi.stubEnv(
+      "STRIPE_SECRET_KEY",
+      validSharedServerEnv.STRIPE_SECRET_KEY,
+    );
+    vi.stubEnv(
+      "STRIPE_WEBHOOK_SECRET",
+      validSharedServerEnv.STRIPE_WEBHOOK_SECRET,
+    );
+    const handleStripeWebhook = createStripeWebhookHandler({
+      logger: createMockLogger(),
+    });
+
+    const response = await handleStripeWebhook(
+      createRequest(verifiedCheckoutPayload, "t=1,v1=invalid"),
+    );
 
     expect(response.status).toBe(500);
     expect(await readJson(response)).toEqual({
@@ -76,9 +118,9 @@ describe("Stripe webhook route", () => {
   });
 
   it("rejects invalid signatures through a typed error response", async () => {
-    vi.stubEnv("STRIPE_WEBHOOK_SECRET", webhookSecret);
     const paymentLogger = createMockLogger();
     const handleStripeWebhook = createStripeWebhookHandler({
+      env: envWithStripeWebhookSecret,
       logger: paymentLogger,
     });
 
@@ -111,7 +153,6 @@ describe("Stripe webhook route", () => {
   });
 
   it("applies a paid vote after a verified successful checkout event", async () => {
-    vi.stubEnv("STRIPE_WEBHOOK_SECRET", webhookSecret);
     const applyPaidVote = vi.fn(() =>
       okAsync({
         status: "applied" as const,
@@ -125,7 +166,11 @@ describe("Stripe webhook route", () => {
         },
       }),
     );
-    const handleStripeWebhook = createStripeWebhookHandler({ applyPaidVote });
+    const handleStripeWebhook = createStripeWebhookHandler({
+      applyPaidVote,
+      env: envWithStripeWebhookSecret,
+      logger: createMockLogger(),
+    });
 
     const response = await handleStripeWebhook(
       createRequest(verifiedCheckoutPayload, signPayload(verifiedCheckoutPayload)),
@@ -160,7 +205,6 @@ describe("Stripe webhook route", () => {
   });
 
   it("returns a successful duplicate response without applying another vote", async () => {
-    vi.stubEnv("STRIPE_WEBHOOK_SECRET", webhookSecret);
     const applyPaidVote = vi.fn(() =>
       okAsync({
         status: "duplicate" as const,
@@ -174,7 +218,11 @@ describe("Stripe webhook route", () => {
         },
       }),
     );
-    const handleStripeWebhook = createStripeWebhookHandler({ applyPaidVote });
+    const handleStripeWebhook = createStripeWebhookHandler({
+      applyPaidVote,
+      env: envWithStripeWebhookSecret,
+      logger: createMockLogger(),
+    });
 
     const response = await handleStripeWebhook(
       createRequest(verifiedCheckoutPayload, signPayload(verifiedCheckoutPayload)),
@@ -210,7 +258,6 @@ describe("Stripe webhook route", () => {
   });
 
   it("returns a typed fulfillment read error without applying a vote", async () => {
-    vi.stubEnv("STRIPE_WEBHOOK_SECRET", webhookSecret);
     const paymentLogger = createMockLogger();
     const applyPaidVote = vi.fn(() =>
       errAsync({
@@ -227,6 +274,7 @@ describe("Stripe webhook route", () => {
     );
     const handleStripeWebhook = createStripeWebhookHandler({
       applyPaidVote,
+      env: envWithStripeWebhookSecret,
       logger: paymentLogger,
     });
 
@@ -270,7 +318,6 @@ describe("Stripe webhook route", () => {
   });
 
   it("returns a typed fulfillment write error after the vote is applied but not recorded", async () => {
-    vi.stubEnv("STRIPE_WEBHOOK_SECRET", webhookSecret);
     const applyPaidVote = vi.fn(() =>
       errAsync({
         code: "paid_vote_fulfillment_write_failed" as const,
@@ -285,7 +332,11 @@ describe("Stripe webhook route", () => {
         },
       }),
     );
-    const handleStripeWebhook = createStripeWebhookHandler({ applyPaidVote });
+    const handleStripeWebhook = createStripeWebhookHandler({
+      applyPaidVote,
+      env: envWithStripeWebhookSecret,
+      logger: createMockLogger(),
+    });
 
     const response = await handleStripeWebhook(
       createRequest(verifiedCheckoutPayload, signPayload(verifiedCheckoutPayload)),
@@ -314,7 +365,6 @@ describe("Stripe webhook route", () => {
   });
 
   it("returns a typed metadata error without applying a vote", async () => {
-    vi.stubEnv("STRIPE_WEBHOOK_SECRET", webhookSecret);
     const paymentLogger = createMockLogger();
     const payload = JSON.stringify({
       id: "evt_route_missing_metadata",
@@ -333,6 +383,7 @@ describe("Stripe webhook route", () => {
     const applyPaidVote = vi.fn();
     const handleStripeWebhook = createStripeWebhookHandler({
       applyPaidVote,
+      env: envWithStripeWebhookSecret,
       logger: paymentLogger,
     });
 
@@ -369,7 +420,6 @@ describe("Stripe webhook route", () => {
   });
 
   it("ignores unsupported verified events without applying a vote", async () => {
-    vi.stubEnv("STRIPE_WEBHOOK_SECRET", webhookSecret);
     const paymentLogger = createMockLogger();
     const payload = JSON.stringify({
       id: "evt_route_payment_intent_succeeded",
@@ -389,6 +439,7 @@ describe("Stripe webhook route", () => {
     const applyPaidVote = vi.fn();
     const handleStripeWebhook = createStripeWebhookHandler({
       applyPaidVote,
+      env: envWithStripeWebhookSecret,
       logger: paymentLogger,
     });
 

@@ -1,6 +1,8 @@
 import { err, ok, type Result } from "neverthrow";
 import Stripe from "stripe";
 
+import { parseServerEnv } from "~/config/server-env.server";
+
 const stripeWebhookSecretEnvVar = "STRIPE_WEBHOOK_SECRET";
 
 export type StripeWebhookConfig = Readonly<{
@@ -41,8 +43,12 @@ export const stripePaidVoteSuccessEventType = "checkout.session.completed";
 const stripeCheckoutSessionIdPattern = /^cs_(test|live)_[A-Za-z0-9_]+$/;
 
 export const getStripeWebhookConfig = (
-  env: NodeJS.ProcessEnv = process.env,
+  env?: NodeJS.ProcessEnv,
 ): Result<StripeWebhookConfig, StripeWebhookVerificationError> => {
+  if (!env) {
+    return getDefaultStripeWebhookConfig();
+  }
+
   const webhookSecret = env[stripeWebhookSecretEnvVar]?.trim();
 
   if (!webhookSecret) {
@@ -56,10 +62,24 @@ export const getStripeWebhookConfig = (
   return ok({ webhookSecret });
 };
 
+const getDefaultStripeWebhookConfig = (): Result<
+  StripeWebhookConfig,
+  StripeWebhookVerificationError
+> =>
+  parseServerEnv().match(
+    (serverEnv) => ok({ webhookSecret: serverEnv.STRIPE_WEBHOOK_SECRET }),
+    () =>
+      err({
+        code: "missing_stripe_webhook_config",
+        message: `${stripeWebhookSecretEnvVar} must be set to verify Stripe webhooks.`,
+        envVar: stripeWebhookSecretEnvVar,
+      }),
+  );
+
 export const verifyStripeWebhookSignature = (
   payload: string,
   signature: string | null,
-  env: NodeJS.ProcessEnv = process.env,
+  env?: NodeJS.ProcessEnv,
 ): Result<VerifiedStripeWebhookEvent, StripeWebhookVerificationError> => {
   const configResult = getStripeWebhookConfig(env);
 

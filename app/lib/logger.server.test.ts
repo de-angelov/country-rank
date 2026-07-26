@@ -1,4 +1,8 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
+
+import {
+  ServerEnvValidationError,
+} from "~/config/server-env.server";
 
 import {
   createApplicationLogger,
@@ -21,8 +25,18 @@ const createMemoryLogStream = () => {
   };
 };
 
+const validSharedServerEnv = {
+  REDIS_URL: "redis://localhost:6379",
+  STRIPE_SECRET_KEY: "sk_test_validSecret123",
+  STRIPE_WEBHOOK_SECRET: "whsec_validSecret123",
+};
+
+afterEach(() => {
+  vi.unstubAllEnvs();
+});
+
 describe("getLogLevel", () => {
-  it("defaults to info when LOG_LEVEL is not configured", () => {
+  it("defaults injected env objects to info when LOG_LEVEL is not configured", () => {
     expect(getLogLevel({})).toBe(defaultLogLevel);
   });
 
@@ -33,6 +47,36 @@ describe("getLogLevel", () => {
 
   it("falls back to info when LOG_LEVEL is not supported", () => {
     expect(getLogLevel({ LOG_LEVEL: "verbose" })).toBe(defaultLogLevel);
+  });
+
+  it("uses the shared server config validation for the default path", () => {
+    vi.stubEnv("REDIS_URL", validSharedServerEnv.REDIS_URL);
+    vi.stubEnv(
+      "STRIPE_SECRET_KEY",
+      validSharedServerEnv.STRIPE_SECRET_KEY,
+    );
+    vi.stubEnv(
+      "STRIPE_WEBHOOK_SECRET",
+      validSharedServerEnv.STRIPE_WEBHOOK_SECRET,
+    );
+    vi.stubEnv("LOG_LEVEL", " warn ");
+
+    expect(getLogLevel()).toBe("warn");
+  });
+
+  it("rejects unsupported default LOG_LEVEL through shared server config validation", () => {
+    vi.stubEnv("REDIS_URL", validSharedServerEnv.REDIS_URL);
+    vi.stubEnv(
+      "STRIPE_SECRET_KEY",
+      validSharedServerEnv.STRIPE_SECRET_KEY,
+    );
+    vi.stubEnv(
+      "STRIPE_WEBHOOK_SECRET",
+      validSharedServerEnv.STRIPE_WEBHOOK_SECRET,
+    );
+    vi.stubEnv("LOG_LEVEL", "verbose");
+
+    expect(() => getLogLevel()).toThrow(ServerEnvValidationError);
   });
 });
 

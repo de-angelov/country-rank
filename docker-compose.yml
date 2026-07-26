@@ -1,54 +1,11 @@
 services:
-  # Development app server with Vite/React Router hot reload. Use via `npm run compose:dev`.
-  app-dev:
-    image: node:20-alpine
-    working_dir: /workspace
-    command:
-      [
-        "sh",
-        "-c",
-        "npm install && chown -R node:node /workspace/node_modules && su node -s /bin/sh -c 'npm run dev -- --host 0.0.0.0'",
-      ]
-    depends_on:
-      - redis
-    environment:
-      REDIS_URL: redis://redis:6379
-      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
-      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-}
-      LOG_LEVEL: ${LOG_LEVEL:-}
-    ports:
-      - "127.0.0.1:${APP_HOST_PORT:-3000}:5173"
-    volumes:
-      - .:/workspace
-      - app-node-modules:/workspace/node_modules
-
-  # Production app server. It is private to the Compose network; Caddy is public.
-  app-server:
-    image: node:20-alpine
-    working_dir: /workspace
-    command:
-      [
-        "sh",
-        "-c",
-        "npm install && npm run build && npm run start",
-      ]
-    depends_on:
-      - redis
-    environment:
-      HOST: "0.0.0.0"
-      PORT: "3000"
-      REDIS_URL: redis://redis:6379
-    expose:
-      - "3000"
-    volumes:
-      - .:/workspace
-      - app-prod-node-modules:/workspace/node_modules
-
-  # Public HTTP/HTTPS reverse proxy. Use this as the production web entrypoint.
+  # Public HTTP/HTTPS reverse proxy. Use this as the VM web entrypoint.
   web-proxy:
     image: caddy:2-alpine
-    depends_on:
-      - app-server
+    environment:
+      SITE_DOMAIN: ${SITE_DOMAIN:-}
+    networks:
+      - web
     ports:
       - "${HTTP_HOST_PORT:-80}:80"
       - "${HTTPS_HOST_PORT:-443}:443"
@@ -57,51 +14,11 @@ services:
       - caddy-data:/data
       - caddy-config:/config
 
-  # Redis database for country catalog metadata and aggregate vote totals.
-  redis:
-    image: redis:7-alpine
-    command: ["redis-server", "--appendonly", "yes"]
-    ports:
-      - "127.0.0.1:${REDIS_HOST_PORT:-4000}:6379"
-    volumes:
-      - redis-data:/data
-
-  # Scheduled Redis backup worker. Runs only with the `backup` Compose profile.
-  redis-backup:
-    image: node:20-alpine
-    profiles: ["backup"]
-    working_dir: /workspace
-    command:
-      [
-        "sh",
-        "-c",
-        "apk add --no-cache git openssh-client && npm install && npm run redis:backup:sidecar",
-      ]
-    depends_on:
-      - redis
-    environment:
-      REDIS_URL: redis://redis:6379
-      GIT_SSH_COMMAND: ssh -i /run/secrets/backup_ssh_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new -o UserKnownHostsFile=/tmp/known_hosts
-      REDIS_BACKUP_SIDECAR_ENABLED: ${REDIS_BACKUP_SIDECAR_ENABLED:-false}
-      REDIS_BACKUP_CADENCE_SECONDS: ${REDIS_BACKUP_CADENCE_SECONDS:-86400}
-      REDIS_BACKUP_DRY_RUN: ${REDIS_BACKUP_DRY_RUN:-true}
-      REDIS_BACKUP_SIDECAR_RUN_ONCE: ${REDIS_BACKUP_SIDECAR_RUN_ONCE:-false}
-      REDIS_BACKUP_GIT_REPOSITORY: ${REDIS_BACKUP_GIT_REPOSITORY:-}
-      REDIS_BACKUP_BRANCH: ${REDIS_BACKUP_BRANCH:-main}
-      REDIS_BACKUP_PATH: ${REDIS_BACKUP_PATH:-redis}
-      REDIS_BACKUP_RETENTION_COUNT: ${REDIS_BACKUP_RETENTION_COUNT:-30}
-    volumes:
-      - .:/workspace
-      - type: bind
-        source: ${REDIS_BACKUP_SSH_KEY_PATH:-/dev/null}
-        target: /run/secrets/backup_ssh_key
-        read_only: true
-        bind:
-          create_host_path: false
-
 volumes:
-  app-node-modules:
-  app-prod-node-modules:
   caddy-config:
   caddy-data:
-  redis-data:
+
+networks:
+  web:
+    external: true
+    name: vm-web

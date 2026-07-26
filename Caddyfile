@@ -7,5 +7,5 @@
 	@staticAssets path /flags/* /favicon.ico /robots.txt
 	header @staticAssets Cache-Control "public, max-age=604800"
 
-	reverse_proxy app-prod:3000
+	reverse_proxy country-ranking-app:3000
 }

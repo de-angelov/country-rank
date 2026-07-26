@@ -39,10 +39,23 @@ export const runComposeDev = async ({
     logger.log(`Compose dev Redis: ${redisUrl}`);
   };
 
-  return commandRunner("docker", ["compose", "up", "app-dev", "redis"], {
-    env: childEnv,
-    onStart: printEndpoints,
-  });
+  return commandRunner(
+    "docker",
+    [
+      "compose",
+      "-p",
+      "country-ranking-dev",
+      "-f",
+      "docker-compose.dev.yml",
+      "up",
+      "app-dev",
+      "redis",
+    ],
+    {
+      env: childEnv,
+      onStart: printEndpoints,
+    },
+  );
 };
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {

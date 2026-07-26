@@ -65,11 +65,23 @@ Common Compose scripts are grouped by environment:
 | --- | --- |
 | `npm run compose:dev` | Start the local dev app and Redis in attached mode. |
 | `npm run compose:dev:seed` | Start the local dev app and Redis in detached mode, then seed Redis. |
-| `npm run compose:prod` | Start `web-proxy`, `app-server`, `redis`, and `redis-backup` in detached mode. |
+| `npm run compose:prod` | Start the VM-level `web-proxy` in detached mode. |
+| `npm run compose:app` | Start this app's `app-server` and `redis` behind the VM-level proxy. |
+| `npm run compose:app:backup` | Start this app's `app-server`, `redis`, and Redis backup sidecar. |
+| `npm run compose:app:seed` | Seed this app's Redis volume after starting `compose:app`. |
 | `npm run compose:prod:update` | Pull the latest code, stop the prod stack without deleting volumes, and restart it. |
-| `npm run compose:prod:down` | Stop the prod stack without deleting Redis data volumes. |
+| `npm run compose:prod:down` | Stop the VM-level proxy stack without deleting Caddy data volumes. |
 | `npm run compose:prod:ps` | Show prod stack container status. |
-| `npm run compose:prod:logs` | Follow `web-proxy`, `app-server`, `redis`, and `redis-backup` logs. |
+| `npm run compose:prod:logs` | Follow `web-proxy` logs. |
+
+Compose topology is split by independent deployment unit:
+`docker-compose.yml` contains the VM-level production proxy,
+`docker-compose.dev.yml` contains the Vite dev server plus Redis, and
+`docker-compose.app.yml` contains this app's production server plus Redis. App
+stacks attach to the external `vm-web` Docker network owned by the VM proxy.
+The npm scripts use separate Compose project names so proxy, app, and dev
+lifecycles do not report each other as orphans: `vm-proxy`,
+`country-ranking-app`, and `country-ranking-dev`.
 
 Run the web app and Redis together with:
 
@@ -141,19 +153,31 @@ For production-style local execution through Compose, run:
 npm run compose:prod
 ```
 
-The `compose:prod` preset starts the Compose `web-proxy`, `app-server`,
-`redis`, and `redis-backup` services in detached mode with the `backup` profile
-enabled. `app-server` runs `npm install`, `npm run build`, and then `npm run start` with
-`HOST=0.0.0.0` and `PORT=3000`, but it is only exposed inside the Compose
-network. Caddy is the public entrypoint, publishes `HTTP_HOST_PORT` and
-`HTTPS_HOST_PORT`, proxies traffic to `app-server:3000`, handles HTTPS
+The `compose:prod` preset starts the VM-level Caddy `web-proxy`. Caddy is the
+public entrypoint, publishes `HTTP_HOST_PORT` and `HTTPS_HOST_PORT`, proxies
+traffic to app services on the shared `vm-web` Docker network, handles HTTPS
 certificates for `SITE_DOMAIN`, compresses responses, and sets cache headers
 for static assets.
 
-For local prod-style testing with the default local `.env`, open
-`http://localhost:8080`. For a real VM, set `SITE_DOMAIN=country-rank.online`,
-`HTTP_HOST_PORT=80`, and `HTTPS_HOST_PORT=443`, then open
-`https://country-rank.online`.
+For production, set `SITE_DOMAIN=country-rank.online`, `HTTP_HOST_PORT=80`,
+and `HTTPS_HOST_PORT=443`, then open `https://country-rank.online`. Caddy uses
+the configured domain to obtain HTTPS certificates and redirects HTTP traffic to
+HTTPS.
+
+Start this app behind the VM-level Caddy proxy with:
+
+```sh
+npm run compose:app
+```
+
+The `compose:app` preset starts this app's `app-server` and Redis dependency.
+`app-server` joins the shared `vm-web` Docker network with the
+`country-ranking-app` alias, and Caddy routes `country-rank.online` to
+`country-ranking-app:3000`. Run `npm run compose:app:backup` when this app's
+Redis backup sidecar should run too. Future web apps can join the same `vm-web`
+network and be added to the VM-level `Caddyfile`.
+For a new Redis volume, restore a backup artifact first or run
+`npm run compose:app:seed` as an explicit demo/dev fallback.
 
 Use `compose:dev` while changing app code and `compose:prod` when checking the
 production build/start path locally. Direct host commands remain available:
@@ -208,8 +232,8 @@ Runtime and integration variables currently supported by the app and scripts:
 | --- | --- | --- | --- |
 | `REDIS_URL` | Browsing Redis-backed country pages, reading/writing votes, seeding, restore, and Redis backup commands. Optional for backup dry-run and local restore only because those runners default to local Redis. | App loaders/actions and Redis scripts | `redis://localhost:4000` |
 | `LOG_LEVEL` | Optional for every app runtime. Supported values are `fatal`, `error`, `warn`, `info`, `debug`, `trace`, and `silent`; invalid or missing values fall back to `info`. | Shared Pino application logger | `info` |
-| `APP_HOST_PORT` | Optional when starting the app service through Docker Compose and the host port must differ from `3000`. | `docker-compose.yml` app port mapping | `3000` |
-| `REDIS_HOST_PORT` | Optional when starting Redis through Docker Compose and the host port must differ from `4000`. | `docker-compose.yml` Redis port mapping and local Redis restore wrapper | `4000` |
+| `APP_HOST_PORT` | Optional when starting the dev app service through Docker Compose and the host port must differ from `3000`. | `docker-compose.dev.yml` app-dev port mapping | `3000` |
+| `REDIS_HOST_PORT` | Optional when starting Redis through Docker Compose and the host port must differ from `4000`. | `docker-compose.dev.yml` and `docker-compose.app.yml` Redis port mapping, plus local Redis restore wrapper | `4000` |
 | `SITE_DOMAIN` | Production Caddy entrypoint. Must point DNS at the VM for automatic HTTPS. | `Caddyfile` | `country-rank.online` |
 | `HTTP_HOST_PORT` | Production Caddy HTTP listener. Required for Let's Encrypt HTTP challenge unless using another ACME challenge. | `docker-compose.yml` Caddy port mapping | `80` |
 | `HTTPS_HOST_PORT` | Production Caddy HTTPS listener. | `docker-compose.yml` Caddy port mapping | `443` |
@@ -229,7 +253,7 @@ Configuration by workflow:
 
 | Workflow | Required variables |
 | --- | --- |
-| Local browsing and vote reads/writes | `REDIS_URL`; start Redis first with `docker compose up -d redis`. |
+| Local browsing and vote reads/writes | `REDIS_URL`; start Redis first with `docker compose -f docker-compose.app.yml up -d redis` or use `compose:dev`. |
 | Redis seeding | `REDIS_URL`. |
 | Stripe checkout request validation | `STRIPE_SECRET_KEY`; use only a Stripe test-mode `sk_test_...` secret for local checkout work. |
 | Stripe webhook verification | `STRIPE_WEBHOOK_SECRET`; webhook vote application also needs `REDIS_URL`. |

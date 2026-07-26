@@ -28,7 +28,7 @@ describe("runComposeDev", () => {
 
     expect(commandRunner).toHaveBeenCalledWith(
       "docker",
-      ["compose", "up", "app-dev", "redis"],
+      ["compose", "-p", "country-ranking-dev", "-f", "docker-compose.dev.yml", "up", "app-dev", "redis"],
       {
         env: {
           PATH: "/bin",
@@ -62,7 +62,7 @@ describe("runComposeDev", () => {
 
     expect(commandRunner).toHaveBeenCalledWith(
       "docker",
-      ["compose", "up", "app-dev", "redis"],
+      ["compose", "-p", "country-ranking-dev", "-f", "docker-compose.dev.yml", "up", "app-dev", "redis"],
       {
         env: {
           APP_HOST_PORT: "3001",
@@ -101,7 +101,7 @@ describe("runComposeDev", () => {
 
     expect(commandRunner).toHaveBeenCalledWith(
       "docker",
-      ["compose", "up", "app-dev", "redis"],
+      ["compose", "-p", "country-ranking-dev", "-f", "docker-compose.dev.yml", "up", "app-dev", "redis"],
       {
         env: {
           APP_HOST_PORT: "3001",
@@ -143,7 +143,7 @@ describe("runComposeDev", () => {
 
     expect(commandRunner).toHaveBeenCalledWith(
       "docker",
-      ["compose", "up", "app-dev", "redis"],
+      ["compose", "-p", "country-ranking-dev", "-f", "docker-compose.dev.yml", "up", "app-dev", "redis"],
       {
         env: {
           LOG_LEVEL: "debug",
@@ -178,7 +178,7 @@ describe("runComposeDev", () => {
 
     expect(commandRunner).toHaveBeenCalledWith(
       "docker",
-      ["compose", "up", "app-dev", "redis"],
+      ["compose", "-p", "country-ranking-dev", "-f", "docker-compose.dev.yml", "up", "app-dev", "redis"],
       {
         env: {
           APP_HOST_PORT: "3000",

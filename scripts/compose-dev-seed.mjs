@@ -225,7 +225,17 @@ export const runComposeDevSeed = async ({
 
   const composeExitCode = await commandRunner(
     "docker",
-    ["compose", "up", "-d", "app-dev", "redis"],
+    [
+      "compose",
+      "-p",
+      "country-ranking-dev",
+      "-f",
+      "docker-compose.dev.yml",
+      "up",
+      "-d",
+      "app-dev",
+      "redis",
+    ],
     {
       env: childEnv,
     },

@@ -1,0 +1,36 @@
+services:
+  # Development app server with Vite/React Router hot reload. Use via `npm run compose:dev`.
+  app-dev:
+    image: node:20-alpine
+    working_dir: /workspace
+    command:
+      [
+        "sh",
+        "-c",
+        "npm install && chown -R node:node /workspace/node_modules && su node -s /bin/sh -c 'npm run dev -- --host 0.0.0.0'",
+      ]
+    depends_on:
+      - redis
+    environment:
+      REDIS_URL: redis://redis:6379
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-}
+      LOG_LEVEL: ${LOG_LEVEL:-}
+    ports:
+      - "127.0.0.1:${APP_HOST_PORT:-3000}:5173"
+    volumes:
+      - .:/workspace
+      - app-node-modules:/workspace/node_modules
+
+  # Redis database for local development.
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "127.0.0.1:${REDIS_HOST_PORT:-4000}:6379"
+    volumes:
+      - redis-data:/data
+
+volumes:
+  app-node-modules:
+  redis-data:

@@ -1,4 +1,5 @@
 import { renderToString } from "react-dom/server";
+import { MemoryRouter } from "react-router";
 import { describe, expect, it } from "vitest";
 
 import { countryFixtures } from "./countries";
@@ -56,7 +57,9 @@ describe("root error boundary", () => {
 
   it("renders friendly generic error copy", () => {
     const html = renderToString(
-      <RootErrorPage error={new Error("Redis connection failed")} />,
+      <MemoryRouter>
+        <RootErrorPage error={new Error("Redis connection failed")} />
+      </MemoryRouter>,
     );
     const text = visibleText(html);
 
@@ -68,14 +71,16 @@ describe("root error boundary", () => {
 
   it("renders distinct not-found copy for 404 route errors", () => {
     const html = renderToString(
-      <RootErrorPage
-        error={{
-          status: 404,
-          statusText: "Not Found",
-          data: null,
-          internal: false,
-        }}
-      />,
+      <MemoryRouter>
+        <RootErrorPage
+          error={{
+            status: 404,
+            statusText: "Not Found",
+            data: null,
+            internal: false,
+          }}
+        />
+      </MemoryRouter>,
     );
     const text = visibleText(html);
 

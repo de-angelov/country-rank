@@ -1,8 +1,13 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { errAsync, okAsync } from "neverthrow";
 
 import type { ApplicationLogger } from "~/lib/logger.server";
 import { createCheckoutHandler } from "./checkout.server";
 import type { CreateStripeCheckoutSession } from "~/payments/stripe-checkout.server";
+import type {
+  PaidVoteFulfillmentRecord,
+  RedisPaidVoteFulfillmentError,
+} from "~/votes/fulfillment.server";
 
 const envWithStripeSecret = {
   STRIPE_SECRET_KEY: "sk_test_checkout_secret",
@@ -24,6 +29,9 @@ const createMockLogger = (): ApplicationLogger => ({
   error: vi.fn(),
 });
 
+const createSuccessfulFulfillmentWriter = () =>
+  vi.fn((record: PaidVoteFulfillmentRecord) => okAsync(record));
+
 afterEach(() => {
   vi.unstubAllEnvs();
 });
@@ -32,12 +40,15 @@ describe("paid vote checkout route", () => {
   it("redirects browser-submitted paid vote requests to Stripe Checkout", async () => {
     const createSession = vi.fn<CreateStripeCheckoutSession>(() =>
       Promise.resolve({
+        id: "cs_test_form",
         url: "https://checkout.stripe.test/session/form",
       }),
     );
+    const writeFulfillmentRecord = createSuccessfulFulfillmentWriter();
     const handleCheckout = createCheckoutHandler({
       env: envWithStripeSecret,
       createSession,
+      writeFulfillmentRecord,
     });
     const formData = new FormData();
     formData.set("countryCode", "jp");
@@ -63,17 +74,26 @@ describe("paid vote checkout route", () => {
         },
       }),
     );
+    expect(writeFulfillmentRecord).toHaveBeenCalledWith({
+      status: "pending",
+      checkoutSessionId: "cs_test_form",
+      countryCode: "JP",
+      voteType: "like",
+    });
   });
 
   it("returns a Checkout URL for valid JSON paid vote requests", async () => {
     const createSession = vi.fn<CreateStripeCheckoutSession>(() =>
       Promise.resolve({
+        id: "cs_test_json",
         url: "https://checkout.stripe.test/session/json",
       }),
     );
+    const writeFulfillmentRecord = createSuccessfulFulfillmentWriter();
     const handleCheckout = createCheckoutHandler({
       env: envWithStripeSecret,
       createSession,
+      writeFulfillmentRecord,
     });
 
     const response = await handleCheckout(
@@ -105,13 +125,21 @@ describe("paid vote checkout route", () => {
         },
       }),
     );
+    expect(writeFulfillmentRecord).toHaveBeenCalledWith({
+      status: "pending",
+      checkoutSessionId: "cs_test_json",
+      countryCode: "DE",
+      voteType: "dislike",
+    });
   });
 
   it("rejects invalid requests before calling Stripe", async () => {
     const createSession = vi.fn<CreateStripeCheckoutSession>();
+    const writeFulfillmentRecord = createSuccessfulFulfillmentWriter();
     const handleCheckout = createCheckoutHandler({
       env: envWithStripeSecret,
       createSession,
+      writeFulfillmentRecord,
     });
 
     const response = await handleCheckout(
@@ -141,15 +169,18 @@ describe("paid vote checkout route", () => {
       },
     });
     expect(createSession).not.toHaveBeenCalled();
+    expect(writeFulfillmentRecord).not.toHaveBeenCalled();
   });
 
   it("returns a safe server error when Stripe configuration is missing", async () => {
     const paymentLogger = createMockLogger();
     const createSession = vi.fn<CreateStripeCheckoutSession>();
+    const writeFulfillmentRecord = createSuccessfulFulfillmentWriter();
     const handleCheckout = createCheckoutHandler({
       env: {},
       createSession,
       logger: paymentLogger,
+      writeFulfillmentRecord,
     });
     const formData = new FormData();
     formData.set("countryCode", "CA");
@@ -174,6 +205,7 @@ describe("paid vote checkout route", () => {
     });
     expect(JSON.stringify(body)).not.toContain("STRIPE_SECRET_KEY");
     expect(createSession).not.toHaveBeenCalled();
+    expect(writeFulfillmentRecord).not.toHaveBeenCalled();
     expect(paymentLogger.error).toHaveBeenCalledWith(
       {
         route: "checkout",
@@ -201,12 +233,15 @@ describe("paid vote checkout route", () => {
     const paymentLogger = createMockLogger();
     const createSession = vi.fn<CreateStripeCheckoutSession>(() =>
       Promise.resolve({
+        id: "cs_test_default_env",
         url: "https://checkout.stripe.test/session/default-env",
       }),
     );
+    const writeFulfillmentRecord = createSuccessfulFulfillmentWriter();
     const handleCheckout = createCheckoutHandler({
       createSession,
       logger: paymentLogger,
+      writeFulfillmentRecord,
     });
 
     const response = await handleCheckout(
@@ -233,6 +268,7 @@ describe("paid vote checkout route", () => {
       },
     });
     expect(createSession).not.toHaveBeenCalled();
+    expect(writeFulfillmentRecord).not.toHaveBeenCalled();
     expect(paymentLogger.error).toHaveBeenCalledWith(
       {
         route: "checkout",
@@ -255,10 +291,12 @@ describe("paid vote checkout route", () => {
     const createSession = vi.fn<CreateStripeCheckoutSession>(() =>
       Promise.reject(new Error("Stripe API unavailable")),
     );
+    const writeFulfillmentRecord = createSuccessfulFulfillmentWriter();
     const handleCheckout = createCheckoutHandler({
       env: envWithStripeSecret,
       createSession,
       logger: paymentLogger,
+      writeFulfillmentRecord,
     });
 
     const response = await handleCheckout(
@@ -300,17 +338,21 @@ describe("paid vote checkout route", () => {
     expect(JSON.stringify(vi.mocked(paymentLogger.error).mock.calls)).not.toContain(
       envWithStripeSecret.STRIPE_SECRET_KEY,
     );
+    expect(writeFulfillmentRecord).not.toHaveBeenCalled();
   });
 
   it("does not increment Redis vote totals while creating checkout", async () => {
     const createSession = vi.fn<CreateStripeCheckoutSession>(() =>
       Promise.resolve({
+        id: "cs_test_no_redis",
         url: "https://checkout.stripe.test/session/no-redis",
       }),
     );
+    const writeFulfillmentRecord = createSuccessfulFulfillmentWriter();
     const handleCheckout = createCheckoutHandler({
       env: envWithStripeSecret,
       createSession,
+      writeFulfillmentRecord,
     });
 
     await handleCheckout(
@@ -327,5 +369,69 @@ describe("paid vote checkout route", () => {
     );
 
     expect(createSession.mock.calls[0]?.[0]).not.toHaveProperty("totals");
+  });
+
+  it("returns a safe server error when pending paid vote tracking fails", async () => {
+    const paymentLogger = createMockLogger();
+    const createSession = vi.fn<CreateStripeCheckoutSession>(() =>
+      Promise.resolve({
+        id: "cs_test_tracking_failure",
+        url: "https://checkout.stripe.test/session/tracking-failure",
+      }),
+    );
+    const trackingError: RedisPaidVoteFulfillmentError = {
+      code: "redis_command_failed",
+      message: "Failed to write paid vote fulfillment record to Redis.",
+      cause: new Error("Redis unavailable"),
+    };
+    const writeFulfillmentRecord = vi.fn(() => errAsync(trackingError));
+    const handleCheckout = createCheckoutHandler({
+      env: envWithStripeSecret,
+      createSession,
+      logger: paymentLogger,
+      writeFulfillmentRecord,
+    });
+
+    const response = await handleCheckout(
+      new Request("https://country-ranking.test/checkout", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          "x-request-id": "req_tracking_failure",
+        },
+        body: JSON.stringify({
+          countryCode: "JP",
+          voteType: "like",
+        }),
+      }),
+    );
+
+    expect(response.status).toBe(502);
+    expect(await readJson(response)).toEqual({
+      ok: false,
+      error: {
+        code: "paid_vote_tracking_failed",
+        message: "We couldn't start checkout. Please try again in a moment.",
+        causeCode: "redis_command_failed",
+      },
+    });
+    expect(writeFulfillmentRecord).toHaveBeenCalledWith({
+      status: "pending",
+      checkoutSessionId: "cs_test_tracking_failure",
+      countryCode: "JP",
+      voteType: "like",
+    });
+    expect(paymentLogger.error).toHaveBeenCalledWith(
+      {
+        route: "checkout",
+        action: "write_paid_vote_pending_fulfillment",
+        errorCode: "redis_command_failed",
+        checkoutSessionId: "cs_test_tracking_failure",
+        countryCode: "JP",
+        voteType: "like",
+        requestId: "req_tracking_failure",
+      },
+      "Paid vote pending fulfillment write failed.",
+    );
   });
 });

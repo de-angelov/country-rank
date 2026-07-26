@@ -3,6 +3,10 @@ import Stripe from "stripe";
 
 import { parseServerEnv } from "~/config/server-env.server";
 import {
+  parseStripePaidVoteMetadata,
+  type StripePaidVoteMetadataError,
+} from "~/payments/paid-vote-metadata.server";
+import {
   validateVoteRequest,
   type VoteRequestPayload,
 } from "~/votes/request.server";
@@ -40,6 +44,7 @@ export type StripeCheckoutRequestResult = Result<
 >;
 
 export type StripeCheckoutSessionSuccess = Readonly<{
+  checkoutSessionId: string;
   checkoutUrl: string;
 }>;
 
@@ -49,17 +54,59 @@ export type StripeCheckoutSessionError = Readonly<{
   cause: unknown;
 }>;
 
+export type StripeCheckoutSessionPaymentStatus =
+  | Readonly<{
+      status: "paid";
+      checkoutSessionId: string;
+      countryCode: string;
+      voteType: VoteKind;
+    }>
+  | Readonly<{
+      status: "unpaid";
+      checkoutSessionId: string;
+    }>;
+
+export type StripeCheckoutSessionStatusError =
+  | Readonly<{
+      code: "stripe_checkout_session_retrieval_failed";
+      message: string;
+      checkoutSessionId: string;
+      cause: unknown;
+    }>
+  | Readonly<{
+      code: "invalid_stripe_checkout_session_metadata";
+      message: string;
+      checkoutSessionId: string;
+      cause: StripePaidVoteMetadataError;
+    }>;
+
 type StripeCheckoutSessionCreateParams = Stripe.Checkout.SessionCreateParams;
-type StripeCheckoutSessionCreateResult = Pick<Stripe.Checkout.Session, "url">;
+type StripeCheckoutSessionCreateResult = Pick<
+  Stripe.Checkout.Session,
+  "id" | "url"
+>;
+type StripeCheckoutSessionRetrieveResult = Pick<
+  Stripe.Checkout.Session,
+  "id" | "metadata" | "payment_status" | "status"
+>;
 
 export type CreateStripeCheckoutSession = (
   params: StripeCheckoutSessionCreateParams,
 ) => Promise<StripeCheckoutSessionCreateResult>;
 
+export type RetrieveStripeCheckoutSession = (
+  checkoutSessionId: string,
+) => Promise<StripeCheckoutSessionRetrieveResult>;
+
 export type StripeCheckoutSessionOptions = Readonly<{
   config: StripeCheckoutConfig;
   appBaseUrl: string;
   createSession?: CreateStripeCheckoutSession;
+}>;
+
+export type StripeCheckoutSessionStatusOptions = Readonly<{
+  config: StripeCheckoutConfig;
+  retrieveSession?: RetrieveStripeCheckoutSession;
 }>;
 
 export const getStripeCheckoutConfig = (
@@ -148,7 +195,50 @@ export const createStripeCheckoutSession = (
     }
 
     return ok({
+      checkoutSessionId: session.id,
       checkoutUrl: session.url,
+    });
+  });
+};
+
+export const getStripeCheckoutSessionPaymentStatus = (
+  checkoutSessionId: string,
+  options: StripeCheckoutSessionStatusOptions,
+): ResultAsync<
+  StripeCheckoutSessionPaymentStatus,
+  StripeCheckoutSessionStatusError
+> => {
+  const retrieveSession =
+    options.retrieveSession ?? createStripeSessionRetriever(options.config);
+
+  return ResultAsync.fromPromise(retrieveSession(checkoutSessionId), (cause) => ({
+    code: "stripe_checkout_session_retrieval_failed" as const,
+    message: "Failed to retrieve Stripe checkout session.",
+    checkoutSessionId,
+    cause,
+  })).andThen((session) => {
+    if (session.status !== "complete" || session.payment_status !== "paid") {
+      return ok({
+        status: "unpaid" as const,
+        checkoutSessionId: session.id,
+      });
+    }
+
+    const metadataResult = parseStripePaidVoteMetadata(session.metadata);
+
+    if (metadataResult.isErr()) {
+      return err({
+        code: "invalid_stripe_checkout_session_metadata" as const,
+        message: "Stripe checkout session metadata is invalid.",
+        checkoutSessionId: session.id,
+        cause: metadataResult.error,
+      });
+    }
+
+    return ok({
+      status: "paid" as const,
+      checkoutSessionId: session.id,
+      ...metadataResult.value,
     });
   });
 };
@@ -161,11 +251,22 @@ const createStripeSessionCreator = (
   return (params) => stripe.checkout.sessions.create(params);
 };
 
+const createStripeSessionRetriever = (
+  config: StripeCheckoutConfig,
+): RetrieveStripeCheckoutSession => {
+  const stripe = new Stripe(config.secretKey);
+
+  return (checkoutSessionId) => stripe.checkout.sessions.retrieve(checkoutSessionId);
+};
+
 const buildStripeCheckoutSessionParams = (
   checkoutRequest: StripeCheckoutRequest,
   appBaseUrl: string,
 ): StripeCheckoutSessionCreateParams => ({
   mode: "payment",
+  managed_payments: {
+    enabled: false,
+  },
   line_items: [
     {
       quantity: 1,
@@ -182,14 +283,20 @@ const buildStripeCheckoutSessionParams = (
     countryCode: checkoutRequest.countryCode,
     voteType: checkoutRequest.voteType,
   },
-  success_url: `${normalizeAppBaseUrl(appBaseUrl)}/checkout/success?session_id={CHECKOUT_SESSION_ID}`,
-  cancel_url: `${normalizeAppBaseUrl(appBaseUrl)}/`,
+  success_url: buildStripeCheckoutSuccessUrl(appBaseUrl),
+  cancel_url: buildStripeCheckoutCancelUrl(appBaseUrl),
 });
 
 const stripeCheckoutUnitAmount = {
   like: 100,
   dislike: 200,
 } satisfies Record<VoteKind, number>;
+
+export const buildStripeCheckoutSuccessUrl = (appBaseUrl: string) =>
+  `${normalizeAppBaseUrl(appBaseUrl)}/?session_id={CHECKOUT_SESSION_ID}`;
+
+export const buildStripeCheckoutCancelUrl = (appBaseUrl: string) =>
+  `${normalizeAppBaseUrl(appBaseUrl)}/`;
 
 const normalizeAppBaseUrl = (appBaseUrl: string) =>
   appBaseUrl.replace(/\/+$/, "");

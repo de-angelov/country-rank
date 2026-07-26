@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import type { Country } from "~/countries";
+import { localCountryFlagPaths } from "~/countries/local-flag-assets";
 import { cn } from "~/lib/utils";
 
 import {
@@ -11,8 +12,6 @@ import {
 import { Button } from "~/components/ui/button";
 import { Card } from "~/components/ui/card";
 import { Progress } from "~/components/ui/progress";
-
-import flagAssets from "../../../public/flag-assets.json";
 
 export type CountryCardProps = Readonly<{
   country: Country;
@@ -25,7 +24,6 @@ const voteIconSymbolIds = {
   dislike: "country-card-thumbs-down",
   like: "country-card-thumbs-up",
 } as const satisfies Record<VoteType, string>;
-const localFlagPaths = flagAssets.flags as Record<string, string>;
 
 const styles = {
   article: "grid gap-4 bg-secondary-background p-4",
@@ -97,7 +95,7 @@ function CountryCardVoteIcon({ voteType }: { voteType: VoteType }) {
 }
 
 export function getCountryCardFlagImageUrl(country: Country) {
-  return localFlagPaths[country.code] ?? country.flagImageUrl;
+  return localCountryFlagPaths[country.code] ?? country.flagImageUrl;
 }
 
 export function CountryCard({

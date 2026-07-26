@@ -1,6 +1,17 @@
 import { err, ok, type Result } from "neverthrow";
 
 import {
+  getStripeCheckoutConfig,
+  getStripeCheckoutSessionPaymentStatus,
+  type RetrieveStripeCheckoutSession,
+  type StripeCheckoutRequestError,
+  type StripeCheckoutSessionStatusError,
+} from "~/payments/stripe-checkout.server";
+import {
+  applyPaidVote,
+  type PaidVoteApplicationError,
+} from "~/votes/paid-application.server";
+import {
   readPaidVoteFulfillmentRecord,
   type PaidVoteFulfillmentReadResult,
   type RedisPaidVoteFulfillmentError,
@@ -17,9 +28,18 @@ type CheckoutStatusValidationError = Readonly<{
 }>;
 
 type ReadPaidVoteFulfillmentRecord = typeof readPaidVoteFulfillmentRecord;
+type ApplyPaidVote = typeof applyPaidVote;
+
+type CheckoutStatusReconciliationError =
+  | StripeCheckoutRequestError
+  | StripeCheckoutSessionStatusError
+  | PaidVoteApplicationError;
 
 type CheckoutStatusHandlerOptions = Readonly<{
+  applyPaidVote?: ApplyPaidVote;
+  env?: NodeJS.ProcessEnv;
   readFulfillmentRecord?: ReadPaidVoteFulfillmentRecord;
+  retrieveCheckoutSession?: RetrieveStripeCheckoutSession;
 }>;
 
 const validateCheckoutSessionId = (
@@ -53,6 +73,7 @@ const validateCheckoutSessionId = (
 export const createCheckoutStatusHandler = (
   options: CheckoutStatusHandlerOptions = {},
 ) => {
+  const applyResolvedPaidVote = options.applyPaidVote ?? applyPaidVote;
   const readFulfillmentRecord =
     options.readFulfillmentRecord ?? readPaidVoteFulfillmentRecord;
 
@@ -88,10 +109,31 @@ export const createCheckoutStatusHandler = (
       );
     }
 
+    const responseDataResult = await reconcileCheckoutStatusData(
+      fulfillmentResult.value,
+      {
+        applyPaidVote: applyResolvedPaidVote,
+        env: options.env,
+        retrieveCheckoutSession: options.retrieveCheckoutSession,
+      },
+    );
+
+    if (responseDataResult.isErr()) {
+      return Response.json(
+        {
+          ok: false,
+          error: toCheckoutStatusReconciliationResponseError(
+            responseDataResult.error,
+          ),
+        },
+        { status: 503 },
+      );
+    }
+
     return Response.json(
       {
         ok: true,
-        data: toCheckoutStatusResponseData(fulfillmentResult.value),
+        data: responseDataResult.value,
       },
       { status: 200 },
     );
@@ -117,6 +159,57 @@ const toCheckoutStatusResponseData = (
   };
 };
 
+const reconcileCheckoutStatusData = async (
+  result: PaidVoteFulfillmentReadResult,
+  options: Required<
+    Pick<CheckoutStatusHandlerOptions, "applyPaidVote">
+  > &
+    Pick<CheckoutStatusHandlerOptions, "env" | "retrieveCheckoutSession">,
+): Promise<
+  Result<
+    ReturnType<typeof toCheckoutStatusResponseData>,
+    CheckoutStatusReconciliationError
+  >
+> => {
+  if (result.status !== "pending") {
+    return ok(toCheckoutStatusResponseData(result));
+  }
+
+  const configResult = getStripeCheckoutConfig(options.env);
+
+  if (configResult.isErr()) {
+    return err(configResult.error);
+  }
+
+  const sessionStatusResult = await getStripeCheckoutSessionPaymentStatus(
+    result.checkoutSessionId,
+    {
+      config: configResult.value,
+      retrieveSession: options.retrieveCheckoutSession,
+    },
+  );
+
+  if (sessionStatusResult.isErr()) {
+    return err(sessionStatusResult.error);
+  }
+
+  if (sessionStatusResult.value.status !== "paid") {
+    return ok(toCheckoutStatusResponseData(result));
+  }
+
+  const applicationResult = await options.applyPaidVote({
+    checkoutSessionId: sessionStatusResult.value.checkoutSessionId,
+    countryCode: sessionStatusResult.value.countryCode,
+    voteType: sessionStatusResult.value.voteType,
+  });
+
+  if (applicationResult.isErr()) {
+    return err(applicationResult.error);
+  }
+
+  return ok(toCheckoutStatusResponseData(applicationResult.value));
+};
+
 const toCheckoutStatusStorageResponseError = (
   error: RedisPaidVoteFulfillmentError,
 ) => {
@@ -139,5 +232,64 @@ const toCheckoutStatusStorageResponseError = (
   return {
     code: error.code,
     message: error.message,
+  };
+};
+
+const toCheckoutStatusReconciliationResponseError = (
+  error: CheckoutStatusReconciliationError,
+) => {
+  if (
+    error.code === "missing_stripe_checkout_config" ||
+    error.code === "invalid_stripe_checkout_request"
+  ) {
+    return {
+      code: error.code,
+      message: error.message,
+    };
+  }
+
+  if (error.code === "invalid_stripe_checkout_session_metadata") {
+    return {
+      code: error.code,
+      message: error.message,
+      checkoutSessionId: error.checkoutSessionId,
+      cause: {
+        code: error.cause.code,
+        message: error.cause.message,
+        fieldErrors: error.cause.fieldErrors,
+      },
+    };
+  }
+
+  if (error.code === "stripe_checkout_session_retrieval_failed") {
+    return {
+      code: error.code,
+      message: error.message,
+      checkoutSessionId: error.checkoutSessionId,
+    };
+  }
+
+  if (
+    error.code === "paid_vote_fulfillment_read_failed" ||
+    error.code === "paid_vote_fulfillment_write_failed"
+  ) {
+    return {
+      code: error.code,
+      message: error.message,
+      checkoutSessionId: error.checkoutSessionId,
+      cause: {
+        code: error.cause.code,
+        message: error.cause.message,
+      },
+    };
+  }
+
+  return {
+    code: error.code,
+    message: error.message,
+    cause: {
+      code: error.cause.code,
+      message: error.cause.message,
+    },
   };
 };

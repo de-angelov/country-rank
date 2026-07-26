@@ -64,8 +64,23 @@ describe("checkout status route", () => {
         voteType: "dislike" as const,
       }),
     );
+    const retrieveCheckoutSession = vi.fn(async () => ({
+      id: "cs_test_checkout_status_pending",
+      status: "open" as const,
+      payment_status: "unpaid" as const,
+      metadata: {
+        countryCode: "DE",
+        voteType: "dislike",
+      },
+    }));
+    const applyPaidVote = vi.fn();
     const handleCheckoutStatus = createCheckoutStatusHandler({
+      applyPaidVote,
+      env: {
+        STRIPE_SECRET_KEY: "sk_test_checkoutStatusSecret",
+      },
       readFulfillmentRecord,
+      retrieveCheckoutSession,
     });
 
     const response = await handleCheckoutStatus(
@@ -78,6 +93,75 @@ describe("checkout status route", () => {
       data: {
         status: "pending",
       },
+    });
+    expect(retrieveCheckoutSession).toHaveBeenCalledWith(
+      "cs_test_checkout_status_pending",
+    );
+    expect(applyPaidVote).not.toHaveBeenCalled();
+  });
+
+  it("applies pending paid votes when Stripe has completed the session", async () => {
+    const readFulfillmentRecord = vi.fn(() =>
+      okAsync({
+        status: "pending" as const,
+        checkoutSessionId: "cs_test_checkout_status_paid",
+        countryCode: "AX",
+        voteType: "like" as const,
+      }),
+    );
+    const retrieveCheckoutSession = vi.fn(async () => ({
+      id: "cs_test_checkout_status_paid",
+      status: "complete" as const,
+      payment_status: "paid" as const,
+      metadata: {
+        countryCode: "AX",
+        voteType: "like",
+      },
+    }));
+    const applyPaidVote = vi.fn(() =>
+      okAsync({
+        status: "applied" as const,
+        checkoutSessionId: "cs_test_checkout_status_paid",
+        countryCode: "AX",
+        voteType: "like" as const,
+        totals: {
+          countryCode: "AX",
+          likes: 8,
+          dislikes: 2,
+        },
+      }),
+    );
+    const handleCheckoutStatus = createCheckoutStatusHandler({
+      applyPaidVote,
+      env: {
+        STRIPE_SECRET_KEY: "sk_test_checkoutStatusSecret",
+      },
+      readFulfillmentRecord,
+      retrieveCheckoutSession,
+    });
+
+    const response = await handleCheckoutStatus(
+      createRequest("cs_test_checkout_status_paid"),
+    );
+
+    expect(response.status).toBe(200);
+    expect(await readJson(response)).toEqual({
+      ok: true,
+      data: {
+        status: "applied",
+        countryCode: "AX",
+        voteType: "like",
+        totals: {
+          countryCode: "AX",
+          likes: 8,
+          dislikes: 2,
+        },
+      },
+    });
+    expect(applyPaidVote).toHaveBeenCalledWith({
+      checkoutSessionId: "cs_test_checkout_status_paid",
+      countryCode: "AX",
+      voteType: "like",
     });
   });
 
@@ -172,6 +256,41 @@ describe("checkout status route", () => {
       error: {
         code: "redis_command_failed",
         message: "Failed to read paid vote fulfillment record from Redis.",
+      },
+    });
+  });
+
+  it("returns a clear server error when pending Stripe session retrieval fails", async () => {
+    const readFulfillmentRecord = vi.fn(() =>
+      okAsync({
+        status: "pending" as const,
+        checkoutSessionId: "cs_test_checkout_status_stripe_failure",
+        countryCode: "DE",
+        voteType: "like" as const,
+      }),
+    );
+    const retrieveCheckoutSession = vi.fn(async () => {
+      throw new Error("stripe unavailable");
+    });
+    const handleCheckoutStatus = createCheckoutStatusHandler({
+      env: {
+        STRIPE_SECRET_KEY: "sk_test_checkoutStatusSecret",
+      },
+      readFulfillmentRecord,
+      retrieveCheckoutSession,
+    });
+
+    const response = await handleCheckoutStatus(
+      createRequest("cs_test_checkout_status_stripe_failure"),
+    );
+
+    expect(response.status).toBe(503);
+    expect(await readJson(response)).toEqual({
+      ok: false,
+      error: {
+        code: "stripe_checkout_session_retrieval_failed",
+        message: "Failed to retrieve Stripe checkout session.",
+        checkoutSessionId: "cs_test_checkout_status_stripe_failure",
       },
     });
   });

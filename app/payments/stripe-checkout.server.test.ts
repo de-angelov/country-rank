@@ -1,10 +1,14 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
+  buildStripeCheckoutCancelUrl,
+  buildStripeCheckoutSuccessUrl,
   createStripeCheckoutSession,
   getStripeCheckoutConfig,
+  getStripeCheckoutSessionPaymentStatus,
   validateStripeCheckoutRequest,
   type CreateStripeCheckoutSession,
+  type RetrieveStripeCheckoutSession,
 } from "./stripe-checkout.server";
 
 const envWithStripeSecret = {
@@ -179,6 +183,7 @@ describe("createStripeCheckoutSession", () => {
   it("creates a like checkout session with the approved price and metadata", async () => {
     const createSession = vi.fn<CreateStripeCheckoutSession>(() =>
       Promise.resolve({
+        id: "cs_test_like",
         url: "https://checkout.stripe.test/session/like",
       }),
     );
@@ -197,11 +202,15 @@ describe("createStripeCheckoutSession", () => {
 
     expect(result.isOk()).toBe(true);
     expect(result._unsafeUnwrap()).toEqual({
+      checkoutSessionId: "cs_test_like",
       checkoutUrl: "https://checkout.stripe.test/session/like",
     });
     expect(createSession).toHaveBeenCalledTimes(1);
     expect(createSession).toHaveBeenCalledWith({
       mode: "payment",
+      managed_payments: {
+        enabled: false,
+      },
       line_items: [
         {
           quantity: 1,
@@ -219,7 +228,7 @@ describe("createStripeCheckoutSession", () => {
         voteType: "like",
       },
       success_url:
-        "https://country-ranking.test/app/checkout/success?session_id={CHECKOUT_SESSION_ID}",
+        "https://country-ranking.test/app/?session_id={CHECKOUT_SESSION_ID}",
       cancel_url: "https://country-ranking.test/app/",
     });
   });
@@ -227,6 +236,7 @@ describe("createStripeCheckoutSession", () => {
   it("creates a dislike checkout session with the approved price", async () => {
     const createSession = vi.fn<CreateStripeCheckoutSession>(() =>
       Promise.resolve({
+        id: "cs_test_dislike",
         url: "https://checkout.stripe.test/session/dislike",
       }),
     );
@@ -246,6 +256,9 @@ describe("createStripeCheckoutSession", () => {
     expect(result.isOk()).toBe(true);
     expect(createSession).toHaveBeenCalledWith(
       expect.objectContaining({
+        managed_payments: {
+          enabled: false,
+        },
         line_items: [
           {
             quantity: 1,
@@ -263,7 +276,7 @@ describe("createStripeCheckoutSession", () => {
           voteType: "dislike",
         },
         success_url:
-          "https://country-ranking.test/checkout/success?session_id={CHECKOUT_SESSION_ID}",
+          "https://country-ranking.test/?session_id={CHECKOUT_SESSION_ID}",
         cancel_url: "https://country-ranking.test/",
       }),
     );
@@ -298,6 +311,7 @@ describe("createStripeCheckoutSession", () => {
   it("does not apply vote totals when creating checkout sessions", async () => {
     const createSession = vi.fn<CreateStripeCheckoutSession>(() =>
       Promise.resolve({
+        id: "cs_test_no_vote_write",
         url: "https://checkout.stripe.test/session/no-vote-write",
       }),
     );
@@ -316,5 +330,143 @@ describe("createStripeCheckoutSession", () => {
 
     expect(createSession).toHaveBeenCalledTimes(1);
     expect(createSession.mock.calls[0]?.[0]).not.toHaveProperty("totals");
+  });
+});
+
+describe("getStripeCheckoutSessionPaymentStatus", () => {
+  const config = {
+    secretKey: "sk_test_checkout_secret",
+  };
+
+  it("returns paid vote details for completed paid Checkout Sessions", async () => {
+    const retrieveSession = vi.fn<RetrieveStripeCheckoutSession>(() =>
+      Promise.resolve({
+        id: "cs_test_paid",
+        status: "complete",
+        payment_status: "paid",
+        metadata: {
+          countryCode: "ax",
+          voteType: "like",
+        },
+      }),
+    );
+
+    const result = await getStripeCheckoutSessionPaymentStatus("cs_test_paid", {
+      config,
+      retrieveSession,
+    });
+
+    expect(result.isOk()).toBe(true);
+    expect(result._unsafeUnwrap()).toEqual({
+      status: "paid",
+      checkoutSessionId: "cs_test_paid",
+      countryCode: "AX",
+      voteType: "like",
+    });
+    expect(retrieveSession).toHaveBeenCalledWith("cs_test_paid");
+  });
+
+  it("returns unpaid while the Checkout Session is still open", async () => {
+    const retrieveSession = vi.fn<RetrieveStripeCheckoutSession>(() =>
+      Promise.resolve({
+        id: "cs_test_open",
+        status: "open",
+        payment_status: "unpaid",
+        metadata: {
+          countryCode: "DE",
+          voteType: "dislike",
+        },
+      }),
+    );
+
+    const result = await getStripeCheckoutSessionPaymentStatus("cs_test_open", {
+      config,
+      retrieveSession,
+    });
+
+    expect(result.isOk()).toBe(true);
+    expect(result._unsafeUnwrap()).toEqual({
+      status: "unpaid",
+      checkoutSessionId: "cs_test_open",
+    });
+  });
+
+  it("returns a typed error when completed paid metadata is invalid", async () => {
+    const retrieveSession = vi.fn<RetrieveStripeCheckoutSession>(() =>
+      Promise.resolve({
+        id: "cs_test_bad_metadata",
+        status: "complete",
+        payment_status: "paid",
+        metadata: {
+          countryCode: "AX",
+        },
+      }),
+    );
+
+    const result = await getStripeCheckoutSessionPaymentStatus(
+      "cs_test_bad_metadata",
+      {
+        config,
+        retrieveSession,
+      },
+    );
+
+    expect(result.isErr()).toBe(true);
+    expect(result._unsafeUnwrapErr()).toEqual({
+      code: "invalid_stripe_checkout_session_metadata",
+      message: "Stripe checkout session metadata is invalid.",
+      checkoutSessionId: "cs_test_bad_metadata",
+      cause: {
+        code: "invalid_stripe_paid_vote_metadata",
+        message: "Stripe paid vote metadata is invalid.",
+        fieldErrors: {
+          voteType: "Stripe paid vote metadata must include voteType.",
+        },
+      },
+    });
+  });
+
+  it("returns a typed error when Stripe session retrieval fails", async () => {
+    const stripeError = new Error("Stripe API unavailable");
+    const retrieveSession = vi.fn<RetrieveStripeCheckoutSession>(() =>
+      Promise.reject(stripeError),
+    );
+
+    const result = await getStripeCheckoutSessionPaymentStatus(
+      "cs_test_retrieval_failure",
+      {
+        config,
+        retrieveSession,
+      },
+    );
+
+    expect(result.isErr()).toBe(true);
+    expect(result._unsafeUnwrapErr()).toEqual({
+      code: "stripe_checkout_session_retrieval_failed",
+      message: "Failed to retrieve Stripe checkout session.",
+      checkoutSessionId: "cs_test_retrieval_failure",
+      cause: stripeError,
+    });
+  });
+});
+
+describe("Stripe checkout redirect URLs", () => {
+  it("returns successful checkouts to the home route confirmation query", () => {
+    const successUrl = new URL(
+      buildStripeCheckoutSuccessUrl("https://country-ranking.test/app/"),
+    );
+
+    expect(successUrl.origin).toBe("https://country-ranking.test");
+    expect(successUrl.pathname).toBe("/app/");
+    expect(successUrl.searchParams.get("session_id")).toBe(
+      "{CHECKOUT_SESSION_ID}",
+    );
+    expect(successUrl.pathname).not.toBe("/checkout/success");
+  });
+
+  it("returns canceled checkouts to the home route", () => {
+    expect(buildStripeCheckoutCancelUrl("https://country-ranking.test/app/")).toBe(
+      "https://country-ranking.test/app/",
+    );
   });
 });

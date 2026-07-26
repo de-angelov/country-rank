@@ -22,6 +22,7 @@
     "redis:restore": "node scripts/restore-redis.mjs",
     "redis:restore:local": "node scripts/local-redis-restore.mjs",
     "redis:seed": "node scripts/seed-redis-votes.mjs",
+    "stripe:listen": "stripe listen --events checkout.session.completed --forward-to localhost:${APP_HOST_PORT:-3000}/webhooks/stripe",
     "start": "node scripts/verify-server-env.mjs && react-router-serve ./build/server/index.js",
     "test": "react-router typegen && vitest run",
     "typecheck": "react-router typegen && tsc"

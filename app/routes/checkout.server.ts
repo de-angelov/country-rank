@@ -8,11 +8,18 @@ import {
   type StripeCheckoutRequestError,
 } from "~/payments/stripe-checkout.server";
 import type { VoteRequestPayload } from "~/votes/request.server";
+import {
+  writePaidVoteFulfillmentRecord,
+  type RedisPaidVoteFulfillmentError,
+} from "~/votes/fulfillment.server";
+
+type WritePaidVoteFulfillmentRecord = typeof writePaidVoteFulfillmentRecord;
 
 type CheckoutHandlerOptions = Readonly<{
   env?: NodeJS.ProcessEnv;
   createSession?: CreateStripeCheckoutSession;
   logger?: ApplicationLogger;
+  writeFulfillmentRecord?: WritePaidVoteFulfillmentRecord;
 }>;
 
 const readVoteRequestPayload = async (
@@ -46,6 +53,8 @@ export const createCheckoutHandler =
   (options: CheckoutHandlerOptions = {}) =>
   async (request: Request) => {
     const paymentLogger = options.logger ?? logger;
+    const writePendingPaidVote =
+      options.writeFulfillmentRecord ?? writePaidVoteFulfillmentRecord;
     const payload = await readVoteRequestPayload(request);
     const checkoutRequestResult = validateStripeCheckoutRequest(
       payload,
@@ -118,6 +127,36 @@ export const createCheckoutHandler =
       );
     }
 
+    const pendingFulfillmentResult = await writePendingPaidVote({
+      status: "pending",
+      checkoutSessionId: sessionResult.value.checkoutSessionId,
+      countryCode: checkoutRequestResult.value.countryCode,
+      voteType: checkoutRequestResult.value.voteType,
+    });
+
+    if (pendingFulfillmentResult.isErr()) {
+      paymentLogger.error(
+        {
+          route: "checkout",
+          action: "write_paid_vote_pending_fulfillment",
+          errorCode: pendingFulfillmentResult.error.code,
+          checkoutSessionId: sessionResult.value.checkoutSessionId,
+          countryCode: checkoutRequestResult.value.countryCode,
+          voteType: checkoutRequestResult.value.voteType,
+          ...getRequestLogContext(request),
+        },
+        "Paid vote pending fulfillment write failed.",
+      );
+
+      return Response.json(
+        {
+          ok: false,
+          error: toPaidVoteTrackingResponseError(pendingFulfillmentResult.error),
+        },
+        { status: 502 },
+      );
+    }
+
     if (request.headers.get("content-type")?.includes("application/json")) {
       return Response.json(
         {
@@ -158,6 +197,14 @@ const toStripeCheckoutSessionResponseError = (
 ) => ({
   code: error.code,
   message: "We couldn't start checkout. Please try again in a moment.",
+});
+
+const toPaidVoteTrackingResponseError = (
+  error: RedisPaidVoteFulfillmentError,
+) => ({
+  code: "paid_vote_tracking_failed" as const,
+  message: "We couldn't start checkout. Please try again in a moment.",
+  causeCode: error.code,
 });
 
 const getRequestLogContext = (request: Request) => {

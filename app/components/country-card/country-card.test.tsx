@@ -1,6 +1,8 @@
 import { renderToString } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
+import { localCountryFlagPaths } from "~/countries/local-flag-assets";
+
 import { CountryCard, getCountryCardFlagImageUrl } from "./country-card";
 
 const country = {
@@ -8,7 +10,8 @@ const country = {
   name: "Japan",
   capital: "Tokyo",
   factSnippet: "Vending machines, bullet trains, and stationery with main-character energy.",
-  flagImageUrl: "https://example.com/japan.svg",
+  flagImageUrl:
+    "https://commons.wikimedia.org/wiki/Special:FilePath/Flag%20of%20Japan.svg",
   likes: 1234,
   dislikes: 56,
 };
@@ -120,5 +123,10 @@ describe("CountryCard", () => {
         flagImageUrl: "https://example.com/fallback.svg",
       }),
     ).toBe("https://example.com/fallback.svg");
+  });
+
+  it("uses the importable local flag manifest instead of remote source URLs", () => {
+    expect(localCountryFlagPaths.JP).toBe("/flags/JP.svg");
+    expect(getCountryCardFlagImageUrl(country)).toBe(localCountryFlagPaths.JP);
   });
 });

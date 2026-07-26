@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
   createRedisClientProvider,
@@ -8,6 +8,12 @@ import {
 
 const envWithRedisUrl = {
   REDIS_URL: " redis://localhost:6379 ",
+};
+
+const validSharedServerEnv = {
+  REDIS_URL: "redis://localhost:6379",
+  STRIPE_SECRET_KEY: "sk_test_validSecret123",
+  STRIPE_WEBHOOK_SECRET: "whsec_validSecret123",
 };
 
 const createClient = (
@@ -30,6 +36,10 @@ const createProvider = (
     connectionFailureMessage: "Redis test connection failed.",
   });
 
+afterEach(() => {
+  vi.unstubAllEnvs();
+});
+
 describe("getRedisConfig", () => {
   it("returns a typed error when REDIS_URL is missing", () => {
     const result = getRedisConfig({}, "REDIS_URL must be set.");
@@ -48,6 +58,57 @@ describe("getRedisConfig", () => {
     expect(result.isOk()).toBe(true);
     expect(result._unsafeUnwrap()).toEqual({
       url: "redis://localhost:6379",
+    });
+  });
+
+  it("keeps injected env objects scoped to Redis config", () => {
+    const result = getRedisConfig({
+      REDIS_URL: "redis://localhost:6380",
+    });
+
+    expect(result.isOk()).toBe(true);
+    expect(result._unsafeUnwrap()).toEqual({
+      url: "redis://localhost:6380",
+    });
+  });
+
+  it("uses the shared server config validation for the default path", () => {
+    vi.stubEnv("REDIS_URL", "https://localhost:6379");
+    vi.stubEnv(
+      "STRIPE_SECRET_KEY",
+      validSharedServerEnv.STRIPE_SECRET_KEY,
+    );
+    vi.stubEnv(
+      "STRIPE_WEBHOOK_SECRET",
+      validSharedServerEnv.STRIPE_WEBHOOK_SECRET,
+    );
+
+    const result = getRedisConfig();
+
+    expect(result.isErr()).toBe(true);
+    expect(result._unsafeUnwrapErr()).toEqual({
+      code: "missing_redis_config",
+      message: "REDIS_URL must be set to connect to Redis.",
+      envVar: "REDIS_URL",
+    });
+  });
+
+  it("returns the shared server Redis URL for the default path", () => {
+    vi.stubEnv("REDIS_URL", validSharedServerEnv.REDIS_URL);
+    vi.stubEnv(
+      "STRIPE_SECRET_KEY",
+      validSharedServerEnv.STRIPE_SECRET_KEY,
+    );
+    vi.stubEnv(
+      "STRIPE_WEBHOOK_SECRET",
+      validSharedServerEnv.STRIPE_WEBHOOK_SECRET,
+    );
+
+    const result = getRedisConfig();
+
+    expect(result.isOk()).toBe(true);
+    expect(result._unsafeUnwrap()).toEqual({
+      url: validSharedServerEnv.REDIS_URL,
     });
   });
 });

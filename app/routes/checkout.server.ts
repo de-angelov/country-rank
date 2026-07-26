@@ -45,10 +45,12 @@ const readVoteRequestPayload = async (
 export const createCheckoutHandler =
   (options: CheckoutHandlerOptions = {}) =>
   async (request: Request) => {
-    const env = options.env ?? process.env;
     const paymentLogger = options.logger ?? logger;
     const payload = await readVoteRequestPayload(request);
-    const checkoutRequestResult = validateStripeCheckoutRequest(payload, env);
+    const checkoutRequestResult = validateStripeCheckoutRequest(
+      payload,
+      options.env,
+    );
 
     if (checkoutRequestResult.isErr()) {
       if (checkoutRequestResult.error.code === "missing_stripe_checkout_config") {
@@ -73,7 +75,7 @@ export const createCheckoutHandler =
       );
     }
 
-    const configResult = getStripeCheckoutConfig(env);
+    const configResult = getStripeCheckoutConfig(options.env);
 
     if (configResult.isErr()) {
       return Response.json(

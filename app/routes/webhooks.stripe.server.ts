@@ -24,6 +24,7 @@ type ApplyPaidVote = (
 
 type StripeWebhookHandlerOptions = Readonly<{
   applyPaidVote?: ApplyPaidVote;
+  env?: NodeJS.ProcessEnv;
   logger?: ApplicationLogger;
 }>;
 
@@ -37,6 +38,7 @@ export const createStripeWebhookHandler = (
     const result = verifyStripeWebhookSignature(
       await request.text(),
       request.headers.get(stripeSignatureHeader),
+      options.env,
     );
 
     if (result.isErr()) {

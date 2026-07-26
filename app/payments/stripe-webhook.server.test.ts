@@ -1,5 +1,5 @@
 import Stripe from "stripe";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
   getStripeWebhookConfig,
@@ -9,6 +9,11 @@ import {
 const webhookSecret = "whsec_test_secret";
 const envWithStripeWebhookSecret = {
   STRIPE_WEBHOOK_SECRET: webhookSecret,
+};
+const validSharedServerEnv = {
+  REDIS_URL: "redis://localhost:6379",
+  STRIPE_SECRET_KEY: "sk_test_validSecret123",
+  STRIPE_WEBHOOK_SECRET: "whsec_validSecret123",
 };
 const payload = JSON.stringify({
   id: "evt_test_signature_shell",
@@ -31,6 +36,10 @@ const signedHeader = Stripe.webhooks.generateTestHeaderString({
   secret: webhookSecret,
 });
 
+afterEach(() => {
+  vi.unstubAllEnvs();
+});
+
 describe("getStripeWebhookConfig", () => {
   it("returns a clear error when webhook configuration is missing", () => {
     const result = getStripeWebhookConfig({});
@@ -49,6 +58,57 @@ describe("getStripeWebhookConfig", () => {
     expect(result.isOk()).toBe(true);
     expect(result._unsafeUnwrap()).toEqual({
       webhookSecret,
+    });
+  });
+
+  it("keeps injected env objects scoped to Stripe webhook config", () => {
+    const result = getStripeWebhookConfig({
+      STRIPE_WEBHOOK_SECRET: " whsec_injectedWebhookSecret123 ",
+    });
+
+    expect(result.isOk()).toBe(true);
+    expect(result._unsafeUnwrap()).toEqual({
+      webhookSecret: "whsec_injectedWebhookSecret123",
+    });
+  });
+
+  it("uses the shared server config validation for the default path", () => {
+    vi.stubEnv("REDIS_URL", "https://localhost:6379");
+    vi.stubEnv(
+      "STRIPE_SECRET_KEY",
+      validSharedServerEnv.STRIPE_SECRET_KEY,
+    );
+    vi.stubEnv(
+      "STRIPE_WEBHOOK_SECRET",
+      validSharedServerEnv.STRIPE_WEBHOOK_SECRET,
+    );
+
+    const result = getStripeWebhookConfig();
+
+    expect(result.isErr()).toBe(true);
+    expect(result._unsafeUnwrapErr()).toEqual({
+      code: "missing_stripe_webhook_config",
+      message: "STRIPE_WEBHOOK_SECRET must be set to verify Stripe webhooks.",
+      envVar: "STRIPE_WEBHOOK_SECRET",
+    });
+  });
+
+  it("returns the shared server webhook secret for the default path", () => {
+    vi.stubEnv("REDIS_URL", validSharedServerEnv.REDIS_URL);
+    vi.stubEnv(
+      "STRIPE_SECRET_KEY",
+      validSharedServerEnv.STRIPE_SECRET_KEY,
+    );
+    vi.stubEnv(
+      "STRIPE_WEBHOOK_SECRET",
+      validSharedServerEnv.STRIPE_WEBHOOK_SECRET,
+    );
+
+    const result = getStripeWebhookConfig();
+
+    expect(result.isOk()).toBe(true);
+    expect(result._unsafeUnwrap()).toEqual({
+      webhookSecret: validSharedServerEnv.STRIPE_WEBHOOK_SECRET,
     });
   });
 });

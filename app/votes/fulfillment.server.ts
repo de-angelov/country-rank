@@ -165,12 +165,11 @@ const parseStoredRecord = (
 export const createRedisPaidVoteFulfillmentStorage = (
   options: RedisPaidVoteFulfillmentOptions = {},
 ) => {
-  const env = options.env ?? process.env;
   const paymentLogger = options.logger ?? logger;
   const clientFactory =
     options.clientFactory ?? createDefaultRedisPaidVoteFulfillmentClient;
   const getClient = createRedisClientProvider({
-    env,
+    env: options.env,
     clientFactory,
     missingConfigMessage: `${redisUrlEnvVar} must be set to read or write paid vote fulfillment records.`,
     connectionFailureMessage:

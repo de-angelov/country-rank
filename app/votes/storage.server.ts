@@ -60,7 +60,7 @@ const createDefaultRedisVoteClient: RedisVoteClientFactory = (config) =>
   createDefaultRedisClient(config) as RedisVoteClient;
 
 export const getRedisVoteStorageConfig = (
-  env: NodeJS.ProcessEnv = process.env,
+  env?: NodeJS.ProcessEnv,
 ) =>
   getRedisConfig(
     env,
@@ -73,10 +73,9 @@ export const voteTotalsKey = (voteKind: VoteKind) =>
 export const createRedisVoteStorage = (
   options: RedisVoteStorageOptions = {},
 ) => {
-  const env = options.env ?? process.env;
   const clientFactory = options.clientFactory ?? createDefaultRedisVoteClient;
   const getClient = createRedisClientProvider({
-    env,
+    env: options.env,
     clientFactory,
     missingConfigMessage: `${redisUrlEnvVar} must be set to read or write vote totals.`,
     connectionFailureMessage: "Failed to connect to Redis vote storage.",

@@ -119,6 +119,44 @@ describe("runComposeDev", () => {
     );
   });
 
+  it("passes Stripe and log values from Compose .env to Docker Compose", async () => {
+    const commandRunner = vi.fn((_command, _args, options) => {
+      options.onStart();
+      return Promise.resolve(0);
+    });
+
+    await expect(
+      runComposeDev({
+        env: { PATH: "/bin" },
+        dotEnv: {
+          LOG_LEVEL: "debug",
+          STRIPE_SECRET_KEY: "sk_test_localSecret123",
+          STRIPE_WEBHOOK_SECRET: "whsec_localSecret123",
+        },
+        commandRunner,
+        isPortAvailable: createPortAvailabilityChecker(new Set([4000])),
+        logger: {
+          log: vi.fn(),
+        },
+      }),
+    ).resolves.toBe(0);
+
+    expect(commandRunner).toHaveBeenCalledWith(
+      "docker",
+      ["compose", "up", "app-dev", "redis"],
+      {
+        env: {
+          LOG_LEVEL: "debug",
+          PATH: "/bin",
+          REDIS_HOST_PORT: "4000",
+          STRIPE_SECRET_KEY: "sk_test_localSecret123",
+          STRIPE_WEBHOOK_SECRET: "whsec_localSecret123",
+        },
+        onStart: expect.any(Function),
+      },
+    );
+  });
+
   it("lets shell env override Compose .env values", async () => {
     const commandRunner = vi.fn((_command, _args, options) => {
       options.onStart();

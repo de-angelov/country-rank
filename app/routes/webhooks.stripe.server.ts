@@ -4,10 +4,12 @@ import {
   type StripePaidVoteMetadataError,
 } from "~/payments/paid-vote-metadata.server";
 import {
+  getStripeWebhookConfigFromEnv,
   stripePaidVoteSuccessEventType,
   type StripeWebhookVerificationError,
   type VerifiedStripeWebhookEvent,
   verifyStripeWebhookSignature,
+  verifyStripeWebhookSignatureWithConfig,
 } from "~/payments/stripe-webhook.server";
 import {
   applyPaidVote,
@@ -35,11 +37,13 @@ export const createStripeWebhookHandler = (
   const paymentLogger = options.logger ?? logger;
 
   return async (request: Request) => {
-    const result = verifyStripeWebhookSignature(
-      await request.text(),
-      request.headers.get(stripeSignatureHeader),
-      options.env,
-    );
+    const payload = await request.text();
+    const signature = request.headers.get(stripeSignatureHeader);
+    const result = options.env
+      ? getStripeWebhookConfigFromEnv(options.env).andThen((config) =>
+          verifyStripeWebhookSignatureWithConfig(payload, signature, config),
+        )
+      : verifyStripeWebhookSignature(payload, signature);
 
     if (result.isErr()) {
       paymentLogger.error(

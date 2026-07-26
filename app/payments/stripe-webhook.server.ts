@@ -42,13 +42,9 @@ export type VerifiedStripeWebhookEvent = Readonly<{
 export const stripePaidVoteSuccessEventType = "checkout.session.completed";
 const stripeCheckoutSessionIdPattern = /^cs_(test|live)_[A-Za-z0-9_]+$/;
 
-export const getStripeWebhookConfig = (
-  env?: NodeJS.ProcessEnv,
+export const getStripeWebhookConfigFromEnv = (
+  env: NodeJS.ProcessEnv,
 ): Result<StripeWebhookConfig, StripeWebhookVerificationError> => {
-  if (!env) {
-    return getDefaultStripeWebhookConfig();
-  }
-
   const webhookSecret = env[stripeWebhookSecretEnvVar]?.trim();
 
   if (!webhookSecret) {
@@ -62,7 +58,7 @@ export const getStripeWebhookConfig = (
   return ok({ webhookSecret });
 };
 
-const getDefaultStripeWebhookConfig = (): Result<
+export const getDefaultStripeWebhookConfig = (): Result<
   StripeWebhookConfig,
   StripeWebhookVerificationError
 > =>
@@ -79,14 +75,25 @@ const getDefaultStripeWebhookConfig = (): Result<
 export const verifyStripeWebhookSignature = (
   payload: string,
   signature: string | null,
-  env?: NodeJS.ProcessEnv,
 ): Result<VerifiedStripeWebhookEvent, StripeWebhookVerificationError> => {
-  const configResult = getStripeWebhookConfig(env);
+  const configResult = getDefaultStripeWebhookConfig();
 
   if (configResult.isErr()) {
     return err(configResult.error);
   }
 
+  return verifyStripeWebhookSignatureWithConfig(
+    payload,
+    signature,
+    configResult.value,
+  );
+};
+
+export const verifyStripeWebhookSignatureWithConfig = (
+  payload: string,
+  signature: string | null,
+  config: StripeWebhookConfig,
+): Result<VerifiedStripeWebhookEvent, StripeWebhookVerificationError> => {
   if (!signature) {
     return err({
       code: "missing_stripe_signature",
@@ -100,7 +107,7 @@ export const verifyStripeWebhookSignature = (
     event = Stripe.webhooks.constructEvent(
       payload,
       signature,
-      configResult.value.webhookSecret,
+      config.webhookSecret,
     );
   } catch (cause) {
     return err({

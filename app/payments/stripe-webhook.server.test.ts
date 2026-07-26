@@ -2,8 +2,10 @@ import Stripe from "stripe";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
-  getStripeWebhookConfig,
+  getDefaultStripeWebhookConfig,
+  getStripeWebhookConfigFromEnv,
   verifyStripeWebhookSignature,
+  verifyStripeWebhookSignatureWithConfig,
 } from "./stripe-webhook.server";
 
 const webhookSecret = "whsec_test_secret";
@@ -40,9 +42,19 @@ afterEach(() => {
   vi.unstubAllEnvs();
 });
 
-describe("getStripeWebhookConfig", () => {
+const getInjectedWebhookConfig = () => {
+  const configResult = getStripeWebhookConfigFromEnv(envWithStripeWebhookSecret);
+
+  if (configResult.isErr()) {
+    throw configResult.error;
+  }
+
+  return configResult.value;
+};
+
+describe("getStripeWebhookConfigFromEnv", () => {
   it("returns a clear error when webhook configuration is missing", () => {
-    const result = getStripeWebhookConfig({});
+    const result = getStripeWebhookConfigFromEnv({});
 
     expect(result.isErr()).toBe(true);
     expect(result._unsafeUnwrapErr()).toEqual({
@@ -53,7 +65,7 @@ describe("getStripeWebhookConfig", () => {
   });
 
   it("reads the webhook secret from the environment", () => {
-    const result = getStripeWebhookConfig(envWithStripeWebhookSecret);
+    const result = getStripeWebhookConfigFromEnv(envWithStripeWebhookSecret);
 
     expect(result.isOk()).toBe(true);
     expect(result._unsafeUnwrap()).toEqual({
@@ -62,7 +74,7 @@ describe("getStripeWebhookConfig", () => {
   });
 
   it("keeps injected env objects scoped to Stripe webhook config", () => {
-    const result = getStripeWebhookConfig({
+    const result = getStripeWebhookConfigFromEnv({
       STRIPE_WEBHOOK_SECRET: " whsec_injectedWebhookSecret123 ",
     });
 
@@ -72,6 +84,9 @@ describe("getStripeWebhookConfig", () => {
     });
   });
 
+});
+
+describe("getDefaultStripeWebhookConfig", () => {
   it("uses the shared server config validation for the default path", () => {
     vi.stubEnv("REDIS_URL", "https://localhost:6379");
     vi.stubEnv(
@@ -83,7 +98,7 @@ describe("getStripeWebhookConfig", () => {
       validSharedServerEnv.STRIPE_WEBHOOK_SECRET,
     );
 
-    const result = getStripeWebhookConfig();
+    const result = getDefaultStripeWebhookConfig();
 
     expect(result.isErr()).toBe(true);
     expect(result._unsafeUnwrapErr()).toEqual({
@@ -104,7 +119,7 @@ describe("getStripeWebhookConfig", () => {
       validSharedServerEnv.STRIPE_WEBHOOK_SECRET,
     );
 
-    const result = getStripeWebhookConfig();
+    const result = getDefaultStripeWebhookConfig();
 
     expect(result.isOk()).toBe(true);
     expect(result._unsafeUnwrap()).toEqual({
@@ -115,10 +130,10 @@ describe("getStripeWebhookConfig", () => {
 
 describe("verifyStripeWebhookSignature", () => {
   it("returns a verified placeholder event for valid signatures", () => {
-    const result = verifyStripeWebhookSignature(
+    const result = verifyStripeWebhookSignatureWithConfig(
       payload,
       signedHeader,
-      envWithStripeWebhookSecret,
+      getInjectedWebhookConfig(),
     );
 
     expect(result.isOk()).toBe(true);
@@ -153,10 +168,10 @@ describe("verifyStripeWebhookSignature", () => {
       secret: webhookSecret,
     });
 
-    const result = verifyStripeWebhookSignature(
+    const result = verifyStripeWebhookSignatureWithConfig(
       payloadWithoutSessionId,
       header,
-      envWithStripeWebhookSecret,
+      getInjectedWebhookConfig(),
     );
 
     expect(result.isErr()).toBe(true);
@@ -191,10 +206,10 @@ describe("verifyStripeWebhookSignature", () => {
       secret: webhookSecret,
     });
 
-    const result = verifyStripeWebhookSignature(
+    const result = verifyStripeWebhookSignatureWithConfig(
       payloadWithMalformedSessionId,
       header,
-      envWithStripeWebhookSecret,
+      getInjectedWebhookConfig(),
     );
 
     expect(result.isErr()).toBe(true);
@@ -208,18 +223,33 @@ describe("verifyStripeWebhookSignature", () => {
   });
 
   it("rejects invalid signatures through a typed error path", () => {
-    const result = verifyStripeWebhookSignature(
+    const result = verifyStripeWebhookSignatureWithConfig(
       payload,
       signedHeader,
-      {
-        STRIPE_WEBHOOK_SECRET: "whsec_wrong_secret",
-      },
+      { webhookSecret: "whsec_wrong_secret" },
     );
 
     expect(result.isErr()).toBe(true);
     expect(result._unsafeUnwrapErr()).toMatchObject({
       code: "invalid_stripe_signature",
       message: "Stripe webhook signature verification failed.",
+    });
+  });
+
+  it("uses the default shared server config path", () => {
+    vi.stubEnv("REDIS_URL", validSharedServerEnv.REDIS_URL);
+    vi.stubEnv(
+      "STRIPE_SECRET_KEY",
+      validSharedServerEnv.STRIPE_SECRET_KEY,
+    );
+    vi.stubEnv("STRIPE_WEBHOOK_SECRET", webhookSecret);
+
+    const result = verifyStripeWebhookSignature(payload, signedHeader);
+
+    expect(result.isOk()).toBe(true);
+    expect(result._unsafeUnwrap()).toMatchObject({
+      id: "evt_test_signature_shell",
+      type: "checkout.session.completed",
     });
   });
 });

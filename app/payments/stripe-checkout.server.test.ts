@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
   createStripeCheckoutSession,
@@ -10,6 +10,16 @@ import {
 const envWithStripeSecret = {
   STRIPE_SECRET_KEY: "sk_test_checkout_secret",
 };
+
+const validSharedServerEnv = {
+  REDIS_URL: "redis://localhost:6379",
+  STRIPE_SECRET_KEY: "sk_test_validSecret123",
+  STRIPE_WEBHOOK_SECRET: "whsec_validSecret123",
+};
+
+afterEach(() => {
+  vi.unstubAllEnvs();
+});
 
 describe("getStripeCheckoutConfig", () => {
   it("returns a typed error when Stripe secret configuration is missing", () => {
@@ -30,6 +40,58 @@ describe("getStripeCheckoutConfig", () => {
     expect(result.isOk()).toBe(true);
     expect(result._unsafeUnwrap()).toEqual({
       secretKey: "sk_test_checkout_secret",
+    });
+  });
+
+  it("keeps injected env objects scoped to Stripe checkout config", () => {
+    const result = getStripeCheckoutConfig({
+      STRIPE_SECRET_KEY: " sk_test_injectedCheckoutSecret123 ",
+    });
+
+    expect(result.isOk()).toBe(true);
+    expect(result._unsafeUnwrap()).toEqual({
+      secretKey: "sk_test_injectedCheckoutSecret123",
+    });
+  });
+
+  it("uses the shared server config validation for the default path", () => {
+    vi.stubEnv("REDIS_URL", "https://localhost:6379");
+    vi.stubEnv(
+      "STRIPE_SECRET_KEY",
+      validSharedServerEnv.STRIPE_SECRET_KEY,
+    );
+    vi.stubEnv(
+      "STRIPE_WEBHOOK_SECRET",
+      validSharedServerEnv.STRIPE_WEBHOOK_SECRET,
+    );
+
+    const result = getStripeCheckoutConfig();
+
+    expect(result.isErr()).toBe(true);
+    expect(result._unsafeUnwrapErr()).toEqual({
+      code: "missing_stripe_checkout_config",
+      message:
+        "STRIPE_SECRET_KEY must be set to create Stripe checkout sessions.",
+      envVar: "STRIPE_SECRET_KEY",
+    });
+  });
+
+  it("returns the shared server Stripe secret for the default path", () => {
+    vi.stubEnv("REDIS_URL", validSharedServerEnv.REDIS_URL);
+    vi.stubEnv(
+      "STRIPE_SECRET_KEY",
+      validSharedServerEnv.STRIPE_SECRET_KEY,
+    );
+    vi.stubEnv(
+      "STRIPE_WEBHOOK_SECRET",
+      validSharedServerEnv.STRIPE_WEBHOOK_SECRET,
+    );
+
+    const result = getStripeCheckoutConfig();
+
+    expect(result.isOk()).toBe(true);
+    expect(result._unsafeUnwrap()).toEqual({
+      secretKey: validSharedServerEnv.STRIPE_SECRET_KEY,
     });
   });
 });

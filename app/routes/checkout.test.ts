@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import type { ApplicationLogger } from "~/lib/logger.server";
 import { createCheckoutHandler } from "./checkout.server";
@@ -6,6 +6,12 @@ import type { CreateStripeCheckoutSession } from "~/payments/stripe-checkout.ser
 
 const envWithStripeSecret = {
   STRIPE_SECRET_KEY: "sk_test_checkout_secret",
+};
+
+const validSharedServerEnv = {
+  REDIS_URL: "redis://localhost:6379",
+  STRIPE_SECRET_KEY: "sk_test_validSecret123",
+  STRIPE_WEBHOOK_SECRET: "whsec_validSecret123",
 };
 
 const readJson = async (response: Response) =>
@@ -16,6 +22,10 @@ const createMockLogger = (): ApplicationLogger => ({
   info: vi.fn(),
   warn: vi.fn(),
   error: vi.fn(),
+});
+
+afterEach(() => {
+  vi.unstubAllEnvs();
 });
 
 describe("paid vote checkout route", () => {
@@ -175,6 +185,68 @@ describe("paid vote checkout route", () => {
     );
     expect(JSON.stringify(vi.mocked(paymentLogger.error).mock.calls)).not.toContain(
       envWithStripeSecret.STRIPE_SECRET_KEY,
+    );
+  });
+
+  it("uses shared server config validation for the default checkout path", async () => {
+    vi.stubEnv("REDIS_URL", "https://localhost:6379");
+    vi.stubEnv(
+      "STRIPE_SECRET_KEY",
+      validSharedServerEnv.STRIPE_SECRET_KEY,
+    );
+    vi.stubEnv(
+      "STRIPE_WEBHOOK_SECRET",
+      validSharedServerEnv.STRIPE_WEBHOOK_SECRET,
+    );
+    const paymentLogger = createMockLogger();
+    const createSession = vi.fn<CreateStripeCheckoutSession>(() =>
+      Promise.resolve({
+        url: "https://checkout.stripe.test/session/default-env",
+      }),
+    );
+    const handleCheckout = createCheckoutHandler({
+      createSession,
+      logger: paymentLogger,
+    });
+
+    const response = await handleCheckout(
+      new Request("https://country-ranking.test/checkout", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          countryCode: "CA",
+          voteType: "like",
+        }),
+      }),
+    );
+
+    expect(response.status).toBe(500);
+    const body = await readJson(response);
+
+    expect(body).toEqual({
+      ok: false,
+      error: {
+        code: "missing_stripe_checkout_config",
+        message: "We couldn't start checkout. Please try again in a moment.",
+      },
+    });
+    expect(createSession).not.toHaveBeenCalled();
+    expect(paymentLogger.error).toHaveBeenCalledWith(
+      {
+        route: "checkout",
+        action: "read_stripe_checkout_config",
+        errorCode: "missing_stripe_checkout_config",
+        envVar: "STRIPE_SECRET_KEY",
+      },
+      "Stripe checkout configuration was missing.",
+    );
+    expect(JSON.stringify(body)).not.toContain(
+      validSharedServerEnv.STRIPE_SECRET_KEY,
+    );
+    expect(JSON.stringify(vi.mocked(paymentLogger.error).mock.calls)).not.toContain(
+      validSharedServerEnv.STRIPE_SECRET_KEY,
     );
   });
 

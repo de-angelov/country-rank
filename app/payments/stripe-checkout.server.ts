@@ -1,6 +1,7 @@
 import { err, ok, ResultAsync, type Result } from "neverthrow";
 import Stripe from "stripe";
 
+import { parseServerEnv } from "~/config/server-env.server";
 import {
   validateVoteRequest,
   type VoteRequestPayload,
@@ -62,8 +63,12 @@ export type StripeCheckoutSessionOptions = Readonly<{
 }>;
 
 export const getStripeCheckoutConfig = (
-  env: NodeJS.ProcessEnv = process.env,
+  env?: NodeJS.ProcessEnv,
 ): Result<StripeCheckoutConfig, StripeCheckoutRequestError> => {
+  if (!env) {
+    return getDefaultStripeCheckoutConfig();
+  }
+
   const secretKey = env[stripeSecretKeyEnvVar]?.trim();
 
   if (!secretKey) {
@@ -77,9 +82,23 @@ export const getStripeCheckoutConfig = (
   return ok({ secretKey });
 };
 
+const getDefaultStripeCheckoutConfig = (): Result<
+  StripeCheckoutConfig,
+  StripeCheckoutRequestError
+> =>
+  parseServerEnv().match(
+    (serverEnv) => ok({ secretKey: serverEnv.STRIPE_SECRET_KEY }),
+    () =>
+      err({
+        code: "missing_stripe_checkout_config",
+        message: `${stripeSecretKeyEnvVar} must be set to create Stripe checkout sessions.`,
+        envVar: stripeSecretKeyEnvVar,
+      }),
+  );
+
 export const validateStripeCheckoutRequest = (
   payload: VoteRequestPayload,
-  env: NodeJS.ProcessEnv = process.env,
+  env?: NodeJS.ProcessEnv,
 ): StripeCheckoutRequestResult => {
   const configResult = getStripeCheckoutConfig(env);
 

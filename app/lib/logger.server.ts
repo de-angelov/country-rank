@@ -1,5 +1,7 @@
 import pino, { type DestinationStream, type Logger } from "pino";
 
+import { getServerEnv } from "~/config/server-env.server";
+
 import {
   defaultLogLevel,
   supportedLogLevels,
@@ -79,10 +81,13 @@ export const sensitiveLogRedactionPaths = [
 ] as const;
 
 export const getLogLevel = (
-  env: NodeJS.ProcessEnv = process.env,
+  env?: NodeJS.ProcessEnv,
 ): SupportedLogLevel => {
-  const configuredLevel = env[logLevelEnvVar]?.trim().toLowerCase();
+  if (!env) {
+    return getServerEnv().LOG_LEVEL;
+  }
 
+  const configuredLevel = env[logLevelEnvVar]?.trim().toLowerCase();
   if (configuredLevel && supportedLogLevelSet.has(configuredLevel)) {
     return configuredLevel as SupportedLogLevel;
   }
@@ -107,4 +112,21 @@ export const createApplicationLogger = (
     options.stream,
   );
 
-export const logger = createApplicationLogger();
+let defaultApplicationLogger: Logger | undefined;
+
+const getDefaultApplicationLogger = (): Logger => {
+  defaultApplicationLogger ??= createApplicationLogger();
+
+  return defaultApplicationLogger;
+};
+
+export const logger: ApplicationLogger = {
+  debug: (...args: Parameters<ApplicationLogger["debug"]>) =>
+    getDefaultApplicationLogger().debug(...args),
+  info: (...args: Parameters<ApplicationLogger["info"]>) =>
+    getDefaultApplicationLogger().info(...args),
+  warn: (...args: Parameters<ApplicationLogger["warn"]>) =>
+    getDefaultApplicationLogger().warn(...args),
+  error: (...args: Parameters<ApplicationLogger["error"]>) =>
+    getDefaultApplicationLogger().error(...args),
+};

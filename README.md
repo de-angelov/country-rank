@@ -90,6 +90,16 @@ APP_HOST_PORT=3001 npm run compose:dev
 
 Open `http://localhost:${APP_HOST_PORT}` when `APP_HOST_PORT` is set.
 
+For direct host commands such as `npm run dev`, provide server environment
+variables through the shell before starting the process. For Compose dev
+commands, `scripts/compose-dev*.mjs` merge the local `.env` file with shell
+environment values before invoking Docker Compose, and shell values take
+precedence. The `app-dev` container receives `REDIS_URL=redis://redis:6379` for
+the Compose network, plus `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, and
+`LOG_LEVEL` from that resolved Compose environment. The example placeholder
+Stripe values from `.env.example` are still rejected by server startup
+validation; use Stripe test-mode secrets for local checkout and webhook work.
+
 To start the same local dev stack and seed Redis country catalog data in one command,
 run:
 
@@ -110,6 +120,20 @@ APP_HOST_PORT=3001 REDIS_HOST_PORT=4001 npm run compose:dev:seed
 
 Open `http://localhost:3001` after the command reports that Redis country
 catalog data was seeded.
+
+For local Stripe test checkout through Compose, put real Stripe test-mode values
+in `.env` or export them in the shell, start the seeded Compose dev stack, then
+forward Stripe CLI webhooks to the host-mapped app port:
+
+```sh
+npm run compose:dev:seed
+stripe listen --forward-to localhost:${APP_HOST_PORT:-3000}/webhooks/stripe
+```
+
+Use the `whsec_...` value printed by `stripe listen` as
+`STRIPE_WEBHOOK_SECRET`, restart `npm run compose:dev` or
+`npm run compose:dev:seed` after changing it, and complete checkout with Stripe
+test cards only.
 
 For production-style local execution through Compose, run:
 
@@ -209,6 +233,7 @@ Configuration by workflow:
 | Redis seeding | `REDIS_URL`. |
 | Stripe checkout request validation | `STRIPE_SECRET_KEY`; use only a Stripe test-mode `sk_test_...` secret for local checkout work. |
 | Stripe webhook verification | `STRIPE_WEBHOOK_SECRET`; webhook vote application also needs `REDIS_URL`. |
+| Compose Stripe checkout and webhook testing | `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET`; Compose provides `REDIS_URL=redis://redis:6379` inside `app-dev`. Run `stripe listen --forward-to localhost:${APP_HOST_PORT:-3000}/webhooks/stripe`. |
 | Redis backup dry-run | No GitHub variables; set `REDIS_URL` when targeting anything other than local Redis. |
 | Git-backed Redis backup push | `REDIS_BACKUP_GIT_REPOSITORY` and existing Git credentials with write access; for the Compose sidecar, set `REDIS_BACKUP_SSH_KEY_PATH` to a host deploy key with write access. Set `REDIS_URL` for the source Redis instance and override branch/path/retention only when needed. |
 

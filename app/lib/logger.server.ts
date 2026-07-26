@@ -1,18 +1,13 @@
 import pino, { type DestinationStream, type Logger } from "pino";
 
-export const logLevelEnvVar = "LOG_LEVEL";
-export const defaultLogLevel = "info";
-export const redactedLogValue = "[Redacted]";
+import {
+  defaultLogLevel,
+  supportedLogLevels,
+} from "./logger-constants.mjs";
 
-export const supportedLogLevels = [
-  "fatal",
-  "error",
-  "warn",
-  "info",
-  "debug",
-  "trace",
-  "silent",
-] as const;
+export const logLevelEnvVar = "LOG_LEVEL";
+export const redactedLogValue = "[Redacted]";
+export { defaultLogLevel, supportedLogLevels };
 
 export type SupportedLogLevel = (typeof supportedLogLevels)[number];
 export type ApplicationLogger = Pick<Logger, "debug" | "info" | "warn" | "error">;

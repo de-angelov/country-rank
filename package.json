@@ -11,7 +11,7 @@
     "compose:prod:logs": "docker compose --profile backup logs -f web-proxy app-server redis redis-backup",
     "compose:prod:ps": "docker compose --profile backup ps",
     "compose:prod:update": "git pull && npm run compose:prod:down && npm run compose:prod",
-    "dev": "react-router dev",
+    "dev": "node scripts/verify-server-env.mjs && react-router dev",
     "generate:banner-assets": "node scripts/generate-banner-assets.mjs",
     "generate:country-fixtures": "node scripts/generate-country-fixtures.mjs",
     "download:country-flags": "node scripts/download-country-flags.mjs",
@@ -22,7 +22,7 @@
     "redis:restore": "node scripts/restore-redis.mjs",
     "redis:restore:local": "node scripts/local-redis-restore.mjs",
     "redis:seed": "node scripts/seed-redis-votes.mjs",
-    "start": "react-router-serve ./build/server/index.js",
+    "start": "node scripts/verify-server-env.mjs && react-router-serve ./build/server/index.js",
     "test": "react-router typegen && vitest run",
     "typecheck": "react-router typegen && tsc"
   },
